@@ -1,0 +1,9 @@
+[submodule "vscode-codeql-starter"]
+	path = vscode-codeql-starter
+	url = https://github.com/github/vscode-codeql-starter/
+[submodule "vulnerable-node"]
+	path = vulnerable-node
+	url = https://github.com/cr0hn/vulnerable-node
+[submodule "NodeGoat"]
+	path = NodeGoat
+	url = https://github.com/OWASP/NodeGoat

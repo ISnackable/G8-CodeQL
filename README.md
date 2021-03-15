@@ -30,10 +30,11 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-Clone this repository on the latest version using git.
+Clone this repository on the latest version using git and update all submodules to the latest version.
 * git
 ```sh
-$ git clone https://github.com/ISnackable/CodeQL-Scanner/
+$ git clone https://github.com/ISnackable/CodeQL-Scanner/ --recursive
+$ git submodule update --init --remote --recursive
 ```
 
 ### Installation
@@ -48,8 +49,8 @@ $ git clone https://github.com/ISnackable/CodeQL-Scanner/
     4. Edit `Path` for both User variables and System variables
     5. Click on `New` and add the CodeQL directory; `D:/Programs/codeql-home/codeql`
 
-
 5. Verify your CodeQL CLI setup.
+
     ```
     $ codeql --help
     ```
@@ -61,13 +62,14 @@ To start trying out the project, follow the steps below.
 
 1. Navigate to the cloned repository directory; for example, `D:/Downloads/CodeQL-Scanner`
 2. Create a CodeQL databases for the project.
-    ```sh
+
+    ```
     $ codeql database create new-database --source-root=src --language=javascript
     ```
 3. Open VSCode and click on `Open Workspace...` and select `workspace.code-workspace`.
 4. In VSCode, click on the CodeQL Extension tab, and add the CodeQL database; `D:/Downloads/CodeQL-Scanner/new-database`.
 5. Make sure to click `Set current database` on the database added.
-6. Right click and run a custom CodeQL query; `D:/Downloads/CodeQL-Scanner/vscode-codeql-starter/codeql-custom-queries-javascript`
+6. Right click and run a custom CodeQL query; `CodeQL-Scanner/vscode-codeql-starter/codeql-custom-queries-javascript/example.ql`
 
 ## Acknowledgements
 

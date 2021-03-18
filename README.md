@@ -6,7 +6,7 @@
   <p align="center">
     FYP Project ultizing CodeQL for code analysis
     <br />
-    <a href="https://github.com/ISnackable/CodeQL-Scanner/"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/ISnackable/DISMFYP2021GRP8/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/github/codeql">CodeQL</a>
@@ -33,7 +33,7 @@ To get a local copy up and running follow these simple example steps.
 Clone this repository on the latest version using git and update all submodules to the latest version.
 * git
 ```sh
-$ git clone https://github.com/ISnackable/CodeQL-Scanner/ --recursive
+$ git clone https://github.com/ISnackable/DISMFYP2021GRP8/ --recursive
 $ git submodule update --init --remote --recursive
 ```
 
@@ -60,16 +60,16 @@ $ git submodule update --init --remote --recursive
 
 To start trying out the project, follow the steps below.
 
-1. Navigate to the cloned repository directory; for example, `D:/Downloads/CodeQL-Scanner`
+1. Navigate to the cloned repository directory; for example, `D:/Downloads/DISMFYP2021GRP8`
 2. Create a CodeQL databases for the project.
 
     ```
     $ codeql database create new-database --source-root=src --language=javascript
     ```
 3. Open VSCode and click on `Open Workspace...` and select `workspace.code-workspace`.
-4. In VSCode, click on the CodeQL Extension tab, and add the CodeQL database; `D:/Downloads/CodeQL-Scanner/new-database`.
+4. In VSCode, click on the CodeQL Extension tab, and add the CodeQL database; `D:/Downloads/DISMFYP2021GRP8/new-database`.
 5. Make sure to click `Set current database` on the database added.
-6. Right click and run a custom CodeQL query; `CodeQL-Scanner/vscode-codeql-starter/codeql-custom-queries-javascript/example.ql`
+6. Right click and run a custom CodeQL query; `DISMFYP2021GRP8/vscode-codeql-starter/codeql-custom-queries-javascript/example.ql`
 
 ## Acknowledgements
 

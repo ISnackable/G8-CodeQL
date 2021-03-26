@@ -1,6 +1,6 @@
-[submodule "vscode-codeql-starter"]
-	path = vscode-codeql-starter
-	url = https://github.com/github/vscode-codeql-starter/
 [submodule "NodeGoat"]
 	path = NodeGoat
 	url = https://github.com/OWASP/NodeGoat
+[submodule "codeql"]
+	path = codeql
+	url = https://github.com/github/codeql.git

@@ -69,9 +69,8 @@ To start trying out the project, follow the steps below.
 3. Open VSCode and click on `Open Workspace...` and select `workspace.code-workspace`.
 4. In VSCode, click on the CodeQL Extension tab, and add the CodeQL database; `D:/Downloads/DISMFYP2021GRP8/new-database`.
 5. Make sure to click `Set current database` on the database added.
-6. Right click and run a custom CodeQL query; Eg. `DISMFYP2021GRP8/vscode-codeql-starter/ql/javascript/ql/src/Security/CWE-078/CommandInjection.ql`
+6. Right click and run a custom CodeQL query; Eg. `DISMFYP2021GRP8/codeql/javascript/ql/src/Security/CWE-078/CommandInjection.ql`
 
 ## Acknowledgements
 
 - [NodeGoat](https://github.com/OWASP/NodeGoat)
-- [vulnerable-node](https://github.com/cr0hn/vulnerable-node)

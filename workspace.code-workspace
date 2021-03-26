@@ -1,40 +1,14 @@
 {
 	"folders": [
 		{
-			"path": "vscode-codeql-starter/codeql-custom-queries-cpp"
-		},
-		{
-			"path": "vscode-codeql-starter/codeql-custom-queries-csharp"
-		},
-		{
-			"path": "vscode-codeql-starter/codeql-custom-queries-go"
-		},
-		{
-			"path": "vscode-codeql-starter/codeql-custom-queries-java"
-		},
-		{
-			"path": "vscode-codeql-starter/codeql-custom-queries-javascript"
-		},
-		{
-			"path": "vscode-codeql-starter/codeql-custom-queries-python"
-		},
-		{
-			"path": "vscode-codeql-starter/codeql-go"
-		},
-		{
-			"path": "vscode-codeql-starter/ql"
+			"path": "codeql"
 		},
 		{
 			"path": "NodeGoat"
 		},
 		{
 			"path": "src"
-		},
-		{
-			"path": "vulnerable-node"
 		}
 	],
-	"settings": {
-		"omnisharp.autoStart": false
-	}
+	"settings": {}
 }

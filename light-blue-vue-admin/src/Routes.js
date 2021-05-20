@@ -10,7 +10,7 @@ import Maps from '@/pages/Maps/Maps';
 import Charts from '@/pages/Charts/Charts';
 import Dashboard from '@/pages/Visits/Visits';
 import Login from '@/pages/Login/Login';
-// import Tables from '@/pages/Documentation/Documentation';
+import Documentation from '@/pages/Documentation/Documentation';
 import ErrorPage from '@/pages/Error/Error';
 
 Vue.use(Router);
@@ -23,11 +23,6 @@ export default new Router({
       name: 'Login',
       component: Login,
     },
-    // {
-    //   path: '/documentation',
-    //   name: 'Documentation',
-    //   component: Documentation,
-    // },
     {
       path: '/error',
       name: 'Error',
@@ -52,6 +47,11 @@ export default new Router({
           path: 'tables',
           name: 'Typography',
           component: Tables,
+        },
+        {
+          path: 'documentation',
+          name: 'Documentation',
+          component: Documentation,
         },
         {
           path: 'notifications',

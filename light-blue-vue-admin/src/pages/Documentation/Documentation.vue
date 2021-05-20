@@ -2,12 +2,74 @@
   <div class="tables-basic">
     <b-breadcrumb>
       <b-breadcrumb-item>YOU ARE HERE</b-breadcrumb-item>
-      <b-breadcrumb-item active>Tables Basic</b-breadcrumb-item>
+      <b-breadcrumb-item active>G8 Documentation</b-breadcrumb-item>
     </b-breadcrumb>
-    <h2 class="page-title">Tables - <span class="fw-semi-bold">Static</span></h2>
+    <h2 class="page-title">Documentation</h2>
     <b-row>
       <b-col>
+
         <Widget
+      title="<h6> About G8 </h6>"
+      close collapse settings customHeader
+    >
+      <b-row>
+        <b-col lg="4" xs="12">
+          <h5 class="m-t-1">Layout options</h5>
+          <p>There are few position options available for notifications. You can click any of
+            them
+            to change notifications position:</p>
+          <div class="location-selector">
+            <div
+              class="bit top left" @click="toggleLocation('top-left')"
+            />
+            <div
+              class="bit top right" @click="toggleLocation('top-right')"
+            />
+            <div
+              class="bit top" @click="toggleLocation('top-center')"
+            />
+            <div
+              class="bit bottom left" @click="toggleLocation('bottom-left')"
+            />
+            <div
+              class="bit bottom right" @click="toggleLocation('bottom-right')"
+            />
+            <div
+              class="bit bottom" @click="toggleLocation('bottom-center')"
+            />
+          </div>
+        </b-col>
+
+        <b-col lg="4" xs="12">
+          <h5 class="m-t-1">Notification Types</h5>
+          <p>Different types of notifications for lots of use cases. Custom classes are also
+            supported.</p>
+          <p><b-button variant="info" id="show-info-message" @click="addInfoNotification">Info
+            Message</b-button></p>
+          <p><b-button variant="danger" id="show-error-message" @click="addErrorNotification">Error
+            Message</b-button></p>
+          <p><b-button
+            variant="success" id="show-success-message" @click="addSuccessNotification"
+          >Success Message</b-button></p>
+        </b-col>
+
+        <b-col lg="4" xs="12">
+          <h5 class="m-t-1">Dead Simple Usage</h5>
+          <p>Just few lines of code to instantiate a notifications object. Does not require
+            passing any options:</p>
+          <pre><code>this.$toasted.show("Thanks for checking out Messenger!");</code></pre>
+          <p>More complex example:</p>
+          <pre>
+            <code>this.$toasted.error('There was an explosion while processing your request.', {
+  duration: 5000,
+  position: 'top-center'
+});</code>
+          </pre>
+        </b-col>
+      </b-row>
+    </Widget>
+
+        <!-- <Widget
           title="<h5>Table <span class='fw-semi-bold'>Styles</span></h5>"
           customHeader settings close
         >
@@ -79,12 +141,14 @@
             </div>
             <p>Basic table with styled content</p>
           </div>
-        </Widget>
+        </Widget> -->
+
       </b-col>
     </b-row>
     <b-row>
      <b-col lg="6">
-       <Widget
+
+       <!-- <Widget
          title="<h5>Table <span class='fw-semi-bold'>Styles</span></h5>"
          customHeader settings close
        >
@@ -199,10 +263,12 @@
              </tbody>
            </table>
          </div>
-       </Widget>
+       </Widget> -->
+
      </b-col>
      <b-col lg="6">
-        <Widget
+
+        <!-- <Widget
           title="<h5>Table <span class='fw-semi-bold'>Styles</span></h5>"
           customHeader ettings close
         >
@@ -310,8 +376,9 @@
               </tr>
             </tbody>
           </table>
-        </Widget>
-        <Widget
+        </Widget> -->
+
+        <!-- <Widget
           title="<h5>Table <span class='fw-semi-bold'>Styles</span></h5>"
           customHeader settings close
         >
@@ -424,7 +491,8 @@
               </tbody>
             </table>
           </div>
-        </Widget>
+        </Widget> -->
+
       </b-col>
    </b-row>
   </div>
@@ -436,7 +504,7 @@ import Widget from '@/components/Widget/Widget';
 import Sparklines from '../../components/Sparklines/Sparklines'
 
 export default {
-  name: 'Tables',
+  name: 'Documentation',
   components: { Widget, Sparklines },
   data() {
     return {
@@ -558,4 +626,4 @@ export default {
 };
 </script>
 
-<style src="./Tables.scss" lang="scss" scoped />
+<style src="./Documentation.scss" lang="scss" scoped />

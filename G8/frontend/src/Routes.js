@@ -12,6 +12,12 @@ import Dashboard from '@/pages/Visits/Visits';
 import Login from '@/pages/Login/Login';
 import ErrorPage from '@/pages/Error/Error';
 
+//######## Imports added that are not part of the templates ########
+import Alerts from '@/pages/Alerts/Alerts';
+import Home from '@/pages/Home/Home';
+import Customquery from '@/pages/Customquery/Customquery';
+import Layoutdashboard from '@/components/Layout/Layout-dashboard';
+//######## End of new imports added ########
 Vue.use(Router);
 
 export default new Router({
@@ -30,7 +36,7 @@ export default new Router({
     {
       path: '/app',
       name: 'Layout',
-      component: Layout,
+      component: Layoutdashboard,
       children: [
         {
           path: 'dashboard',
@@ -67,8 +73,26 @@ export default new Router({
           name: 'Charts',
           component: Charts,
         },
+        //#################New-Routes added for app-child##############################
+        {
+          path: 'home',
+          name: 'Home',
+          component: Home,
+        },
+        {
+          path: 'alerts',
+          name: 'Alerts',
+          component: Alerts,
+        },
+        {
+          path: 'customquery',
+          name: 'Customquery',
+          component: Customquery,
+        },
+        //#################End of new routes added for app-child#######################
       ],
     },
+
     {
       path: '*',
       name: 'Error',

@@ -1,22 +1,25 @@
 console.log("-----------------------------------------");
-console.log("Class: DISM/FT/3A/03")
+console.log("Class: DISM/FT/3A/03");
 console.log("-----------------------------------------");
-console.log("DISM FYP 2021 GRP 8")
+console.log("DISM FYP 2021 GRP 8");
 console.log("-----------------------------------------");
 
 // ---------------------------------------------------------
 // load modules
 // ---------------------------------------------------------
-const neo4j = require('neo4j-driver');
+const neo4j = require("neo4j-driver");
 
 // Neo4J Database
-const driver = neo4j.driver('bolt://localhost:7687',
-neo4j.auth.basic('REDACTED', 'REDACTED'), 
-{/* encrypted: 'ENCRYPTION_OFF' */});
-const session = driver.session()
+const driver = neo4j.driver(
+  "bolt://localhost:7687",
+  neo4j.auth.basic("REDACTED", "REDACTED"),
+  {
+    /* encrypted: 'ENCRYPTION_OFF' */
+  }
+);
+const session = driver.session();
 
-const query =
-`
+const query = `
 // SHOW DATABASES
 CREATE DATABASE SOMEHARDCODEDDATABASEFORNOW
 :USE SOMEHARDCODEDDATABASEFORNOW
@@ -45,20 +48,20 @@ const params = { name: "Alice" };
 
 session
   .run(query, params)
-  .then(result => {
-    result.records.forEach(record => {
+  .then((result) => {
+    result.records.forEach((record) => {
       console.log(record.get("a"));
       console.log(JSON.stringify(record));
       console.log("=======================");
-    })
+    });
   })
-  .catch(error => {
-    console.log(error)
+  .catch((error) => {
+    console.log(error);
   })
   .finally(() => {
     session.close();
     driver.close();
-  })
+  });
 
 // try {
 // const result = await session.run(query, params);
@@ -69,11 +72,10 @@ session
 // const node = singleRecord.get(0);
 
 // console.log(node.properties.name);
-// } 
+// }
 // finally {
 // await session.close();
 // }
 
 // // on application exit:
 // await driver.close()
-

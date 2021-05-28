@@ -1,16 +1,12 @@
-console.log("-----------------------------------------");
-console.log("Class: DISM/FT/3A/03");
-console.log("-----------------------------------------");
-console.log("DISM FYP 2021 GRP 8");
-console.log("-----------------------------------------");
+console.log("------------------------------------");
+console.log("controllers > apiController.js");
+console.log("------------------------------------");
 
 // --------------------------------------------------
 // load modules
 // --------------------------------------------------
-const express = require("express");
-const app = express();
-const bodyParser = require("body-parser");
 const fs = require("fs");
+const path = require("path");
 const { exec } = require("child_process");
 const { hashElement } = require("folder-hash");
 const lineReader = require("line-reader");
@@ -20,22 +16,22 @@ const lineReader = require("line-reader");
 // --------------------------------------------------
 
 // Create Database
-app.get("/createDatabase", function(req, res) {
+exports.createDatabase = (req, res) => {
   /*
-Creating hashes over folders (with default options)
-Content means in this case a folder's children - both the files and the subfolders with their children.
+    Creating hashes over folders (with default options)
+    Content means in this case a folder's children - both the files and the subfolders with their children.
 
-The hashes are the same if:
+    The hashes are the same if:
 
-A folder is checked again
-Two folders have the same name and content (but have different parent folders)
+    A folder is checked again
+    Two folders have the same name and content (but have different parent folders)
 
-The hashes are different if:
+    The hashes are different if:
 
-A file somewhere in the directory structure was renamed or its content was changed
-Two folders have the same name but different content
-Two folders have the same content but different names
-*/
+    A file somewhere in the directory structure was renamed or its content was changed
+    Two folders have the same name but different content
+    Two folders have the same content but different names
+  */
 
   // const {  getHashes } = require('crypto');
   // console.log(getHashes()); // ['DSA', 'DSA-SHA', 'DSA-SHA1', ...]
@@ -67,7 +63,7 @@ Two folders have the same content but different names
       // This function allows us to read each line in a txt file
       // line = content from the line the function is reading
       // last = boolean, returns true or false depending if the function is reading the last line of the file
-      lineReader.eachLine("hash.txt", function(line, last) {
+      lineReader.eachLine("hash.txt", function (line, last) {
         console.log("Hash: " + line);
 
         // Checking if the line read matches the hash of the folder we are comparing
@@ -78,7 +74,7 @@ Two folders have the same content but different names
         } else {
           if (last == true) {
             // last returns true when the file is being read at the last line
-            fs.appendFile("hash.txt", hash.hash + "\n", function(err) {
+            fs.appendFile("hash.txt", hash.hash + "\n", function (err) {
               // Appends the hash to a new line of the file
               if (err) throw err; // Error checking for appendFile
               console.log("File does not exist");
@@ -117,10 +113,10 @@ Two folders have the same content but different names
       });
     }
   );
-});
+};
 
 // Query current database number in the counter
-app.get("/query", function(req, res) {
+exports.query = (req, res) => {
   // Counter from the number of hashes there are
   var data = fs.readFileSync("hash.txt");
   var counter = data.toString().split("\n").length - 1;
@@ -131,7 +127,7 @@ app.get("/query", function(req, res) {
   exec(
     'codeql database analyze --format="sarifv2.1.0"  --output="./scan.sarif" ./controller/database' +
       counter +
-      " ..\\..\\codeql\\javascript\\ql\\src\\codeql-suites\\javascript-code-scanning.qls --search-path ..\\..\\codeql\\misc\\suite-helpers",
+      " ../../codeql/javascript/ql/src/codeql-suites/javascript-code-scanning.qls --search-path ../../codeql/misc/suite-helpers",
     (error, stdout, stderr) => {
       // Errors for troubleshooting
       if (error) {
@@ -142,6 +138,4 @@ app.get("/query", function(req, res) {
       console.error(`stderr: ${stderr}`);
     }
   );
-});
-
-module.exports = app;
+};

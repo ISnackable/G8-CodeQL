@@ -10,8 +10,6 @@ const lineReader = require("line-reader");
 
 // -----------------------------------------------------------------------------------------------------------------------------
 
-
-
 /*
 Creating hashes over folders (with default options)
 Content means in this case a folder's children - both the files and the subfolders with their children.
@@ -51,7 +49,6 @@ console.log("Creating a hash over the selected folder:");
 // hashElement(<Folder name>, <Directory>, <options>)
 hashElement("database17", path.join(__dirname, "."), options)
   .then((hash) => {
-
     // Shows the database being hashed
     console.log(hash.toString());
 
@@ -59,54 +56,56 @@ hashElement("database17", path.join(__dirname, "."), options)
     // This function allows us to read each line in a txt file
     // line = content from the line the function is reading
     // last = boolean, returns true or false depending if the function is reading the last line of the file
-    lineReader.eachLine('hash.txt', function(line, last) {
+    lineReader.eachLine("hash.txt", function (line, last) {
       console.log("Hash: " + line);
-    
+
       // Checking if the line read matches the hash of the folder we are comparing
       if (line == hash.hash) {
-        console.log("Hash matched: " + hash.hash)
-        console.log("Database Exists")
+        console.log("Hash matched: " + hash.hash);
+        console.log("Database Exists");
         return false; // stop reading
-      } 
-      else {
-         if(last == true) { // last returns true when the file is being read at the last line
-           fs.appendFile('hash.txt', hash.hash + "\n", function(err){ // Appends the hash to a new line of the file
-             if (err) throw err; // Error checking for appendFile
-             console.log("File does not exist")
-             console.log("Hash added to database")
+      } else {
+        if (last == true) {
+          // last returns true when the file is being read at the last line
+          fs.appendFile("hash.txt", hash.hash + "\n", function (err) {
+            // Appends the hash to a new line of the file
+            if (err) throw err; // Error checking for appendFile
+            console.log("File does not exist");
+            console.log("Hash added to database");
 
             // -----------------------------------------------------------------------------------------------------
             // Create database
 
             // Counter from the number of hashes there are
-            var data = fs.readFileSync('hash.txt');
-            var counter = data.toString().split('\n').length - 1;           
-             console.log("Current Counter: " + counter)
-             
-             // exec command to create a CodeQL database
-              exec('codeql database create ../database/database' + counter + ' --source-root=./ --language=javascript', (error, stdout, stderr) => {
-                 if (error) {
-                   // Outputs error for troubleshooting
-                   console.error(`exec error: ${error}`);
-                   return;
-                 }
-                 console.log(`stdout: ${stdout}`);
-                 console.error(`stderr: ${stderr}`);
-                });            
-             
-           })
-         }
+            var data = fs.readFileSync("hash.txt");
+            var counter = data.toString().split("\n").length - 1;
+            console.log("Current Counter: " + counter);
+
+            // exec command to create a CodeQL database
+            exec(
+              "codeql database create ../database/database" +
+                counter +
+                " --source-root=./ --language=javascript",
+              (error, stdout, stderr) => {
+                if (error) {
+                  // Outputs error for troubleshooting
+                  console.error(`exec error: ${error}`);
+                  return;
+                }
+                console.log(`stdout: ${stdout}`);
+                console.error(`stderr: ${stderr}`);
+              }
+            );
+          });
+        }
       }
     });
   })
-
-
 
   // Error checking for hashElement
   .catch((error) => {
     return console.error("Hashing failed:", error);
   });
-
 
 // -----------------------------------------------------------------------------------------------------------------------------
 

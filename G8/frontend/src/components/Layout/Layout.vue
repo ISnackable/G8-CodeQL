@@ -19,13 +19,12 @@ import { mapState, mapActions } from 'vuex';
 
 import Sidebar from '@/components/Sidebar/Sidebar';
 import Header from '@/components/Header/Header';
-import Helper from '@/components/Helper/Helper';
 
 import './Layout.scss';
 
 export default {
   name: 'Layout',
-  components: { Sidebar, Header, Helper },
+  components: { Sidebar, Header },
   methods: {
     ...mapActions(
       'layout', ['switchSidebar', 'changeSidebarActive'],

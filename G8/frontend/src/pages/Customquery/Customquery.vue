@@ -90,4 +90,4 @@ export default {
 };
 </script>
 
-<style src="./Customquery.scss" lang="scss" />
+<style src="./CustomQuery.scss" lang="scss" />

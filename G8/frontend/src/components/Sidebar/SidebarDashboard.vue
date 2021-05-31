@@ -10,10 +10,10 @@
       <h5 class="navTitle">Information</h5>
       <NavLink
         :activeItem="activeItem"
-        header="Dashboard"
-        link="/app/dashboard"
+        header="Home"
+        link="/app/home"
         iconName="flaticon-home-3"
-        index="dashboard"
+        index="home"
         isHeader
       />
       <NavLink

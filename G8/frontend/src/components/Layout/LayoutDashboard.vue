@@ -17,8 +17,8 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 
-import Sidebar from '@/components/Sidebar/Sidebar-dashboard';
-import Header from '@/components/Header/Header-dashboard';
+import Sidebar from '@/components/Sidebar/SidebarDashboard';
+import Header from '@/components/Header/HeaderDashboard';
 
 import './Layout.scss';
 

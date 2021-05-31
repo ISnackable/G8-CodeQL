@@ -15,8 +15,8 @@ import ErrorPage from '@/pages/Error/Error';
 //######## Imports added that are not part of the templates ########
 import Alerts from '@/pages/Alerts/Alerts';
 import Home from '@/pages/Home/Home';
-import Customquery from '@/pages/Customquery/Customquery';
-import Layoutdashboard from '@/components/Layout/Layout-dashboard';
+import CustomQuery from '@/pages/CustomQuery/CustomQuery';
+import Layoutdashboard from '@/components/Layout/LayoutDashboard';
 //######## End of new imports added ########
 Vue.use(Router);
 
@@ -86,8 +86,8 @@ export default new Router({
         },
         {
           path: 'customquery',
-          name: 'Customquery',
-          component: Customquery,
+          name: 'CustomQuery',
+          component: CustomQuery,
         },
         //#################End of new routes added for app-child#######################
       ],

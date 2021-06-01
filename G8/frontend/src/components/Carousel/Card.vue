@@ -25,5 +25,4 @@ export default {
 };
 </script>
 
-
 <style src="../../components/Carousel/CarouselHomepage.scss" lang="scss" />

@@ -8,29 +8,27 @@ console.log("-----------------------------------------");
 // load modules
 // ---------------------------------------------------------
 
-  var mysql = require('mysql');
+var mysql = require("mysql");
+const config = require("../config");
 
-  // attempt to get a connection to the DB
-  var conn = mysql.createConnection({
-      host: "localhost",
-      //port: "/Applications/MAMP/tmp/mysql/mysql.sock", <<< ONLY IF YOU NEED IT
-      user: "root", // REPLACE 'root' WITH YOUR USER
-      password: "", // <<<< INSERT PASSWORD
-      database: "g8",
-      multipleStatements: true,
-      dateStrings: true
-  });
-  
-          conn.connect(function (err) {
-              if (err) {
-                  console.log("Error connecting database: " + err.stack);
-              }
-              else {
-                  console.log("Database connected");
-              }
-          });
+// attempt to get a connection to the DB
+var conn = mysql.createPool({
+  host: "mysql",
+  user: config.username,
+  password: config.password,
+  database: config.database,
+  dateStrings: true,
+});
 
-          module.exports = conn;
+conn.connect(function (err) {
+  if (err) {
+    console.log("Error connecting database: " + err.stack);
+  } else {
+    console.log("Database connected");
+  }
+});
+
+module.exports = conn;
 // try {
 // const result = await session.run(query, params);
 

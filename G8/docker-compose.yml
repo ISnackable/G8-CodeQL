@@ -4,7 +4,7 @@ version: "3.9"
 services:
   mysql:
     image: mysql:8.0
-    command: --init-file /docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password
     volumes:
       - db_data:/var/lib/mysql
       #   - ./backend/init.sql:/data/application/init.sql
@@ -35,8 +35,10 @@ services:
         PRECOMPILE_QUERIES: "false" # TO REDUCE CREATION TIME
         # PRECOMPILE_QUERIES: "true"
     environment:
-      - CODEQL_HOME=/usr/local/codeql-home
-      - DB_URL=mysql://codeql:codeql@mysql/g8?dateStrings=true
+      CODEQL_HOME: /usr/local/codeql-home
+      DB_NAME: g8
+      DB_USER: codeql
+      DB_PASSWORD: codeql
     # Ports to map, mapping our port 8080, to the port 8080 on the container
     ports:
       - 8080:8080

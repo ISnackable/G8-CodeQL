@@ -6,9 +6,7 @@
 
   <Header/>
   <Sidebar/>
- 
   <Carousel/>
-
   <Widget>
 
   <div class="information">

@@ -1,4 +1,3 @@
-  
 <template>
 <div>
   <button class="btn">
@@ -16,6 +15,5 @@ export default {
   props: { arrowType: String }
 };
 </script>
-
 
 <style src="../../components/Carousel/ArrowButton.scss" lang="scss" />

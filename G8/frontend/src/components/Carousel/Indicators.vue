@@ -25,5 +25,4 @@ export default {
 };
 </script>
 
-
 <style src="../../components/Carousel/Indicators.scss" lang="scss" />

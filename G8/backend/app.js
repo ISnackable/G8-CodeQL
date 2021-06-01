@@ -32,7 +32,7 @@ function startServer() {
     let hostname = process.env.hostname ?? "localhost";
     let port = process.env.port ?? 8080;
 
-    app.listen(port, hostname, () => {
+    app.listen(port /*, hostname*/, () => {
       console.log(
         `Server started and accessible via http://${hostname}:${port}/`
       );

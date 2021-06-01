@@ -1,0 +1,68 @@
+version: "3.9"
+
+# The different services that make up our "network" of containers
+services:
+  mysql:
+    image: mysql:8.0
+    command: --init-file /docker-entrypoint-initdb.d/init.sql
+    volumes:
+      - db_data:/var/lib/mysql
+      #   - ./backend/init.sql:/data/application/init.sql
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: g8
+      MYSQL_USER: codeql
+      MYSQL_PASSWORD: codeql
+    ports:
+      - 3306:3306
+  # Express frontend
+  frontend:
+    # The location of dockerfile to build this service
+    build: ./frontend
+    environment:
+      NODE_ENV: production
+    # Ports to map, mapping our port 80, to the port 5000 on the container
+    ports:
+      - 80:5000
+  backend:
+    # The location of dockerfile to build this service
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        PRECOMPILE_QUERIES: "false" # TO REDUCE CREATION TIME
+        # PRECOMPILE_QUERIES: "true"
+    environment:
+      - CODEQL_HOME=/usr/local/codeql-home
+      - DB_URL=mysql://codeql:codeql@mysql/g8?dateStrings=true
+    # Ports to map, mapping our port 8080, to the port 8080 on the container
+    ports:
+      - 8080:8080
+    # Tell docker this container depends on the neo service so they can communicate, the neo4j server will be located at neo:7474
+    depends_on:
+      - neo
+      - mysql
+  ## Defining the Neo4j Database Service
+  neo:
+    # The image to use
+    image: neo4j:latest
+    # map the ports so we can check the db server is up
+    ports:
+      - 7474:7474
+      - 7687:7687
+    # mounting a named volume to the container to track db data
+    volumes:
+      - neo4j_data:/data/
+    environment:
+      - NEO4J_AUTH=neo4j/s3cr3t # configure the instance with custom username/password
+      # Raise memory limits
+      - NEO4J_dbms_memory_pagecache_size=1G
+      - NEO4J_dbms.memory.heap.initial_size=1G
+      - NEO4J_dbms_memory_heap_max__size=1G
+
+## volumes to be generated, these are saved somewhere for repeated use by docker
+volumes:
+  neo4j_data:
+  db_data:

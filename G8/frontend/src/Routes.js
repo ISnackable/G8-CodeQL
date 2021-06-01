@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import Layout from '@/components/Layout/Layout';
+import LayoutDocumentation from '@/components/Layout/LayoutDocumentation';
 import Typography from '@/pages/Typography/Typography';
 import Tables from '@/pages/Tables/Tables';
 import Notifications from '@/pages/Notifications/Notifications';
@@ -11,6 +12,9 @@ import Charts from '@/pages/Charts/Charts';
 import Dashboard from '@/pages/Visits/Visits';
 import Login from '@/pages/Login/Login';
 import Documentation from '@/pages/Documentation/Documentation';
+import ExploringG8 from '@/pages/Documentation/ExploringG8';
+import GettingStarted from '@/pages/Documentation/GettingStarted';
+import FAQ from '@/pages/Documentation/Faq';
 import ErrorPage from '@/pages/Error/Error';
 
 Vue.use(Router);
@@ -27,6 +31,33 @@ export default new Router({
       path: '/error',
       name: 'Error',
       component: ErrorPage,
+    },
+    {
+      path: '/documentation',
+      name: 'LayoutDocumentation',
+      component: LayoutDocumentation,
+      children: [
+        {
+          path: 'documentation',
+          name: 'Documentation',
+          component: Documentation,
+        },
+        {
+          path: 'getting-started',
+          name: 'GettingStarted',
+          component: GettingStarted,
+        },
+        {
+          path: 'exploring-g8',
+          name: 'ExploringG8',
+          component: ExploringG8,
+        },
+        {
+          path: 'faq',
+          name: 'FAQ',
+          component: FAQ,
+        },
+      ],
     },
     {
       path: '/app',
@@ -47,11 +78,6 @@ export default new Router({
           path: 'tables',
           name: 'Typography',
           component: Tables,
-        },
-        {
-          path: 'documentation',
-          name: 'Documentation',
-          component: Documentation,
         },
         {
           path: 'notifications',

@@ -2,15 +2,11 @@ import { SarifLog } from "./CodeQLSarifValidator";
 var jsonMap = require("json-source-map");
 import * as fs from "fs";
 
-const file = fs.readFileSync(
-  "./sarifTestFiles/RMerl_asuswrt-merlin__2021-05-20_17_18_36__export.sarif",
-  "utf8"
-);
 // const file = fs.readFileSync(
-//   "./sarifTestFiles/tplink3_snippets_nogrpresults.sarif",
+//   "./sarifTestFiles/RMerl_asuswrt-merlin__2021-05-20_17_18_36__export.sarif",
 //   "utf8"
 // );
-// const file = fs.readFileSync("./sarifTestFiles/tplink1.sarif", "utf8");
+const file = fs.readFileSync("./sarifTestFiles/tplink1.sarif", 'utf8');
 
 // console.log(file);
 const testSarifJson: SarifLog = jsonMap.parse(file).data;
@@ -34,18 +30,23 @@ let driverRules = testSarifJson.runs[0].tool.driver.rules;
 // }
 // console.timeEnd('loop');
 
-var noOfError: number = 0,
-  noOfWarnings: number = 0,
-  noOfRecommendation: number = 0;
-var queries: Array<String> = new Array();
+var noOfError = 0,
+  noOfWarnings = 0,
+  noOfRecommendation = 0;
 
 console.time("forofloop");
+var queries: Array<String> = new Array();
 for (const result of results) {
-  // let index = driverRules.findIndex((x) => x.id === result.ruleId);
-  let index = result.ruleIndex;
+  let index = driverRules.findIndex((x) => x.id === result.ruleId);
+
   if (!queries.includes(result.ruleId)) {
+
     queries.push(result.ruleId);
+
   }
+
+
+
 
   if (driverRules[index].properties["problem.severity"] === "error") {
     noOfError++;
@@ -95,8 +96,8 @@ for (const result of results) {
 }
 console.timeEnd("forofloop");
 
-console.log(`numer of queries ${queries.length}`);
 console.log(`number of alerts: ${results.length}`);
 console.log(`number of errors: ${noOfError}`);
 console.log(`number of warning: ${noOfWarnings}`);
 console.log(`number of recommendation: ${noOfRecommendation}`);
+console.log(`number of queries ${queries.length}`);

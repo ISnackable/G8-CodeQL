@@ -29,8 +29,8 @@ app.use(routes);
 // ------------------------------------------------------
 function startServer() {
   try {
-    let hostname = process.env.hostname ?? "localhost";
-    let port = process.env.port ?? 8080;
+    let hostname = process.env.hostname = "localhost";
+    let port = process.env.port = 8080;
 
     app.listen(port /*, hostname*/, () => {
       console.log(

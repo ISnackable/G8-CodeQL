@@ -11,6 +11,8 @@ import Charts from '@/pages/Charts/Charts';
 import Dashboard from '@/pages/Visits/Visits';
 import Login from '@/pages/Login/Login';
 import ErrorPage from '@/pages/Error/Error';
+import Homepage from '@/pages/Homepage/Homepage';
+
 
 Vue.use(Router);
 
@@ -69,6 +71,12 @@ export default new Router({
         },
       ],
     },
+    {
+      path: '/homepage',
+      name: 'Homepage',
+      component: Homepage
+    },
+
     {
       path: '*',
       name: 'Error',

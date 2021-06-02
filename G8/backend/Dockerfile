@@ -62,7 +62,6 @@ RUN cd /tmp && \
     rm packages-microsoft-prod.deb
 RUN apt-get install -y dotnet-sdk-3.1
 
-
 RUN mkdir -p /usr/local/nvm
 # nvm environment variables
 ENV NVM_DIR /usr/local/nvm
@@ -127,6 +126,7 @@ RUN if [ "$PRECOMPILE_QUERIES" = "true" ] ; \
 
 ENV PYTHONIOENCODING=utf-8
 # ENTRYPOINT ["python3", "/usr/local/startup_scripts/startup.py"]
+WORKDIR /usr/src/app/
 
 EXPOSE 8080
-CMD [ "node", "/usr/src/app/app.js" ]
+CMD [ "node", "app.js" ]

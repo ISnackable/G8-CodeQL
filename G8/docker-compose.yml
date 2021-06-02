@@ -2,12 +2,12 @@ version: "3.9"
 
 # The different services that make up our "network" of containers
 services:
+  # MySQL Database
   mysql:
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
     volumes:
-      - db_data:/var/lib/mysql
-      #   - ./backend/init.sql:/data/application/init.sql
+      - mysql_data:/var/lib/mysql
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: always
     environment:
@@ -15,17 +15,19 @@ services:
       MYSQL_DATABASE: g8
       MYSQL_USER: codeql
       MYSQL_PASSWORD: codeql
-    ports:
-      - 3306:3306
+    # Remove comment if want to expose MySQL service to host
+    # ports:
+    #   - 3306:3306
   # Express frontend
   frontend:
     # The location of dockerfile to build this service
     build: ./frontend
     environment:
       NODE_ENV: production
-    # Ports to map, mapping our port 80, to the port 5000 on the container
+    # Ports to map our port 80, to the port 5000 on the container
     ports:
       - 80:5000
+  # Express backend
   backend:
     # The location of dockerfile to build this service
     build:
@@ -39,14 +41,14 @@ services:
       DB_NAME: g8
       DB_USER: codeql
       DB_PASSWORD: codeql
-    # Ports to map, mapping our port 8080, to the port 8080 on the container
+    # Ports to map our port 8080, to the port 8080 on the container
     ports:
       - 8080:8080
-    # Tell docker this container depends on the neo service so they can communicate, the neo4j server will be located at neo:7474
+    # Tell docker this container depends on the neo service & mysql so they can communicate
     depends_on:
       - neo
       - mysql
-  ## Defining the Neo4j Database Service
+  # Neo4j Database
   neo:
     # The image to use
     image: neo4j:latest
@@ -64,7 +66,7 @@ services:
       - NEO4J_dbms.memory.heap.initial_size=1G
       - NEO4J_dbms_memory_heap_max__size=1G
 
-## volumes to be generated, these are saved somewhere for repeated use by docker
+# volumes to be generated, these are saved somewhere for repeated use by docker
 volumes:
   neo4j_data:
-  db_data:
+  mysql_data:

@@ -8,11 +8,11 @@ console.log("-----------------------------------------");
 // load modules
 // ---------------------------------------------------------
 
-var mysql = require("mysql");
+const mysql = require("mysql");
 const config = require("../config");
 
 // attempt to get a connection to the DB
-var conn = mysql.createPool({
+var conn = mysql.createConnection({
   host: "mysql",
   user: config.username,
   password: config.password,
@@ -29,19 +29,3 @@ conn.connect(function (err) {
 });
 
 module.exports = conn;
-// try {
-// const result = await session.run(query, params);
-
-// console.log(result);
-// console.log(JSON.stringify(result));
-// const singleRecord = result.records[0];
-// const node = singleRecord.get(0);
-
-// console.log(node.properties.name);
-// }
-// finally {
-// await session.close();
-// }
-
-// // on application exit:
-// await driver.close()

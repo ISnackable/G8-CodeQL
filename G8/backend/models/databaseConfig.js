@@ -13,7 +13,8 @@ const config = require("../config");
 
 // attempt to get a connection to the DB
 var conn = mysql.createConnection({
-  host: "mysql",
+  host: "localhost",
+  // host: "mysql",
   user: config.username,
   password: config.password,
   database: config.database,

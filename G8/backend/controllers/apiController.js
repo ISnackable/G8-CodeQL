@@ -7,7 +7,7 @@ console.log("------------------------------------");
 // --------------------------------------------------
 const fs = require("fs");
 const path = require("path");
-const { exec } = require("child_process");
+const { exec, execFile } = require("child_process");
 const { hashElement } = require("folder-hash");
 const lineReader = require("line-reader");
 const createDB = require("../models/createDB.js");
@@ -16,131 +16,55 @@ const createDB = require("../models/createDB.js");
 // end points
 // --------------------------------------------------
 
-// Create Database (Not Used)
-exports.createDatabase = (req, res) => {
-  /*
-    Creating hashes over folders (with default options)
-    Content means in this case a folder's children - both the files and the subfolders with their children.
-
-    The hashes are the same if:
-
-    A folder is checked again
-    Two folders have the same name and content (but have different parent folders)
-
-    The hashes are different if:
-
-    A file somewhere in the directory structure was renamed or its content was changed
-    Two folders have the same name but different content
-    Two folders have the same content but different names
-  */
-
-  // const {  getHashes } = require('crypto');
-  // console.log(getHashes()); // ['DSA', 'DSA-SHA', 'DSA-SHA1', ...]
-
-  // options can be viewed at https://www.npmjs.com/package/folder-hash
-  // Default algo is SHA1 and encoding is base64, therefore we have to change it
-
-  const options = {
-    algo: "sha256",
-    encoding: "hex",
-    files: {
-      exclude: ["*"],
-    },
-    folders: {
-      exclude: ["*"],
-    },
-  };
-
-  // hashElement is a function from the folder-hash package
-  console.log("Creating a hash over the selected folder:");
-
-  // hashElement(<Folder name>, <Directory>, <options>)
-  hashElement("./", path.join(__dirname, "."), options).then((hash) => {
-    // Shows the database being hashed
-    console.log(hash.toString());
-
-    // eachLine is a function from the line-reader package
-    // This function allows us to read each line in a txt file
-    // line = content from the line the function is reading
-    // last = boolean, returns true or false depending if the function is reading the last line of the file
-    lineReader.eachLine("hash.txt", function (line, last) {
-      console.log("Hash: " + line);
-
-      // Checking if the line read matches the hash of the folder we are comparing
-      if (line == hash.hash) {
-        console.log("Hash matched: " + hash.hash);
-        console.log("Database Exists");
-        return false; // stop reading
-      } else {
-        if (last == true) {
-          // last returns true when the file is being read at the last line
-          fs.appendFile("hash.txt", hash.hash + "\n", function (err) {
-            // Appends the hash to a new line of the file
-            if (err) throw err; // Error checking for appendFile
-            console.log("File does not exist");
-
-            // CodeQL Databases are not allowed to have the same name, or an error will occur
-
-            // Solution to solve the clashing of database names
-            // Making a counter to append to the database name
-
-            // Counter from the number of hashes there are
-            var data = fs.readFileSync("hash.txt");
-            var counter = data.toString().split("\n").length - 1;
-            console.log("Current Counter: " + counter);
-
-            // Starts a shell to run the codeql create database command
-            // Appends the number of hashes there are to database name
-            // E.g. counter = 10, database name = database10
-            // Change directory path as necessary
-            exec(
-              "codeql database create .database" +
-                counter +
-                " --source-root=./ --language=javascript",
-              (error, stdout, stderr) => {
-                // Errors for troubleshooting
-                if (error) {
-                  console.error(`exec error: ${error}`);
-                  return;
-                }
-                console.log(`stdout: ${stdout}`);
-                console.error(`stderr: ${stderr}`);
-              }
-            );
-          });
-        }
-      }
-    });
-  });
-};
+// Read up https://dzone.com/articles/understanding-execfile-spawn-exec-and-fork-in-node
 
 // Query current database number in the counter
 exports.query = (req, res) => {
   // Counter from the number of hashes there are
-  var data = fs.readFileSync("hash.txt");
-  var counter = data.toString().split("\n").length - 1;
-  console.log("Current Counter: " + counter);
+  // var data = fs.readFileSync("hash.txt");
+  // var counter = data.toString().split("\n").length - 1;
+  // console.log("Current Counter: " + counter);
+
+  // Change directory path as necessary
+  const args = [
+    "database", // first argv
+    "analyze", // second argv
+    "--quiet", // suppress output, Incrementally decrease the number of progress messages printed
+    "--format=sarifv2.1.0", // set the result output to SARIF v2.1.0 format
+    "--output=../../insertid.sarif", // output file as scan.sarif
+    "--search-path=../../codeql/misc/suite-helpers", // the list of directories under which QL packs may be found
+    "--sarif-add-snippets", // include code snippets for each location mentioned in the results
+    "../databases/databaseinsertid", // our database to scan
+    "../../codeql/javascript/ql/src/codeql-suites/javascript-security-extended.qls", // maybe change? seem like different QL pack use different suite-helpers
+  ];
 
   // Command for running the CodeQL query
-  // Change directory path as necessary
-  exec(
-    'codeql database analyze --format="sarifv2.1.0"  --output="./scan.sarif" ./database' +
-      counter +
-      " ../../codeql/javascript/ql/src/codeql-suites/javascript-code-scanning.qls --search-path ../../codeql/misc/suite-helpers",
-    (error, stdout, stderr) => {
-      // Errors for troubleshooting
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-      console.error(`stderr: ${stderr}`);
+  execFile("codeql", args, (error, stdout, stderr) => {
+    if (error) {
+      console.error("stderr", stderr);
+      throw error;
     }
-  );
+    console.log("stdout", stdout);
+    console.error(`stderr: ${stderr}`);
+  });
+  // exec(
+  //   'codeql database analyze --format="sarifv2.1.0"  --output="./scan.sarif" ./database' +
+  //     counter +
+  //     " ../../codeql/javascript/ql/src/codeql-suites/javascript-code-scanning.qls --search-path ../../codeql/misc/suite-helpers",
+  //   (error, stdout, stderr) => {
+  //     // Errors for troubleshooting
+  //     if (error) {
+  //       console.error(`exec error: ${error}`);
+  //       return;
+  //     }
+  //     console.log(`stdout: ${stdout}`);
+  //     console.error(`stderr: ${stderr}`);
+  //   }
+  // );
 };
 
 // Create Database
-exports.createDatabase2 = (req, res) => {
+exports.createDatabase = (req, res) => {
   /*
     Creating hashes over folders (with default options)
     Content means in this case a folder's children - both the files and the subfolders with their children.
@@ -177,29 +101,46 @@ exports.createDatabase2 = (req, res) => {
   console.log("Creating a hash over the selected folder:");
 
   // hashElement(<Folder name>, <Directory>, <options>) --> Hashes your desired folder
+  // may need to validate folder name (in case of directory traversing attack)
   hashElement("./", path.join(__dirname, "."), options).then((hash) => {
     // Shows the database being hashed
 
     // Connects to SQL database and compares existing hashes
     createDB.insertDB(hash.hash, function (err, result) {
       if (!err) {
-        if (result) { // if result == There are no existing databases with the same hash
+        if (result) {
+          // if result == There are no existing databases with the same hash
+          const args = [
+            "database", // first argv
+            "create", // second argv
+            `database${result.insertId}`, // database name to be created
+            "--source-root=./", // source code folder
+            "--language=javascript", // programming language
+          ];
           // Command to create a database
           // result.insertId is the ID of the database inserted
-          exec(
-            "codeql database create .database" +
-              result.insertId +
-              " --source-root=./ --language=javascript",
-            (error, stdout, stderr) => {
-              // Errors for troubleshooting
-              if (error) {
-                console.error(`exec error: ${error}`);
-                return;
-              }
-              console.log(`stdout: ${stdout}`);
-              console.error(`stderr: ${stderr}`);
+          execFile("codeql", args, (error, stdout, stderr) => {
+            if (error) {
+              console.error("stderr", stderr);
+              throw error;
             }
-          );
+            console.log("stdout", stdout);
+            console.error(`stderr: ${stderr}`);
+          });
+          // exec(
+          //   "codeql database create .database" +
+          //     result.insertId +
+          //     " --source-root=./ --language=javascript",
+          //   (error, stdout, stderr) => {
+          //     // Errors for troubleshooting
+          //     if (error) {
+          //       console.error(`exec error: ${error}`);
+          //       return;
+          //     }
+          //     console.log(`stdout: ${stdout}`);
+          //     console.error(`stderr: ${stderr}`);
+          //   }
+          // );
           res.status(204).send("Database updated with new hash.");
         } else {
           res

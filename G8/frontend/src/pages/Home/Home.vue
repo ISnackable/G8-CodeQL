@@ -6,10 +6,30 @@
       </small>
     </h1>
     <b-row>
-      <b-col lg="12">
-        <Widget class="bg-Transparent">
+      <b-col lg="4">
+        <Widget class="bg-Transparent py-5">
           <UploadFile />
-          <font-awesome-icon icon="user-secret" />
+        </Widget>
+      </b-col>
+      <b-col lg="4">
+        <Widget class="bg-Transparent py-5">
+          <UploadFolder />
+        </Widget>
+      </b-col>
+      <b-col lg="4">
+        <Widget class="bg-Transparent py-5 text-center">
+          <v-btn style="font-size:2vw" @click="showModalRepoLinkUpload">
+            <span class="glyphicon glyphicon-link" /><a> Repository Link</a>
+          </v-btn>
+          <b-modal ref="RepoLinkUpload" hide-footer title="Insert Repo Link">
+            <div class="d-block text-center my-5">
+              <h3>Repository Link</h3>
+              <input v-model="value" type="text" class="form-control" placeholder="https://github.com/you/HelloWorld.git">
+              <b-button class="mt-3 bg-success" block @click="submitModalRepoLinkUpload">Submit</b-button>
+              <b-button class="mt-3 bg-danger" block @click="hideModalRepoLinkUpload">Close</b-button>
+            </div>
+              <!--Insert File uploads styling here -->
+          </b-modal>
         </Widget>
       </b-col>
     </b-row>
@@ -54,12 +74,14 @@ import AnimatedNumber from "animated-number-vue";
 import AlertsTable from './components/AlertsTable/AlertsTable';
 import QueryTable from './components/QueryTable/QueryTable';
 import UploadFile from './components/UploadFile/UploadFile';
+import UploadFolder from './components/UploadFolder/UploadFolder';
+import UploadRepoLink from './components/UploadRepoLink/UploadRepoLink';
 //end of added
 
 export default {
   name: 'Home',
   components: {
-    Widget, Neo4J, Calendar, AreaChart, AnimatedNumber, AlertsTable, QueryTable,UploadFile //Added AlertsTable & QueryTable
+    Widget, Neo4J, Calendar, AreaChart, AnimatedNumber, AlertsTable, QueryTable,UploadFile,UploadFolder,UploadRepoLink //Added AlertsTable & QueryTable
   },
   data() {
     return {
@@ -75,6 +97,15 @@ export default {
     };
   },
   methods: {
+    showModalRepoLinkUpload(){
+      this.$refs['RepoLinkUpload'].show()
+    },
+    hideModalRepoLinkUpload(){
+      this.$refs['RepoLinkUpload'].hide()
+    },
+    submitModalRepoLinkUpload(){
+      //submit code
+    },
     checkTable(id) {
       let arr = [];
       if (id === 0) {

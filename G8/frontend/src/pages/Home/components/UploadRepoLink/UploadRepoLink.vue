@@ -1,10 +1,13 @@
 <template>
   <div class='text-center'>
     <v-row>
-      <v-btn @click="UploadFilefunction" style="font-size:2vw">
-        <span class="glyphicon glyphicon-file" /><a> Upload File</a>
+      <div lg='4'>
+      <v-btn @click="showModalRepoLinkUpload" class="py-4 px-4">
+        <span class="glyphicon glyphicon-link" /><a>Repository Link</a>
       </v-btn>
+      </div>
     </v-row>
+
     <b-modal ref="RepoLinkUpload" hide-footer title="Insert Repo Link">
       <div class="d-block text-center my-5">
         <h3>Repository Link</h3>
@@ -19,6 +22,17 @@
 
 <script>
   export default {
+    methods:{
+      showModalRepoLinkUpload(){
+        this.$refs['RepoLinkUpload'].show()
+      },
+      hideModalRepoLinkUpload(){
+        this.$refs['RepoLinkUpload'].hide()
+      },
+      submitModalRepoLinkUpload(){
+        //submit code
+      },
+    },
     data () {
       return {
         toggle_exclusive: undefined,
@@ -27,4 +41,4 @@
     },
   }
 </script>
-<!--<style src="./UploadFile.scss" lang="scss" />-->
+<!--<style src="./UploadRepoLink.scss" lang="scss" />-->

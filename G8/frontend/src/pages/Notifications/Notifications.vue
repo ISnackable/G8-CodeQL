@@ -67,6 +67,7 @@
         </b-col>
       </b-row>
     </Widget>
+    
   </div>
 </template>
 

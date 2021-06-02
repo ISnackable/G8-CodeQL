@@ -103,7 +103,7 @@ dist
 # Images
 public/uploads
 # *.txt
-*.sql
+# *.sql
 docs/
 *.docx
 

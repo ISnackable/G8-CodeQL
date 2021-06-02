@@ -20,19 +20,19 @@ if (dotenv.error) {
     --                                                                                 --
     -- EXPRESS_HOSTNAME=<express ip / hostname>                                        --
     -- EXPRESS_PORT=<express port>                                                     --
-    -- DB_USERNAME=<database username>                                                 --
+    -- DB_USER=<database username>                                                     --
     -- DB_PASSWORD=<database passsword>                                                --
-    -- DB_DATABASE=<database name>                                                     --
+    -- DB_NAME=<database name>                                                         --
     -------------------------------------------------------------------------------------
     `);
 }
 
 const config = {
-  hostname: process.env.EXPRESS_HOSTNAME,
-  port: process.env.EXPRESS_PORT,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
+  hostname: process.env.EXPRESS_HOSTNAME ?? "localhost",
+  port: process.env.EXPRESS_PORT ?? "8080",
+  username: process.env.DB_USER ?? "codeql",
+  password: process.env.DB_PASSWORD ?? "codeql",
+  database: process.env.DB_NAME ?? "g8",
 };
 
 module.exports = config;

@@ -6,17 +6,12 @@
       </small>
     </h1>
     <b-row>
-      <b-col lg="4">
-        <Widget class="bg-Transparent py-5">
-          <UploadFile />
-        </Widget>
-      </b-col>
-      <b-col lg="4">
+      <b-col lg="6">
         <Widget class="bg-Transparent py-5">
           <UploadFolder />
         </Widget>
       </b-col>
-      <b-col lg="4">
+      <b-col lg="6">
         <Widget class="bg-Transparent py-5 text-center">
           <v-btn style="font-size:2vw" @click="showModalRepoLinkUpload">
             <span class="glyphicon glyphicon-link" /><a> Repository Link</a>
@@ -73,7 +68,6 @@ import AnimatedNumber from "animated-number-vue";
 //Added
 import AlertsTable from './components/AlertsTable/AlertsTable';
 import QueryTable from './components/QueryTable/QueryTable';
-import UploadFile from './components/UploadFile/UploadFile';
 import UploadFolder from './components/UploadFolder/UploadFolder';
 import UploadRepoLink from './components/UploadRepoLink/UploadRepoLink';
 //end of added
@@ -81,7 +75,7 @@ import UploadRepoLink from './components/UploadRepoLink/UploadRepoLink';
 export default {
   name: 'Home',
   components: {
-    Widget, Neo4J, Calendar, AreaChart, AnimatedNumber, AlertsTable, QueryTable,UploadFile,UploadFolder,UploadRepoLink //Added AlertsTable & QueryTable
+    Widget, Neo4J, Calendar, AreaChart, AnimatedNumber, AlertsTable, QueryTable,UploadFolder,UploadRepoLink //Added AlertsTable & QueryTable
   },
   data() {
     return {

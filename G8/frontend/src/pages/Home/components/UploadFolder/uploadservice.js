@@ -3,8 +3,8 @@ import * as axios from 'axios';
 const BASE_URL = 'http://localhost:8081';
 
 function upload(formData) {
-    const url = `${BASE_URL}/upload/user/1/`;
-    return axios.put(url, formData)
+    const url = `${BASE_URL}/upload`;
+    return axios.post(url, formData)
         // get data
         .then(x => x.data)
         // add url field

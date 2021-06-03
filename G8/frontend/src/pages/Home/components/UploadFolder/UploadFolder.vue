@@ -10,7 +10,7 @@
       <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
         <div class="dropbox">
           <input type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
-            accept="images/*" class="input-file">
+            accept="js/*" class="input-file">
             <p v-if="isInitial">
               Drag your file(s) here to begin<br> or click to browse
             </p>
@@ -39,7 +39,7 @@
         uploadedFiles: [],
         uploadError: null,
         currentStatus: null,
-        uploadFieldName: 'myprofilepicture'
+        uploadFieldName: 'multi-files'
       }
     },
     computed: {

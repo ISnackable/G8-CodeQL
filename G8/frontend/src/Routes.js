@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import Layout from '@/components/Layout/Layout';
+// import Layout from '@/components/Layout/Layout';
 import LayoutDocumentation from '@/components/Layout/LayoutDocumentation';
 import Typography from '@/pages/Typography/Typography';
 import Tables from '@/pages/Tables/Tables';

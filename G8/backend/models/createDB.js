@@ -13,7 +13,7 @@ var apiDB = {
   insertDB: function (hash, callback) {
     console.log("g8.projects.insertDB()...");
     // refrain from using "LIKE"? incase of similar hashes
-    var sql = "SELECT hash FROM projects WHERE hash = ?";
+    let sql = "SELECT hash FROM projects WHERE hash = ?";
 
     db.query(sql, [hash], function (err, results) {
       if (err) {
@@ -24,7 +24,7 @@ var apiDB = {
           console.log("The folder provided already exists in the database.");
           return callback(null, null);
         } else {
-          var sql = `
+          let sql = `
                         INSERT INTO 
                             projects
                             (hash)

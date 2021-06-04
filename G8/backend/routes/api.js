@@ -14,11 +14,9 @@ const apiController = require("../controllers/apiController");
 // ------------------------------------------------------
 // Create CodeQL database
 router.get("/createDatabase", apiController.createDatabase);
-// http://localhost/api/createDatabase
+// http://localhost/teamname/api/createDatabase
 
 // Query current CodeQl database number in the counter
-router.get("/query", apiController.createDatabase);
-
-router.get("/createDatabase2", apiController.createDatabase2);
+router.get("/query", apiController.query);
 
 module.exports = router; // https://expressjs.com/en/4x/api.html#app.mountpath Explains sub-app mount

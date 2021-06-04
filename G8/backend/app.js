@@ -14,7 +14,7 @@ console.log("-----------------------------------------");
 const express = require("express");
 const config = require("./config");
 const routes = require("./routes");
-// const db = require("./model/databaseConfig.js");
+const db = require("./models/databaseConfig.js");
 const app = express();
 
 // --------------------------------------------------
@@ -22,7 +22,7 @@ const app = express();
 // --------------------------------------------------
 app.use(express.urlencoded({ extended: false })); // extended false for no object (security reason)
 app.use(express.json());
-app.use(routes);
+app.use("/teamname", routes);
 
 // ------------------------------------------------------
 // main

@@ -4,10 +4,10 @@
 			"path": "codeql"
 		},
 		{
-			"path": "NodeGoat"
+			"path": "codeql-custom-queries-javascript"
 		},
 		{
-			"path": "src"
+			"path": "G8"
 		}
 	],
 	"settings": {}

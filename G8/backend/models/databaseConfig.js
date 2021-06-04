@@ -8,12 +8,13 @@ console.log("-----------------------------------------");
 // load modules
 // ---------------------------------------------------------
 
-const mysql = require("mysql");
+const mariadb = require("mariadb/callback");
 const config = require("../config");
 
 // attempt to get a connection to the DB
-var conn = mysql.createConnection({
-  host: "mysql",
+var conn = mariadb.createConnection({
+  host: "localhost",
+  // host: "mariadb",
   user: config.username,
   password: config.password,
   database: config.database,

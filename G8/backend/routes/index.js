@@ -7,7 +7,7 @@ console.log("------------------------------------");
 // ------------------------------------------------------
 const express = require("express");
 const api = require("./api");
-var router = express.Router();
+const router = express.Router();
 
 // ------------------------------------------------------
 // MF config / end points

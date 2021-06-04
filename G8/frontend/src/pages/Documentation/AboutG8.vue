@@ -1,8 +1,5 @@
 <template>
-<div id="root">
-  <Header />
-  <Sidebar />
-  
+<div id="root">  
   <div class="tables-basic">
     <div id="location">
     <b-breadcrumb>
@@ -76,15 +73,9 @@ Supported languages:
 </template>
 
 <script>
-// import Vue from 'vue';
-// import Widget from '@/components/Widget/Widget';
-// import Sparklines from '../../components/Sparklines/Sparklines'
-
 export default {
   name: 'Documentation',
   components: {  },
-  data() { 
-  }
 };
 </script>
 

@@ -18,13 +18,14 @@
       <NavLink
         :activeItem="activeItem"
         header="About G8"
-        link="/documentation/documentation"
+        link="/documentation/about-g8"
         iconName="flaticon-home-3"
         index="dashboard"
         isHeader
       />
-      <h5 class="navTitle">TEMPLATE</h5>
+      <!-- <h5 class="navTitle">TEMPLATE</h5> -->
       <NavLink
+      :activeItem="activeItem"
         header="Getting Started"
         link="/documentation/getting-started"
         iconName="flaticon-list-3"
@@ -32,6 +33,7 @@
         isHeader
       />
       <NavLink
+      :activeItem="activeItem"
         header="Exploring G8"
         link="/documentation/exploring-g8"
         iconName="flaticon-equal-3"
@@ -39,20 +41,23 @@
         isHeader
       />
       <NavLink
+      :activeItem="activeItem"
         header="FAQ"
         link="/documentation/faq"
         iconName="flaticon-bell"
         index="notifications"
         isHeader
       />
-      <!-- <NavLink
-        header="About automated code review"
-        link="/app/notifications"
-        iconName="flaticon-bell"
+      <NavLink
+      :activeItem="activeItem"
+        header="G8 Glossary"
+        link="/documentation/g8-glossary"
+        iconName="flaticon-documentation"
         index="notifications"
         isHeader
-      /> -->
-      <NavLink
+      />
+      
+      <!-- <NavLink
         :activeItem="activeItem"
         header="Components"
         link="/app/components"
@@ -63,7 +68,7 @@
           { header: 'Icons', link: '/app/components/icons' },
           { header: 'Maps', link: '/app/components/maps' },
         ]"
-      />
+      /> -->
     </ul>
 
     <!-- <h5 class="navTitle d-sm-down-none">

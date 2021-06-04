@@ -11,10 +11,11 @@ import Maps from '@/pages/Maps/Maps';
 import Charts from '@/pages/Charts/Charts';
 import Dashboard from '@/pages/Visits/Visits';
 import Login from '@/pages/Login/Login';
-import Documentation from '@/pages/Documentation/Documentation';
+import AboutG8 from '@/pages/Documentation/AboutG8';
 import ExploringG8 from '@/pages/Documentation/ExploringG8';
 import GettingStarted from '@/pages/Documentation/GettingStarted';
 import FAQ from '@/pages/Documentation/Faq';
+import G8Glossary from '@/pages/Documentation/G8Glossary';
 import ErrorPage from '@/pages/Error/Error';
 
 Vue.use(Router);
@@ -38,9 +39,9 @@ export default new Router({
       component: LayoutDocumentation,
       children: [
         {
-          path: 'documentation',
-          name: 'Documentation',
-          component: Documentation,
+          path: 'about-g8',
+          name: 'AboutG8',
+          component: AboutG8,
         },
         {
           path: 'getting-started',
@@ -56,6 +57,11 @@ export default new Router({
           path: 'faq',
           name: 'FAQ',
           component: FAQ,
+        },
+        {
+          path: 'g8-glossary',
+          name: 'G8Glossary',
+          component: G8Glossary,
         },
       ],
     },

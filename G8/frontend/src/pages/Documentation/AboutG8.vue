@@ -77,14 +77,12 @@ Supported languages:
 
 <script>
 // import Vue from 'vue';
-import Widget from '@/components/Widget/Widget';
-import Sparklines from '../../components/Sparklines/Sparklines'
-// import Header from '@/components/Header/Header';
-// import Sidebar from './Sidebar/Sidebar';
+// import Widget from '@/components/Widget/Widget';
+// import Sparklines from '../../components/Sparklines/Sparklines'
 
 export default {
   name: 'Documentation',
-  components: { Widget, Sparklines },
+  components: {  },
   data() { 
   }
 };

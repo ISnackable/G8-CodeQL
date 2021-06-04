@@ -41,7 +41,7 @@ export default {
       this.$router.push('/app/dashboard');
     },
     routeToDocumentation() {
-      this.$router.push('/documentation/documentation');
+      this.$router.push('/documentation/about-g8');
     },
   },
 };

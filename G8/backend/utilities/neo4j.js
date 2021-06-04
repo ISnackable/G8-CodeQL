@@ -126,8 +126,6 @@ console.log("number of warning: " + noOfWarnings);
 console.log("number of recommendation: " + noOfRecommendation);
 console.log("number of queries " + queries.length);
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 console.log(qNameArr);
 // Replaces " " and "-" with "_" in each array element
 for (i = 0; i < qNameArr.length; i++) {  

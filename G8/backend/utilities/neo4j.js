@@ -21,11 +21,12 @@ var _a, _b, _c, _d;
 exports.__esModule = true;
 var jsonMap = require("json-source-map");
 var fs = require("fs");
-// const file = fs.readFileSync(
+// var file = fs.readFileSync(
 //   "./sarifTestFiles/RMerl_asuswrt-merlin__2021-05-20_17_18_36__export.sarif",
 //   "utf8"
 // );
-var file = fs.readFileSync("./sarifTestFiles/tplink1.sarif", "utf8");
+var file = fs.readFileSync("./sarifTestFiles/tplink1_snippets.sarif", "utf8");
+//var file = fs.readFileSync("./sarifTestFiles/test.sarif", "utf8");
 // console.log(file);
 var testSarifJson = jsonMap.parse(file).data;
 // console.log(testSarifJson.runs);
@@ -44,6 +45,9 @@ var driverRules = testSarifJson.runs[0].tool.driver.rules;
 //     console.log("================================================================================================\n");
 // }
 // console.timeEnd('loop');
+
+// Global variable for query name
+var qNameArr = new Array();
 var noOfError = 0,
   noOfWarnings = 0,
   noOfRecommendation = 0;
@@ -65,6 +69,7 @@ var _loop_1 = function (result) {
   ) {
     noOfRecommendation++;
   }
+  qNameArr.push(driverRules[index].properties.name);
   console.log(
     "<<==============================++++   QUERY INFO   +++======================================>>"
   );
@@ -121,20 +126,34 @@ console.log("number of warning: " + noOfWarnings);
 console.log("number of recommendation: " + noOfRecommendation);
 console.log("number of queries " + queries.length);
 
-const query = `
+// ---------------------------------------------------------------------------------------------------------------------
+
+console.log(qNameArr);
+// Replaces " " and "-" with "_" in each array element
+for (i = 0; i < qNameArr.length; i++) {  
+  qNameArr[i] = qNameArr[i].replace(/ /g, "_");
+  qNameArr[i] = qNameArr[i].replace(/-/g, "_");
+}
+// Using Sets to remove duplicate queries in the array
+var NoDupeQuery = Array.from(new Set(qNameArr));
+console.log(NoDupeQuery);
+
+var CreateQuery = "";
+
+for (a = 0; a < NoDupeQuery.length; a++) {
+  CreateQuery += `CREATE (${NoDupeQuery[a]}:Query {born:'${NoDupeQuery[a]}'})\n`;
+}
+
+const query =
+  `
 // SHOW DATABASES
 CREATE DATABASE SOMEHARDCODEDDATABASEFORNOW
 :USE SOMEHARDCODEDDATABASEFORNOW
 
-CREATE (Prototype_Pollution_Function:Query {born:'Prototype_Pollution_Function'}) // QUERY
-
-
-
-
-
-
-
-CREATE (A1:Alert {born:"Alert 1"}) // ALERT 1
+` +
+  CreateQuery +
+  `
+CREATE (A1:Alert {born:"Alert 1"})
 CREATE (A2:Alert {born:"Alert 2"}) // ALERT 2
 
 CREATE (V1:Vulnerability {born:"code1"}) // Vulnerability 1
@@ -152,6 +171,8 @@ CREATE
 WITH XSSDOM as q
 MATCH (q)<-[:Child*]-(a)<-[:Child*]-(v) RETURN q,a, v;
 `;
+console.log(query);
+/*
 const params = { name: "Alice" };
 
 session
@@ -170,3 +191,4 @@ session
     session.close();
     driver.close();
   });
+*/

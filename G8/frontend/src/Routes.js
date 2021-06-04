@@ -22,7 +22,7 @@ import Homepage from '@/pages/Homepage/Homepage';
 import Alerts from '@/pages/Alerts/Alerts';
 import Home from '@/pages/Home/Home';
 import CustomQuery from '@/pages/CustomQuery/CustomQuery';
-import Layoutdashboard from '@/components/Layout/LayoutDashboard';
+import LayoutDashboard from '@/components/Layout/LayoutDashboard';
 //######## End of new imports added ########
 Vue.use(Router);
 
@@ -69,7 +69,7 @@ export default new Router({
     {
       path: '/app',
       name: 'Layout',
-      component: Layoutdashboard,
+      component: LayoutDashboard,
       children: [
         {
           path: 'dashboard',
@@ -125,7 +125,6 @@ export default new Router({
         //#################End of new routes added for app-child#######################
       ],
     },
-
     {
       path: '/homepage',
       name: 'Homepage',

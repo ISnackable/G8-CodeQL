@@ -1,6 +1,5 @@
 <template>
 <div :class="{root: true, sidebarClose}">
-  <Helper />
   <Header />
   <Sidebar />
   <div ref="content" class="content animated fadeInUp">

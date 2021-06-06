@@ -11,6 +11,7 @@ const { exec, execFile } = require("child_process");
 const { hashElement } = require("folder-hash");
 const lineReader = require("line-reader");
 const createDB = require("../models/createDB.js");
+const sarifFileVerify = require('../models/sarifFileVerify.js');
 
 // --------------------------------------------------
 // end points
@@ -61,6 +62,25 @@ exports.query = (req, res) => {
   //     console.error(`stderr: ${stderr}`);
   //   }
   // );
+};
+
+// #sarifFileVerify.getSarifFileName# 
+// http://localhost:8080/checkAnalysis
+exports.verifySarifFile = (req, res) => {
+  var sarifFileName = req.body.sarifFileName;
+  sarifFileVerify.getSarifFileName(sarifFileName, function (err, result) {
+        if (!err) {
+            if (result.length == 0) {
+                res.status(200).send("File not found");
+            }
+            else {
+                res.status(200).send(result);
+            }
+        }
+        else {
+            res.status(500).send("Some error");
+        }
+    });
 };
 
 // Create Database

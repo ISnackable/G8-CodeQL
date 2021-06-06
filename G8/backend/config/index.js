@@ -1,5 +1,7 @@
 /*
-    Config stuff 
+    Config stuff \
+
+    where most of the variables are stored for configurations 
 */
 console.log("------------------------------------");
 console.log("config > index.js");

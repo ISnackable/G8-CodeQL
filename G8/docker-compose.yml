@@ -2,20 +2,19 @@ version: "3.9"
 
 # The different services that make up our "network" of containers
 services:
-  # MySQL Database
-  mysql:
-    image: mysql:8.0
-    command: --default-authentication-plugin=mysql_native_password
+  # MariaDB Database
+  mariadb:
+    image: mariadb:10
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_DATABASE: g8
-      MYSQL_USER: codeql
-      MYSQL_PASSWORD: codeql
-    # Remove comment if want to expose MySQL service to host
+      MARIADB_ROOT_PASSWORD: secret
+      MARIADB_DATABASE: g8
+      MARIADB_USER: codeql
+      MARIADB_PASSWORD: codeql
+    # Remove comment if want to expose MariaDB service to host
     # ports:
     #   - 3306:3306
   # Express frontend
@@ -44,14 +43,14 @@ services:
     # Ports to map our port 8080, to the port 8080 on the container
     ports:
       - 8080:8080
-    # Tell docker this container depends on the neo service & mysql so they can communicate
+    # Tell docker this container depends on the neo service & mariadb so they can communicate
     depends_on:
       - neo
-      - mysql
+      - mariadb
   # Neo4j Database
   neo:
     # The image to use
-    image: neo4j:latest
+    image: neo4j:4.2.7
     # map the ports so we can check the db server is up
     ports:
       - 7474:7474
@@ -69,4 +68,4 @@ services:
 # volumes to be generated, these are saved somewhere for repeated use by docker
 volumes:
   neo4j_data:
-  mysql_data:
+  mariadb_data:

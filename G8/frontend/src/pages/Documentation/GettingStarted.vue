@@ -10,6 +10,7 @@
     </b-breadcrumb>
   </div>
 
+<!-- Is this segment needed? -->
   <div id="content">
 
     <h2> Getting Started</h2>
@@ -77,14 +78,12 @@
 
 <script>
 import Vue from 'vue';
-import Widget from '@/components/Widget/Widget';
-import Sparklines from '../../components/Sparklines/Sparklines'
 // import Header from '@/components/Header/Header';
 // import Sidebar from './Sidebar/Sidebar';
 
 export default {
   name: 'gettingStarted',
-  components: { Widget, Sparklines },
+  components: {  },
   data() {
     return {
       tableStyles: [

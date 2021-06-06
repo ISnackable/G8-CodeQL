@@ -1,15 +1,15 @@
-import { SarifLog } from "./CodeQLSarifValidator";
-var jsonMap = require("json-source-map");
+import type { Log } from "sarif";
+const jsonMap = require("json-source-map");
 import * as fs from "fs";
 
 // const file = fs.readFileSync(
 //   "./sarifTestFiles/RMerl_asuswrt-merlin__2021-05-20_17_18_36__export.sarif",
 //   "utf8"
 // );
-const file = fs.readFileSync("./sarifTestFiles/tplink1.sarif", 'utf8');
+const file = fs.readFileSync("./sarifTestFiles/tplink1.sarif", "utf8");
 
 // console.log(file);
-const testSarifJson: SarifLog = jsonMap.parse(file).data;
+const testSarifJson: Log = jsonMap.parse(file).data;
 
 // console.log(testSarifJson.runs);
 
@@ -40,13 +40,8 @@ for (const result of results) {
   let index = driverRules.findIndex((x) => x.id === result.ruleId);
 
   if (!queries.includes(result.ruleId)) {
-
     queries.push(result.ruleId);
-
   }
-
-
-
 
   if (driverRules[index].properties["problem.severity"] === "error") {
     noOfError++;

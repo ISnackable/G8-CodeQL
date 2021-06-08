@@ -84,10 +84,10 @@ exports.query = (req, res) => {
         console.error(`stderr: ${stderr}`);
       });
       child.stdout.on("data", function (data) {
-        console.log('[STDOUT]: ', data.toString());
+        console.log("[STDOUT]: ", data.toString());
       });
       child.stderr.on("data", function (data) {
-        console.log('[STDERR]: ', data.toString());
+        console.log("[STDERR]: ", data.toString());
       });
     }
   });
@@ -161,7 +161,7 @@ exports.createDatabase = (req, res) => {
           const args = [
             "database", // first argv
             "create", // second argv
-            `./CodeQLDB/database${result.insertId}`, // database name to be created
+            `./CodeQLDB/database${id}`, // database name to be created
             "--source-root=./tests", // source code folder
             "--language=javascript", // programming language
           ];
@@ -182,10 +182,10 @@ exports.createDatabase = (req, res) => {
             }
           );
           child.stdout.on("data", function (data) {
-            console.log('[STDOUT]: ', data.toString());
+            console.log("[STDOUT]: ", data.toString());
           });
           child.stderr.on("data", function (data) {
-            console.log('[STDERR]: ', data.toString());
+            console.log("[STDERR]: ", data.toString());
           });
         } else {
           res

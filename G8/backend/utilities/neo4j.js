@@ -48,6 +48,11 @@ var driverRules = testSarifJson.runs[0].tool.driver.rules;
 
 // Global variable for query name
 var qNameArr = new Array();
+var RuleIDArr = new Array();
+var ResultMsgTxtArr = new Array();
+var FileLocArr = new Array();
+var LocRegionArr = new Array();
+var LocContextArr = new Array();
 var noOfError = 0,
   noOfWarnings = 0,
   noOfRecommendation = 0;
@@ -69,7 +74,22 @@ var _loop_1 = function (result) {
   ) {
     noOfRecommendation++;
   }
+  RuleIDArr.push(result.ruleId);
+  ResultMsgTxtArr.push(result.message.text);
   qNameArr.push(driverRules[index].properties.name);
+  FileLocArr.push(result.locations[0].physicalLocation.artifactLocation.uri);
+  LocRegionArr.push(
+    JSON.stringify(result.locations[0].physicalLocation.region)
+  );
+  LocContextArr.push(
+    (_b =
+      (_a = result.locations[0].physicalLocation.contextRegion) === null ||
+      _a === void 0
+        ? void 0
+        : _a.snippet) === null || _b === void 0
+      ? void 0
+      : _b.text
+  );
   console.log(
     "<<==============================++++   QUERY INFO   +++======================================>>"
   );
@@ -126,9 +146,8 @@ console.log("number of warning: " + noOfWarnings);
 console.log("number of recommendation: " + noOfRecommendation);
 console.log("number of queries " + queries.length);
 
-console.log(qNameArr);
 // Replaces " " and "-" with "_" in each array element
-for (i = 0; i < qNameArr.length; i++) {  
+for (i = 0; i < qNameArr.length; i++) {
   qNameArr[i] = qNameArr[i].replace(/ /g, "_");
   qNameArr[i] = qNameArr[i].replace(/-/g, "_");
 }
@@ -139,8 +158,20 @@ console.log(NoDupeQuery);
 var CreateQuery = "";
 
 for (a = 0; a < NoDupeQuery.length; a++) {
-  CreateQuery += `CREATE (${NoDupeQuery[a]}:Query {born:'${NoDupeQuery[a]}'})\n`;
+  CreateQuery += `CREATE (${NoDupeQuery[a]}:Query {Query:'${NoDupeQuery[a]}'})\n`;
 }
+
+var CreateAlert = "";
+for (b = 1; b <= results.length; b++) {
+  CreateAlert += `CREATE (A${b}:ALERT {RuleID:"${
+    RuleIDArr[b - 1]
+  }", Message_Text:"${ResultMsgTxtArr[b - 1]}", FileLocation:"${
+    FileLocArr[b - 1]
+  }, StartEndLine:"${LocRegionArr[b - 1]}
+  }"})\n`;
+}
+
+var CreateVuln = ""; //Warnings
 
 const query =
   `
@@ -150,9 +181,10 @@ CREATE DATABASE SOMEHARDCODEDDATABASEFORNOW
 
 ` +
   CreateQuery +
+  // CreateAlert +
   `
-CREATE (A1:Alert {born:"Alert 1"})
-CREATE (A2:Alert {born:"Alert 2"}) // ALERT 2
+  
+
 
 CREATE (V1:Vulnerability {born:"code1"}) // Vulnerability 1
 CREATE (V2:Vulnerability {born:"code2"}) // Vulnerability 2

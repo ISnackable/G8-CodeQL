@@ -26,7 +26,7 @@ RUN yarn add express && yarn install --production
 # Copy or project directory (locally) in the current directory of our docker image (/usr/src/app/)
 COPY ./server.js ./
 
-COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/build ./build
 
 EXPOSE 5000
 

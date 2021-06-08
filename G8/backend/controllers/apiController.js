@@ -9,9 +9,8 @@ const fs = require("fs");
 const path = require("path");
 const { exec, execFile } = require("child_process");
 const { hashElement } = require("folder-hash");
-const lineReader = require("line-reader");
 const createDB = require("../models/createDB.js");
-const sarifFileVerify = require('../models/sarifFileVerify.js');
+const sarifFileVerify = require("../models/sarifFileVerify.js");
 
 // --------------------------------------------------
 // end points
@@ -25,62 +24,113 @@ exports.query = (req, res) => {
   // var data = fs.readFileSync("hash.txt");
   // var counter = data.toString().split("\n").length - 1;
   // console.log("Current Counter: " + counter);
+  var id = req.params.id;
 
-  // Change directory path as necessary
-  const args = [
-    "database", // first argv
-    "analyze", // second argv
-    "--quiet", // suppress output, Incrementally decrease the number of progress messages printed
-    "--format=sarifv2.1.0", // set the result output to SARIF v2.1.0 format
-    "--output=../../insertid.sarif", // output file as scan.sarif
-    "--search-path=../../codeql/misc/suite-helpers", // the list of directories under which QL packs may be found
-    "--sarif-add-snippets", // include code snippets for each location mentioned in the results
-    "../databases/databaseinsertid", // our database to scan
-    "../../codeql/javascript/ql/src/codeql-suites/javascript-security-extended.qls", // maybe change? seem like different QL pack use different suite-helpers
-  ];
+  const CodeQLpath = `./CodeQLDB/database${id}/db-javascript`;
+  fs.access(CodeQLpath, fs.F_OK, (err) => {
+    if (err) {
+      console.error(err);
+      res.status(422).send("The database does not exist.");
+      return;
+    } else {
+      //file exists
+      createDB.insertSarif(`${id}.sarif`, id, function (err, result) {
+        if (!err) {
+          if (result) {
+            // if result == There are no existing databases with the same hash
+            // Change directory path as necessary
+            // const args = [
+            //   "database", // first argv
+            //   "analyze", // second argv
+            //   //"--quiet", // suppress output, Incrementally decrease the number of progress messages printed
+            //   "--format=sarifv2.1.0", // set the result output to SARIF v2.1.0 format
+            //   `--output=./SarifFiles/${id}.sarif`, // output file as scan.sarif
+            //   "--search-path=../../codeql/misc/suite-helpers", // the list of directories under which QL packs may be found
+            //   "--sarif-add-snippets", // include code snippets for each location mentioned in the results
+            //   `./CodeQLDB/database${id}`, // our database to scan
+            //   "../../codeql/javascript/ql/src/codeql-suites/javascript-security-extended.qls", // maybe change? seem like different QL pack use different suite-helpers
+            // ];
+            const args = [
+              "database", // first argv
+              "analyze", // second argv
+              //"--quiet", // suppress output, Incrementally decrease the number of progress messages printed
+              "--format=sarifv2.1.0", // set the result output to SARIF v2.1.0 format
+              `--output=./SarifFiles/${id}.sarif`, // output file as scan.sarif
+              "--sarif-add-snippets", // include code snippets for each location mentioned in the results
+              `./CodeQLDB/database${id}`, // our database to scan
+              "../../codeql/javascript/ql/src/Security/CWE-078/CommandInjection.ql", // maybe change? seem like different QL pack use different suite-helpers
+            ];
 
-  // Command for running the CodeQL query
-  execFile("codeql", args, (error, stdout, stderr) => {
-    if (error) {
-      console.error("stderr", stderr);
-      throw error;
+            // Command to create a database
+            // result.insertId is the ID of the database inserted
+            execFile("codeql", args, (error, stdout, stderr) => {
+              if (error) {
+                console.error("stderr", stderr);
+                throw error;
+              }
+              console.log("stdout", stdout);
+              console.error(`stderr: ${stderr}`);
+            });
+            // exec(
+            //   'codeql database analyze --format="sarifv2.1.0"  --output="./scan.sarif" ./database' +
+            //     counter +
+            //     " ../../codeql/javascript/ql/src/codeql-suites/javascript-code-scanning.qls --search-path ../../codeql/misc/suite-helpers",
+            //   (error, stdout, stderr) => {
+            //     // Errors for troubleshooting
+            //     if (error) {
+            //       console.error(`exec error: ${error}`);
+            //       return;
+            //     }
+            //     console.log(`stdout: ${stdout}`);
+            //     console.error(`stderr: ${stderr}`);
+            //   }
+            // );
+
+            var SarifFilePath = "16.sarif";
+
+            var options = {
+              root: path.join(__dirname, "../SarifFiles/"),
+            };
+
+            res.sendFile(SarifFilePath, options, function (err) {
+              if (err) {
+                console.error(err);
+              } else {
+                console.log(options);
+                console.log("Sent:", SarifFilePath);
+                res.end();
+              }
+            });
+          } else {
+            res.status(422).send("The database does not exist.");
+          }
+        } else {
+          if (err.code == "ER_BAD_NULL_ERROR") {
+            res.status(400).send("Bad Request");
+          } else {
+            res.status(500).send("Internal Server Error");
+          }
+        }
+      });
     }
-    console.log("stdout", stdout);
-    console.error(`stderr: ${stderr}`);
   });
-  // exec(
-  //   'codeql database analyze --format="sarifv2.1.0"  --output="./scan.sarif" ./database' +
-  //     counter +
-  //     " ../../codeql/javascript/ql/src/codeql-suites/javascript-code-scanning.qls --search-path ../../codeql/misc/suite-helpers",
-  //   (error, stdout, stderr) => {
-  //     // Errors for troubleshooting
-  //     if (error) {
-  //       console.error(`exec error: ${error}`);
-  //       return;
-  //     }
-  //     console.log(`stdout: ${stdout}`);
-  //     console.error(`stderr: ${stderr}`);
-  //   }
-  // );
 };
 
-// #sarifFileVerify.getSarifFileName# 
+// #sarifFileVerify.getSarifFileName#
 // http://localhost:8080/checkAnalysis
 exports.verifySarifFile = (req, res) => {
   var sarifFileName = req.body.sarifFileName;
   sarifFileVerify.getSarifFileName(sarifFileName, function (err, result) {
-        if (!err) {
-            if (result.length == 0) {
-                res.status(200).send("File not found");
-            }
-            else {
-                res.status(200).send(result);
-            }
-        }
-        else {
-            res.status(500).send("Some error");
-        }
-    });
+    if (!err) {
+      if (result.length == 0) {
+        res.status(200).send("File not found");
+      } else {
+        res.status(200).send(result);
+      }
+    } else {
+      res.status(500).send("Some error");
+    }
+  });
 };
 
 // Create Database
@@ -122,7 +172,7 @@ exports.createDatabase = (req, res) => {
 
   // hashElement(<Folder name>, <Directory>, <options>) --> Hashes your desired folder
   // may need to validate folder name (in case of directory traversing attack)
-  hashElement("./", path.join(__dirname, "."), options).then((hash) => {
+  hashElement("../tests", path.join(__dirname, "."), options).then((hash) => {
     // Shows the database being hashed
 
     // Connects to SQL database and compares existing hashes
@@ -133,12 +183,13 @@ exports.createDatabase = (req, res) => {
           const args = [
             "database", // first argv
             "create", // second argv
-            `database${result.insertId}`, // database name to be created
-            "--source-root=./", // source code folder
+            `./CodeQLDB/database${result.insertId}`, // database name to be created
+            "--source-root=./tests", // source code folder
             "--language=javascript", // programming language
           ];
           // Command to create a database
           // result.insertId is the ID of the database inserted
+          // Let the database finish creating or db-javascript will be missing.
           execFile("codeql", args, (error, stdout, stderr) => {
             if (error) {
               console.error("stderr", stderr);

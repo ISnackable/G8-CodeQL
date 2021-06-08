@@ -19,6 +19,6 @@ router.get("/verifySarifFile", apiController.verifySarifFile);
 // http://localhost/teamname/api/createDatabase
 
 // Query current CodeQl database number in the counter
-router.get("/query", apiController.query);
+router.get("/query/:id", apiController.query);
 
 module.exports = router; // https://expressjs.com/en/4x/api.html#app.mountpath Explains sub-app mount

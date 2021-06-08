@@ -1,0 +1,28 @@
+---
+sourceLocationPrefix: "D:\\FYP\\DISMFYP2021GRP8\\G8\\backend\\middlewares"
+unicodeNewlines: true
+columnKind: "utf16"
+primaryLanguage: "javascript"
+inProgress:
+  primaryLanguage: "javascript"
+  installedExtractors:
+    cpp:
+    - "file:///D:/FYP/codeql-home/codeql/cpp/"
+    csharp:
+    - "file:///D:/FYP/codeql-home/codeql/csharp/"
+    csv:
+    - "file:///D:/FYP/codeql-home/codeql/csv/"
+    go:
+    - "file:///D:/FYP/codeql-home/codeql/go/"
+    html:
+    - "file:///D:/FYP/codeql-home/codeql/html/"
+    java:
+    - "file:///D:/FYP/codeql-home/codeql/java/"
+    javascript:
+    - "file:///D:/FYP/codeql-home/codeql/javascript/"
+    properties:
+    - "file:///D:/FYP/codeql-home/codeql/properties/"
+    python:
+    - "file:///D:/FYP/codeql-home/codeql/python/"
+    xml:
+    - "file:///D:/FYP/codeql-home/codeql/xml/"

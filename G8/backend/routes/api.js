@@ -9,11 +9,13 @@ const express = require("express");
 const router = express.Router();
 const apiController = require("../controllers/apiController");
 
+
 // ------------------------------------------------------
 // end points
 // ------------------------------------------------------
 // Create CodeQL database
 router.get("/createDatabase", apiController.createDatabase);
+router.get("/verifySarifFile", apiController.verifySarifFile);
 // http://localhost/teamname/api/createDatabase
 
 // Query current CodeQl database number in the counter

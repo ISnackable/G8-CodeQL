@@ -20,6 +20,8 @@ const app = express();
 // --------------------------------------------------
 // MF configuration
 // --------------------------------------------------
+
+// express has the body parser built in so can call it directly 
 app.use(express.urlencoded({ extended: false })); // extended false for no object (security reason)
 app.use(express.json());
 app.use("/teamname", routes);

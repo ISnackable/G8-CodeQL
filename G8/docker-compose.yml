@@ -15,8 +15,8 @@ services:
       MARIADB_USER: codeql
       MARIADB_PASSWORD: codeql
     # Remove comment if want to expose MariaDB service to host
-    # ports:
-    #   - 3306:3306
+    ports:
+      - 3306:3306
   # Express frontend
   frontend:
     # The location of dockerfile to build this service

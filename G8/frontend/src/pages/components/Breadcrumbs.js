@@ -1,10 +1,9 @@
-
-import React from 'react';
-import { Col, Row, Container, Breadcrumb } from '@themesberg/react-bootstrap';
+import React from "react";
+import { Col, Row, Container, Breadcrumb } from "@themesberg/react-bootstrap";
 
 import Documentation from "../../components/Documentation";
 
-export default () => {
+const BreadcrumbsC = () => {
   return (
     <article>
       <Container className="px-0">
@@ -12,7 +11,8 @@ export default () => {
           <Col className="d-block mb-4 mb-md-0">
             <h1 className="h2">Breadcrumbs</h1>
             <p className="mb-0">
-              Use breadcrumbs to indicate the navigational hierarchy of the current page.
+              Use breadcrumbs to indicate the navigational hierarchy of the
+              current page.
             </p>
           </Col>
         </Row>
@@ -20,7 +20,12 @@ export default () => {
         <Documentation
           title="Example"
           description={
-            <p>Use the <code>&#x3C;Breadcrumb&#x3E;</code> component to show a clear navigational hierarchy for your users, wherever they may be on a given page. Using the <code>variant</code> modifier props you can update the color of the component.</p>
+            <p>
+              Use the <code>&#x3C;Breadcrumb&#x3E;</code> component to show a
+              clear navigational hierarchy for your users, wherever they may be
+              on a given page. Using the <code>variant</code> modifier props you
+              can update the color of the component.
+            </p>
           }
           scope={{ Row, Col, Breadcrumb }}
           imports={`import { Breadcrumb } from '@themesberg/react-bootstrap';`}
@@ -56,7 +61,12 @@ export default () => {
         <Documentation
           title="Transparent Breadcrumbs"
           description={
-            <p>In order to make the <code>&#x3C;Breadcrumb&#x3E;</code> component transparent, all you need to do is add the <code>breadcrumb-transparent</code> modifier class to the parent component.</p>
+            <p>
+              In order to make the <code>&#x3C;Breadcrumb&#x3E;</code> component
+              transparent, all you need to do is add the{" "}
+              <code>breadcrumb-transparent</code> modifier class to the parent
+              component.
+            </p>
           }
           scope={{ Row, Col, Breadcrumb }}
           imports={`import { Breadcrumb } from '@themesberg/react-bootstrap';`}
@@ -92,3 +102,5 @@ export default () => {
     </article>
   );
 };
+
+export default BreadcrumbsC;

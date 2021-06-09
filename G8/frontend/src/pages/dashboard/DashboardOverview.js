@@ -48,7 +48,7 @@ import { trafficShares } from "../../data/charts";
 import Progress from "../../components/Progress";
 // import Code from "../../components/Code";
 
-export default () => {
+const DashboardOverview = () => {
   const filePondRef = useRef(null);
   const [files, setFiles] = useState([]);
   const [modalState, setModalState] = useState("close");
@@ -416,3 +416,5 @@ export default () => {
     </>
   );
 };
+
+export default DashboardOverview;

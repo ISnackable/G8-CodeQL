@@ -3,7 +3,7 @@ import { Image } from "@themesberg/react-bootstrap";
 
 import G8Logo from "../assets/img/g8-logo.png";
 
-export default (props) => {
+const Preloader = (props) => {
   const { show } = props;
 
   return (
@@ -20,3 +20,5 @@ export default (props) => {
     </div>
   );
 };
+
+export default Preloader;

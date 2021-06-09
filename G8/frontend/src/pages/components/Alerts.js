@@ -1,12 +1,17 @@
-
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBullhorn } from '@fortawesome/free-solid-svg-icons';
-import { Col, Row, Alert, Button, Container } from '@themesberg/react-bootstrap';
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBullhorn } from "@fortawesome/free-solid-svg-icons";
+import {
+  Col,
+  Row,
+  Alert,
+  Button,
+  Container,
+} from "@themesberg/react-bootstrap";
 
 import Documentation from "../../components/Documentation";
 
-export default () => {
+const AlertsC = () => {
   return (
     <article>
       <Container className="px-0">
@@ -14,15 +19,22 @@ export default () => {
           <Col className="d-block mb-4 mb-md-0">
             <h1 className="h2">Alerts</h1>
             <p className="mb-0">
-              Use alerts to provide contextual feedback to your users based on their input and behaviour.
-        </p>
+              Use alerts to provide contextual feedback to your users based on
+              their input and behaviour.
+            </p>
           </Col>
         </Row>
 
         <Documentation
           title="Example"
           description={
-            <p>The <code>&#x3C;Alert&#x3E;</code> component can be used to show your users error, success, informational or warning messages. Use component properties such as  <code>variant="primary</code> or <code>variant="secondary"</code> to use the colors from the Sass variables:</p>
+            <p>
+              The <code>&#x3C;Alert&#x3E;</code> component can be used to show
+              your users error, success, informational or warning messages. Use
+              component properties such as <code>variant="primary</code> or{" "}
+              <code>variant="secondary"</code> to use the colors from the Sass
+              variables:
+            </p>
           }
           scope={{ Alert }}
           imports={`import { Alert } from '@themesberg/react-bootstrap';`}
@@ -57,7 +69,14 @@ export default () => {
         <Documentation
           title="Dismissable alerts"
           description={
-            <p>The <code>&#x3C;Alert&#x3E;</code> component can be used to create an alert component that can be closed by clicking on the close icon by adding the <code>show</code> and <code>onClose</code> properties. Additionally, you can also use the <code>&#x3C;FontAwesomeIcon&#x3E;</code> component to add an icon inside the alert component.</p>
+            <p>
+              The <code>&#x3C;Alert&#x3E;</code> component can be used to create
+              an alert component that can be closed by clicking on the close
+              icon by adding the <code>show</code> and <code>onClose</code>{" "}
+              properties. Additionally, you can also use the{" "}
+              <code>&#x3C;FontAwesomeIcon&#x3E;</code> component to add an icon
+              inside the alert component.
+            </p>
           }
           scope={{ Alert, Button, FontAwesomeIcon, faBullhorn }}
           imports={`import { Alert, Button } from '@themesberg/react-bootstrap';
@@ -184,3 +203,5 @@ render( <DismissableAlerts /> );`}
     </article>
   );
 };
+
+export default AlertsC;

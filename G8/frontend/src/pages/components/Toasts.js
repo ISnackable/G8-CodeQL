@@ -1,13 +1,18 @@
-
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBootstrap } from '@fortawesome/free-brands-svg-icons';
-import { Col, Row, Card, Toast, Button, Container } from '@themesberg/react-bootstrap';
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBootstrap } from "@fortawesome/free-brands-svg-icons";
+import {
+  Col,
+  Row,
+  Card,
+  Toast,
+  Button,
+  Container,
+} from "@themesberg/react-bootstrap";
 
 import Documentation from "../../components/Documentation";
 
-
-export default () => {
+const ToastsC = () => {
   const [showDefault, setShowDefault] = useState(true);
   const [showPrimary, setShowPrimary] = useState(true);
   const [showTertiary, setShowTertiary] = useState(true);
@@ -22,9 +27,7 @@ export default () => {
         <Row className="d-flex flex-wrap flex-md-nowrap align-items-center py-4">
           <Col className="d-block mb-4 mb-md-0">
             <h1 className="h2">Toasts</h1>
-            <p className="mb-0">
-              Use toasts to indicate messages.
-          </p>
+            <p className="mb-0">Use toasts to indicate messages.</p>
           </Col>
         </Row>
 
@@ -32,11 +35,31 @@ export default () => {
           title="Example"
           description={
             <>
-              <p>Use the <code>&#x3C;Toast&#x3E;</code> component to show messages and notifications to the user. The component is split into two main subcomponents: <code>&#x3C;Toast.Header&#x3E;</code> and <code>&#x3C;Toast.Body&#x3E;</code> where you can add the text that you want.</p>
-              <p>You can also use the <code>handleClose</code> function to handle the event of closing the component.</p>
+              <p>
+                Use the <code>&#x3C;Toast&#x3E;</code> component to show
+                messages and notifications to the user. The component is split
+                into two main subcomponents:{" "}
+                <code>&#x3C;Toast.Header&#x3E;</code> and{" "}
+                <code>&#x3C;Toast.Body&#x3E;</code> where you can add the text
+                that you want.
+              </p>
+              <p>
+                You can also use the <code>handleClose</code> function to handle
+                the event of closing the component.
+              </p>
             </>
           }
-          scope={{ Card, Toast, Button, useState, FontAwesomeIcon, faBootstrap, showDefault, setShowDefault, handleCloseDefault }}
+          scope={{
+            Card,
+            Toast,
+            Button,
+            useState,
+            FontAwesomeIcon,
+            faBootstrap,
+            showDefault,
+            setShowDefault,
+            handleCloseDefault,
+          }}
           imports={`import React, { useState } from 'react';
 import { Card, Toast, Button } from '@themesberg/react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -60,9 +83,27 @@ const toggleDefaultToast = () => setShowDefault(!showDefault);`}
         <Documentation
           title="Colors"
           description={
-            <p>If you'd like to customize the appearance of the <code>&#x3C;Toast&#x3E;</code> component, you can easily do so by adding a <code>bg-primary</code>, <code>bg-secondary</code>, and any other <code>bg-*</code> modifier class to the main <code>&#x3C;Toast&#x3E;</code> component.</p>
+            <p>
+              If you'd like to customize the appearance of the{" "}
+              <code>&#x3C;Toast&#x3E;</code> component, you can easily do so by
+              adding a <code>bg-primary</code>, <code>bg-secondary</code>, and
+              any other <code>bg-*</code> modifier class to the main{" "}
+              <code>&#x3C;Toast&#x3E;</code> component.
+            </p>
           }
-          scope={{ Toast, Button, useState, FontAwesomeIcon, faBootstrap, showPrimary, setShowPrimary, handleClosePrimary, showTertiary, setShowTertiary, handleCloseTertiary }}
+          scope={{
+            Toast,
+            Button,
+            useState,
+            FontAwesomeIcon,
+            faBootstrap,
+            showPrimary,
+            setShowPrimary,
+            handleClosePrimary,
+            showTertiary,
+            setShowTertiary,
+            handleCloseTertiary,
+          }}
           imports={`import React, { useState } from 'react';
 import { Toast, Button } from '@themesberg/react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -99,8 +140,9 @@ const handleCloseTertiary = () => setShowTertiary(false);`}
   </Toast>
 </React.Fragment>`}
         />
-
       </Container>
     </article>
   );
 };
+
+export default ToastsC;

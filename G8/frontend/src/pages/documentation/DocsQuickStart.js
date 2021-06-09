@@ -1,7 +1,7 @@
 import React from "react";
 import { Row, Col, Card, Container } from "@themesberg/react-bootstrap";
 
-export default () => {
+const DocsQuickStart = () => {
   return (
     <Container className="px-0">
       <Row>
@@ -107,3 +107,5 @@ export default () => {
     </Container>
   );
 };
+
+export default DocsQuickStart;

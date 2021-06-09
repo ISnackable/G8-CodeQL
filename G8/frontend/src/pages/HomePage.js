@@ -52,6 +52,7 @@ const RouteWithLoader = ({ component: Component, ...rest }) => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    // Might want to shorten time of "fake loading"
     const timer = setTimeout(() => setLoaded(true), 1000);
     return () => clearTimeout(timer);
   }, []);
@@ -73,10 +74,12 @@ const RouteWithSidebar = ({ component: Component, ...rest }) => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    // Might want to shorten time of "fake loading"
     const timer = setTimeout(() => setLoaded(true), 1000);
     return () => clearTimeout(timer);
   }, []);
 
+  // removing all this (don't want to see buy option)
   // const localStorageIsSettingsVisible = () => {
   //   return localStorage.getItem("settingsVisible") === "false" ? false : true;
   // };
@@ -112,7 +115,7 @@ const RouteWithSidebar = ({ component: Component, ...rest }) => {
   );
 };
 
-export default () => (
+const HomePage = () => (
   <Switch>
     <RouteWithLoader
       exact
@@ -227,3 +230,5 @@ export default () => (
     <Redirect to={Routes.NotFound.path} />
   </Switch>
 );
+
+export default HomePage;

@@ -5,7 +5,7 @@ import { Table } from "@themesberg/react-bootstrap";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons";
 
-export default () => (
+const DocsGlossary = () => (
   <Container className="px-0">
     <Row>
       <Col xs={12} className="p-3">
@@ -106,3 +106,5 @@ export default () => (
     </Row>
   </Container>
 );
+
+export default DocsGlossary;

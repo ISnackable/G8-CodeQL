@@ -18,7 +18,7 @@ import Snippet from "../components/Snippet";
 // import { TransactionsTable } from "../components/Tables";
 import useLocalStorageState from "use-local-storage-state";
 
-export default () => {
+const CodeQLAlerts = () => {
   const [logs, setLogs] = useLocalStorageState("log", []);
   const [hasMore, setHasMore] = useState(true);
 
@@ -154,3 +154,5 @@ export default () => {
 //     </>
 //   );
 // };
+
+export default CodeQLAlerts;

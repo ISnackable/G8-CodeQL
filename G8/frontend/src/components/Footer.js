@@ -21,7 +21,7 @@ import {
 // import { Link } from "react-router-dom";
 // import { Routes } from "../routes";
 
-export default (props) => {
+const Footer = (props) => {
   const currentYear = moment().get("year");
   // const showSettings = props.showSettings;
 
@@ -182,3 +182,5 @@ export default (props) => {
     </div>
   );
 };
+
+export default Footer;

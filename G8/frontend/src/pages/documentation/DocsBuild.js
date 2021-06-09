@@ -3,7 +3,7 @@ import { Row, Col, Card, Container } from "@themesberg/react-bootstrap";
 
 import { CommandsTable } from "../../components/Tables";
 
-export default () => (
+const DocsBuild = () => (
   <Container className="px-0">
     <Row>
       <Col xs={12} className="p-3">
@@ -28,3 +28,5 @@ export default () => (
     </Row>
   </Container>
 );
+
+export default DocsBuild;

@@ -1,13 +1,25 @@
-
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faThumbsUp, faAngleDown, faAngleUp, faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
-import { Col, Row, Button, Container, Dropdown, ButtonGroup } from '@themesberg/react-bootstrap';
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHeart,
+  faThumbsUp,
+  faAngleDown,
+  faAngleUp,
+  faAngleLeft,
+  faAngleRight,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  Col,
+  Row,
+  Button,
+  Container,
+  Dropdown,
+  ButtonGroup,
+} from "@themesberg/react-bootstrap";
 
 import Documentation from "../../components/Documentation";
 
-
-export default () => {
+const ButtonsC = () => {
   return (
     <article>
       <Container className="px-0">
@@ -15,7 +27,8 @@ export default () => {
           <Col className="d-block mb-4 mb-md-0">
             <h1 className="h2">Buttons</h1>
             <p className="mb-0">
-              Use custom button styles for actions in forms, dialogs, and more with support for multiple sizes, states, and more.
+              Use custom button styles for actions in forms, dialogs, and more
+              with support for multiple sizes, states, and more.
             </p>
           </Col>
         </Row>
@@ -23,7 +36,12 @@ export default () => {
         <Documentation
           title="Example"
           description={
-            <p>The <code>&#x3C;Button&#x3E;</code> component is an important part of the UI that you can use for user actions. If you want to change the appearance of a given button, you can update the modifier props of the <code>variant</code> attribute.</p>
+            <p>
+              The <code>&#x3C;Button&#x3E;</code> component is an important part
+              of the UI that you can use for user actions. If you want to change
+              the appearance of a given button, you can update the modifier
+              props of the <code>variant</code> attribute.
+            </p>
           }
           scope={{ Button }}
           imports={`import { Button } from '@themesberg/react-bootstrap';`}
@@ -45,7 +63,12 @@ export default () => {
         <Documentation
           title="Button sizing"
           description={
-            <p>The <code>&#x3C;Button&#x3E;</code> component comes with three main sizing options: <code>sm</code>, default, and <code>lg</code>. In order to change the size of the button you need to set the size using the <code>size</code> attribute.</p>
+            <p>
+              The <code>&#x3C;Button&#x3E;</code> component comes with three
+              main sizing options: <code>sm</code>, default, and <code>lg</code>
+              . In order to change the size of the button you need to set the
+              size using the <code>size</code> attribute.
+            </p>
           }
           scope={{ Button }}
           imports={`import { Button } from '@themesberg/react-bootstrap';`}
@@ -59,7 +82,13 @@ export default () => {
         <Documentation
           title="Buttons with outline"
           description={
-            <p>Instead of a fully colored background, you can also choose to style the <code>&#x3C;Button&#x3E;</code> component to only have an outline border by using the <code>outline-primary</code>, <code>outline-secondary</code> modifier classes inside the <code>variant</code> attribute.</p>
+            <p>
+              Instead of a fully colored background, you can also choose to
+              style the <code>&#x3C;Button&#x3E;</code> component to only have
+              an outline border by using the <code>outline-primary</code>,{" "}
+              <code>outline-secondary</code> modifier classes inside the{" "}
+              <code>variant</code> attribute.
+            </p>
           }
           scope={{ Button }}
           imports={`import { Button } from '@themesberg/react-bootstrap';`}
@@ -78,7 +107,12 @@ export default () => {
         <Documentation
           title="Link buttons"
           description={
-            <p>If you want to use the <code>&#x3C;Button&#x3E;</code> component, but without the appearance of a button, just use the <code>bsPrefix="text"</code> attribute to create link styled buttons.</p>
+            <p>
+              If you want to use the <code>&#x3C;Button&#x3E;</code> component,
+              but without the appearance of a button, just use the{" "}
+              <code>bsPrefix="text"</code> attribute to create link styled
+              buttons.
+            </p>
           }
           scope={{ Button }}
           imports={`import { Button } from '@themesberg/react-bootstrap';`}
@@ -97,7 +131,12 @@ export default () => {
         <Documentation
           title="Buttons with icon"
           description={
-            <p>You may want to use icons inside the <code>&#x3C;Button&#x3E;</code> component, which can be done by simply adding a <code>&#x3C;FontAwesomeIcon&#x3E;</code> component inside the button element.</p>
+            <p>
+              You may want to use icons inside the{" "}
+              <code>&#x3C;Button&#x3E;</code> component, which can be done by
+              simply adding a <code>&#x3C;FontAwesomeIcon&#x3E;</code> component
+              inside the button element.
+            </p>
           }
           scope={{ Button, FontAwesomeIcon, faHeart, faThumbsUp }}
           imports={`import { Button } from '@themesberg/react-bootstrap';
@@ -116,7 +155,11 @@ import { faHeart, faThumbsUp } from "@fortawesome/free-solid-svg-icons";`}
         <Documentation
           title="Block level Buttons"
           description={
-            <p>Block level buttons are great if you want the button to take up 100% of the width of the parent element. You need to add the <code>w-100</code> class to the component.</p>
+            <p>
+              Block level buttons are great if you want the button to take up
+              100% of the width of the parent element. You need to add the{" "}
+              <code>w-100</code> class to the component.
+            </p>
           }
           scope={{ Button }}
           imports={`import { Button } from '@themesberg/react-bootstrap';`}
@@ -126,7 +169,11 @@ import { faHeart, faThumbsUp } from "@fortawesome/free-solid-svg-icons";`}
         <Documentation
           title="Disabled state"
           description={
-            <p>You may want to disable the <code>&#x3C;Button&#x3E;</code> component for various reasons, so you need to add the <code>disabled</code> attribute in order to achieve that.</p>
+            <p>
+              You may want to disable the <code>&#x3C;Button&#x3E;</code>{" "}
+              component for various reasons, so you need to add the{" "}
+              <code>disabled</code> attribute in order to achieve that.
+            </p>
           }
           scope={{ Button }}
           imports={`import { Button } from '@themesberg/react-bootstrap';`}
@@ -144,11 +191,30 @@ import { faHeart, faThumbsUp } from "@fortawesome/free-solid-svg-icons";`}
           title="Dropdown buttons"
           description={
             <>
-              <p>Use the <code>&#x3C;Dropdown&#x3E;</code> component coupled with the <code>&#x3C;Button&#x3E;</code> component in order to create dropdown items when clicking on a button. The <code> &#x3C;Dropdown.Toggle&#x3E;</code> is the component that will trigger the dropdown menu, while the <code>&#x3C;Dropdown.Menu&#x3E;</code> is the actual menu where you can add the dropdown items.</p>
-              <p>The <code>&#x3C;Button&#x3E;</code> component is used either before or after the toggle component, but all of this is wrapped around with the main <code>&#x3C;Dropdown&#x3E;</code> component.</p>
+              <p>
+                Use the <code>&#x3C;Dropdown&#x3E;</code> component coupled with
+                the <code>&#x3C;Button&#x3E;</code> component in order to create
+                dropdown items when clicking on a button. The{" "}
+                <code> &#x3C;Dropdown.Toggle&#x3E;</code> is the component that
+                will trigger the dropdown menu, while the{" "}
+                <code>&#x3C;Dropdown.Menu&#x3E;</code> is the actual menu where
+                you can add the dropdown items.
+              </p>
+              <p>
+                The <code>&#x3C;Button&#x3E;</code> component is used either
+                before or after the toggle component, but all of this is wrapped
+                around with the main <code>&#x3C;Dropdown&#x3E;</code>{" "}
+                component.
+              </p>
             </>
           }
-          scope={{ Button, Dropdown, ButtonGroup, FontAwesomeIcon, faAngleDown }}
+          scope={{
+            Button,
+            Dropdown,
+            ButtonGroup,
+            FontAwesomeIcon,
+            faAngleDown,
+          }}
           imports={`import { Button, Dropdown, ButtonGroup } from '@themesberg/react-bootstrap';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";`}
@@ -188,9 +254,22 @@ import { faAngleDown } from "@fortawesome/free-solid-svg-icons";`}
         <Documentation
           title="Dropdown sizing"
           description={
-            <p>You may want to use one of the three main sizing options for the <code>&#x3C;Dropdown&#x3E;</code> component, so in order to do that you only need to use the <code>size="md"</code> or <code>size="lg"</code> attributes for the <code>&#x3C;Button&#x3E;</code> component inside the dropdown component.</p>
+            <p>
+              You may want to use one of the three main sizing options for the{" "}
+              <code>&#x3C;Dropdown&#x3E;</code> component, so in order to do
+              that you only need to use the <code>size="md"</code> or{" "}
+              <code>size="lg"</code> attributes for the{" "}
+              <code>&#x3C;Button&#x3E;</code> component inside the dropdown
+              component.
+            </p>
           }
-          scope={{ Button, Dropdown, ButtonGroup, FontAwesomeIcon, faAngleDown }}
+          scope={{
+            Button,
+            Dropdown,
+            ButtonGroup,
+            FontAwesomeIcon,
+            faAngleDown,
+          }}
           imports={`import { Button, ButtonGroup, Dropdown } from '@themesberg/react-bootstrap';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";`}
@@ -248,9 +327,24 @@ import { faAngleDown } from "@fortawesome/free-solid-svg-icons";`}
         <Documentation
           title="Dropdown direction"
           description={
-            <p>If you want to change the direction of the <code>&#x3C;Dropdown&#x3E;</code> component, you can do that by using the <code>direction="*"</code> attribute where you can use <code>up</code>, <code>right</code>, <code>down</code>, or <code>left</code> as attribute values.</p>
+            <p>
+              If you want to change the direction of the{" "}
+              <code>&#x3C;Dropdown&#x3E;</code> component, you can do that by
+              using the <code>direction="*"</code> attribute where you can use{" "}
+              <code>up</code>, <code>right</code>, <code>down</code>, or{" "}
+              <code>left</code> as attribute values.
+            </p>
           }
-          scope={{ Button, Dropdown, ButtonGroup, FontAwesomeIcon, faAngleDown, faAngleUp, faAngleLeft, faAngleRight }}
+          scope={{
+            Button,
+            Dropdown,
+            ButtonGroup,
+            FontAwesomeIcon,
+            faAngleDown,
+            faAngleUp,
+            faAngleLeft,
+            faAngleRight,
+          }}
           imports={`import { Button, ButtonGroup, Dropdown } from '@themesberg/react-bootstrap';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown, faAngleUp, faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";`}
@@ -320,8 +414,9 @@ import { faAngleDown, faAngleUp, faAngleLeft, faAngleRight } from "@fortawesome/
   </Dropdown>
 </React.Fragment>`}
         />
-
       </Container>
     </article>
   );
 };
+
+export default ButtonsC;

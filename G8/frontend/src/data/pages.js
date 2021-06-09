@@ -11,7 +11,7 @@ import ServerErrorImg from "../assets/img/pages/500.jpg";
 
 import { Routes } from "../routes";
 
-export default [
+const pages = [
   {
     id: 1,
     name: "Overview",
@@ -73,3 +73,5 @@ export default [
     link: Routes.ServerError.path,
   },
 ];
+
+export default pages;

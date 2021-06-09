@@ -1,11 +1,10 @@
-
-import React from 'react';
-import { Col, Row, Container } from '@themesberg/react-bootstrap';
+import React from "react";
+import { Col, Row, Container } from "@themesberg/react-bootstrap";
 
 import Documentation from "../../components/Documentation";
 import Progress from "../../components/Progress";
 
-export default () => (
+const ProgressC = () => (
   <article>
     <Container className="px-0">
       <Row className="d-flex flex-wrap flex-md-nowrap align-items-center py-4">
@@ -20,7 +19,14 @@ export default () => (
       <Documentation
         title="Example"
         description={
-          <p>Use the <code>&#x3C;Progress&#x3E;</code> component to show progress bars or loaders for your app. You can set the value of the bar using the <code>value</code> attribute. You can also change the appearance using the <code>variant="*"</code> attributes using the default Bootstrap color classes, such as <code>primary</code>, <code>secondary</code>, <code>danger</code> and so on.</p>
+          <p>
+            Use the <code>&#x3C;Progress&#x3E;</code> component to show progress
+            bars or loaders for your app. You can set the value of the bar using
+            the <code>value</code> attribute. You can also change the appearance
+            using the <code>variant="*"</code> attributes using the default
+            Bootstrap color classes, such as <code>primary</code>,{" "}
+            <code>secondary</code>, <code>danger</code> and so on.
+          </p>
         }
         scope={{ Progress }}
         imports={`import Progress from "src/components/Progress";`}
@@ -30,7 +36,12 @@ export default () => (
       <Documentation
         title="Color variations"
         description={
-          <p>To update the appearance of the <code>&#x3C;Progress&#x3E;</code> component you can use the following classes for the <code>variant</code> attribute. You can also add a label text using the <code>label="lorem ipsum"</code> attribute.</p>
+          <p>
+            To update the appearance of the <code>&#x3C;Progress&#x3E;</code>{" "}
+            component you can use the following classes for the{" "}
+            <code>variant</code> attribute. You can also add a label text using
+            the <code>label="lorem ipsum"</code> attribute.
+          </p>
         }
         scope={{ Progress }}
         imports={`import Progress from "src/components/Progress";`}
@@ -47,7 +58,11 @@ export default () => (
       <Documentation
         title="Sizing"
         description={
-          <p>You can also use one of the four available sizes for the <code>&#x3C;Progress&#x3E;</code> updating the <code>size="*"</code> attribute.</p>
+          <p>
+            You can also use one of the four available sizes for the{" "}
+            <code>&#x3C;Progress&#x3E;</code> updating the <code>size="*"</code>{" "}
+            attribute.
+          </p>
         }
         scope={{ Progress }}
         imports={`import Progress from "src/components/Progress";`}
@@ -61,3 +76,5 @@ export default () => (
     </Container>
   </article>
 );
+
+export default ProgressC;

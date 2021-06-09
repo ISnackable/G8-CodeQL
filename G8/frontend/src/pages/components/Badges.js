@@ -1,18 +1,23 @@
-
-import React from 'react';
-import { Col, Row, Badge, Button, Container } from '@themesberg/react-bootstrap';
+import React from "react";
+import {
+  Col,
+  Row,
+  Badge,
+  Button,
+  Container,
+} from "@themesberg/react-bootstrap";
 
 import Documentation from "../../components/Documentation";
 
-
-export default () => (
+const BadgesC = () => (
   <article>
     <Container className="px-0">
       <Row className="d-flex flex-wrap flex-md-nowrap align-items-center py-4">
         <Col className="d-block mb-4 mb-md-0">
           <h1 className="h2">Badges</h1>
           <p className="mb-0">
-            Use badges to add extra labeling to alongside titles or to categorize items.
+            Use badges to add extra labeling to alongside titles or to
+            categorize items.
           </p>
         </Col>
       </Row>
@@ -20,7 +25,12 @@ export default () => (
       <Documentation
         title="Example"
         description={
-          <p>Use the <code>&#x3C;Badge&#x3E;</code> component to show and highlight labeled text. You can update the colors using the following modifier classes (ie. <code>bg-primary</code>, <code>bg-secondary</code>):</p>
+          <p>
+            Use the <code>&#x3C;Badge&#x3E;</code> component to show and
+            highlight labeled text. You can update the colors using the
+            following modifier classes (ie. <code>bg-primary</code>,{" "}
+            <code>bg-secondary</code>):
+          </p>
         }
         scope={{ Badge }}
         imports={`import { Badge } from '@themesberg/react-bootstrap';`}
@@ -38,9 +48,12 @@ export default () => (
 
       <Documentation
         title="Sizing with badges"
-        description=
-        {
-          <p>To update the size of the <code>&#x3C;Badge&#x3E;</code> component you can use the size modified classes, such as <code>badge-md</code> or <code>badge-lg</code>.</p>
+        description={
+          <p>
+            To update the size of the <code>&#x3C;Badge&#x3E;</code> component
+            you can use the size modified classes, such as <code>badge-md</code>{" "}
+            or <code>badge-lg</code>.
+          </p>
         }
         scope={{ Badge }}
         imports={`import { Badge } from '@themesberg/react-bootstrap';`}
@@ -54,7 +67,10 @@ export default () => (
       <Documentation
         title="Pill badges"
         description={
-          <p>Set the <code>pill</code> on <code>true</code> property to make badges more rounded with a larger border radius.</p>
+          <p>
+            Set the <code>pill</code> on <code>true</code> property to make
+            badges more rounded with a larger border radius.
+          </p>
         }
         scope={{ Badge }}
         imports={`import { Badge } from '@themesberg/react-bootstrap';`}
@@ -69,7 +85,10 @@ export default () => (
       <Documentation
         title="Notification badges"
         description={
-          <p>You can also use the <code>&#x3C;Badge&#x3E;</code> component inside other components, such as buttons, alerts, simple paragraphs.</p>
+          <p>
+            You can also use the <code>&#x3C;Badge&#x3E;</code> component inside
+            other components, such as buttons, alerts, simple paragraphs.
+          </p>
         }
         scope={{ Button, Badge }}
         imports={`import { Badge, Button } from '@themesberg/react-bootstrap';`}
@@ -78,3 +97,5 @@ export default () => (
     </Container>
   </article>
 );
+
+export default BadgesC;

@@ -10,7 +10,7 @@ import Highlight, { Prism } from "prism-react-renderer";
 import themeStyle from "../assets/syntax-themes/ghcolors.json";
 import DOMPurify from "dompurify";
 
-export default (props) => {
+const Snippet = (props) => {
   const { ploc, language = "javascript" } = props;
   const [copied, setCopied] = useState(false);
   const elementRef = useRef(null);
@@ -141,3 +141,5 @@ export default (props) => {
     </SuperHighlighter>
   );
 };
+
+export default Snippet;

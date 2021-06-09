@@ -1,13 +1,19 @@
-
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLaptopCode, faPalette } from "@fortawesome/free-solid-svg-icons";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
-import { Col, Row, Nav, Tab, Card, Container } from '@themesberg/react-bootstrap';
+import {
+  Col,
+  Row,
+  Nav,
+  Tab,
+  Card,
+  Container,
+} from "@themesberg/react-bootstrap";
 
 import Documentation from "../../components/Documentation";
 
-export default () => {
+const TabsC = () => {
   return (
     <article>
       <Container className="px-0">
@@ -15,7 +21,8 @@ export default () => {
           <Col className="d-block mb-4 mb-md-0">
             <h1 className="h2">Tabs</h1>
             <p className="mb-0">
-              Use tabs to partition important data into easily navigable and interchangeable elements.
+              Use tabs to partition important data into easily navigable and
+              interchangeable elements.
             </p>
           </Col>
         </Row>
@@ -24,9 +31,28 @@ export default () => {
           title="Example"
           description={
             <>
-              <p>The <code>&#x3C;Tab&#x3E;</code> component is great if you want to show multiple resources of content with an easy partitioning using nav tabs. First you need to use the <code>&#x3C;Tab.Container&#x3E;</code> component to wrap around the content.</p>
-              <p>The first part of the component will be the <code>&#x3C;Nav&#x3E;</code> component where you can add as many <code>&#x3C;NavItem&#x3E;</code> components as you'd like. The <code>&#x3C;Nav.Link&#x3E;</code> component can then be used to set the tab panel that it should open up when clicking on it.</p>
-              <p>The <code>&#x3C;Tab.Content&#x3E;</code> component and its subcomponents are the content that will be shown based on which <code>&#x3C;Nav.Link&#x3E;</code> is being clicked on. The <code>eventKey="*"</code> attribute should be used for both the <code>&#x3C;Nav.Link&#x3E;</code> and <code>&#x3C;Tab.Content&#x3E;</code> to link the two together.</p>
+              <p>
+                The <code>&#x3C;Tab&#x3E;</code> component is great if you want
+                to show multiple resources of content with an easy partitioning
+                using nav tabs. First you need to use the{" "}
+                <code>&#x3C;Tab.Container&#x3E;</code> component to wrap around
+                the content.
+              </p>
+              <p>
+                The first part of the component will be the{" "}
+                <code>&#x3C;Nav&#x3E;</code> component where you can add as many{" "}
+                <code>&#x3C;NavItem&#x3E;</code> components as you'd like. The{" "}
+                <code>&#x3C;Nav.Link&#x3E;</code> component can then be used to
+                set the tab panel that it should open up when clicking on it.
+              </p>
+              <p>
+                The <code>&#x3C;Tab.Content&#x3E;</code> component and its
+                subcomponents are the content that will be shown based on which{" "}
+                <code>&#x3C;Nav.Link&#x3E;</code> is being clicked on. The{" "}
+                <code>eventKey="*"</code> attribute should be used for both the{" "}
+                <code>&#x3C;Nav.Link&#x3E;</code> and{" "}
+                <code>&#x3C;Tab.Content&#x3E;</code> to link the two together.
+              </p>
             </>
           }
           scope={{ Nav, Tab }}
@@ -81,9 +107,22 @@ export default () => {
         <Documentation
           title="Example with icons"
           description={
-            <p>The following example shows how you can add an icon using the <code>&#x3C;FontAwesomeIcon&#x3E;</code> component inside the navigation item component.</p>
+            <p>
+              The following example shows how you can add an icon using the{" "}
+              <code>&#x3C;FontAwesomeIcon&#x3E;</code> component inside the
+              navigation item component.
+            </p>
           }
-          scope={{ Row, Col, Nav, Tab, FontAwesomeIcon, faPalette, faLaptopCode, faUser }}
+          scope={{
+            Row,
+            Col,
+            Nav,
+            Tab,
+            FontAwesomeIcon,
+            faPalette,
+            faLaptopCode,
+            faUser,
+          }}
           imports={`import { Row, Col, Nav, Tab } from '@themesberg/react-bootstrap';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLaptopCode, faPalette } from "@fortawesome/free-solid-svg-icons";
@@ -196,8 +235,9 @@ import { faUser } from "@fortawesome/free-regular-svg-icons";`}
   </Row>
 </Tab.Container>`}
         />
-
       </Container>
     </article>
   );
 };
+
+export default TabsC;

@@ -1,26 +1,31 @@
-
-import React from 'react';
-import { Row, Col, Container } from '@themesberg/react-bootstrap';
+import React from "react";
+import { Row, Col, Container } from "@themesberg/react-bootstrap";
 
 import AccordionComponent from "../../components/AccordionComponent";
 import Documentation from "../../components/Documentation";
 
-export default () => (
+const AccordionC = () => (
   <article>
     <Container className="px-0">
       <Row className="d-flex flex-wrap flex-md-nowrap align-items-center py-4">
         <Col className="d-block mb-4 mb-md-0">
           <h1 className="h2">Accordions</h1>
           <p className="mb-0">
-            Use the accordion elements to segment content and show/hide when clicking on tabs.
-        </p>
+            Use the accordion elements to segment content and show/hide when
+            clicking on tabs.
+          </p>
         </Col>
       </Row>
 
       <Documentation
         title="Example"
         description={
-          <p>Use the <code>{`<AccordionComponent>`}</code> component and make sure to set the required props, defaultKey and data, to make it shine. When the title element will be toggled you'll get to see the description.</p>
+          <p>
+            Use the <code>{`<AccordionComponent>`}</code> component and make
+            sure to set the required props, defaultKey and data, to make it
+            shine. When the title element will be toggled you'll get to see the
+            description.
+          </p>
         }
         scope={{ AccordionComponent }}
         imports={`import AccordionComponent from "src/components/AccordionComponent";`}
@@ -50,3 +55,5 @@ export default () => (
     </Container>
   </article>
 );
+
+export default AccordionC;

@@ -56,7 +56,7 @@ import G8Logo from "../assets/img/g8-logo.png";
 import pages from "../data/pages";
 import features from "../data/features";
 
-export default () => {
+const Presentation = () => {
   const PagePreview = (props) => {
     const { name, image, link } = props;
 
@@ -1053,3 +1053,5 @@ export default () => {
     </>
   );
 };
+
+export default Presentation;

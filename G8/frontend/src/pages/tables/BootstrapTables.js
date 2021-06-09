@@ -5,7 +5,7 @@ import { Breadcrumb } from "@themesberg/react-bootstrap";
 
 import { PageTrafficTable, RankingTable } from "../../components/Tables";
 
-export default () => {
+const BootstrapTables = () => {
   return (
     <>
       <div className="d-xl-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
@@ -33,3 +33,5 @@ export default () => {
     </>
   );
 };
+
+export default BootstrapTables;

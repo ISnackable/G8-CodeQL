@@ -30,7 +30,7 @@ import { Routes } from "../routes";
 import G8Logo from "../assets/img/g8-logo.png";
 import ProfilePicture from "../assets/img/team/profile-picture-3.jpg";
 
-export default (props = {}) => {
+const Sidebar = (props = {}) => {
   const location = useLocation();
   const { pathname } = location;
   const [show, setShow] = useState(false);
@@ -130,7 +130,7 @@ export default (props = {}) => {
           as={Link}
           to={Routes.DashboardOverview.path}
         >
-          <Image src={"ReactHero"} className="navbar-brand-light" />
+          <Image src={G8Logo} className="navbar-brand-light" />
         </Navbar.Brand>
         <Navbar.Toggle
           as={Button}
@@ -306,3 +306,5 @@ export default (props = {}) => {
     </>
   );
 };
+
+export default Sidebar;

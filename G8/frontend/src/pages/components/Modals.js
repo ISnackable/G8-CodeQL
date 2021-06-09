@@ -1,11 +1,16 @@
-
-import React, { useState } from 'react';
-import { Row, Col, Card, Modal, Button, Container } from '@themesberg/react-bootstrap';
+import React, { useState } from "react";
+import {
+  Row,
+  Col,
+  Card,
+  Modal,
+  Button,
+  Container,
+} from "@themesberg/react-bootstrap";
 
 import Documentation from "../../components/Documentation";
 
-
-export default () => {
+const ModalsC = () => {
   const [showDefault, setShowDefault] = useState(false);
   const handleClose = () => setShowDefault(false);
 
@@ -17,7 +22,7 @@ export default () => {
             <h1 className="h2">Modals</h1>
             <p className="mb-0">
               Use modals to develop faster and more interactive user interfaces.
-          </p>
+            </p>
           </Col>
         </Row>
 
@@ -27,11 +32,30 @@ export default () => {
               title="Example"
               description={
                 <>
-                  <p>The <code>&#x3C;Modal&#x3E;</code> component can be used as a way to show extra content on top of the existing UI based on an event. For example, you can use the <code>onClick</code> event from a button component to show a modal by using the <code>setShowDefault(true)</code> function.</p>
-                  <p>Additionally, you can use the <code>handleClose</code> event to handle the situation when the modal is being closed.</p>
+                  <p>
+                    The <code>&#x3C;Modal&#x3E;</code> component can be used as
+                    a way to show extra content on top of the existing UI based
+                    on an event. For example, you can use the{" "}
+                    <code>onClick</code> event from a button component to show a
+                    modal by using the <code>setShowDefault(true)</code>{" "}
+                    function.
+                  </p>
+                  <p>
+                    Additionally, you can use the <code>handleClose</code> event
+                    to handle the situation when the modal is being closed.
+                  </p>
                 </>
               }
-              scope={{ Col, Card, Button, Modal, showDefault, setShowDefault, handleClose, useState }}
+              scope={{
+                Col,
+                Card,
+                Button,
+                Modal,
+                showDefault,
+                setShowDefault,
+                handleClose,
+                useState,
+              }}
               imports={`import React, { useState } from "react";
 import { Button, Modal } from '@themesberg/react-bootstrap';
 
@@ -60,10 +84,11 @@ const handleClose = () => setShowDefault(false);`}
   </Modal>
 </React.Fragment>`}
             />
-
           </Col>
         </Row>
       </Container>
     </article>
   );
 };
+
+export default ModalsC;

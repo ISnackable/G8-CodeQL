@@ -13,7 +13,7 @@ const lineReader = require("line-reader");
 const createDB = require("../models/createDB.js");
 const sarifFileVerify = require('../models/sarifFileVerify.js');
 const projectDB = require("../models/projectid.js");
-
+const uploadFiles=require("../models/uploadFiles.js");
 // --------------------------   
 // standard functions 
 // --------------------------
@@ -208,3 +208,82 @@ exports.projectid = (req,res) => {
     }
   });
 };
+
+exports.repoLinkupload=(req,res)=>{
+  try {//Deletes or try to delete temporary folder before using
+      fs.rmdirSync("./uploadDatabase/temporaryGitClone", { recursive: true });
+      console.log(`./uploadDatabase/temporaryGitClone is deleted!`);
+  } catch (err) {
+      console.error(`Error while deleting ${dir}.`);
+  }
+  let repoLinkRegExp=/^((http(s)?)|(git@[\w.]+))(:(\/\/)?)([\w.@:/\-~]+)(\.git)(\/)?$/;
+  var repoLink=req.body.repoLink;
+  if(!repoLinkRegExp.test(repoLink)){//Checking using regex.
+      res.status(400).send({message:'The link provided is not supported.'});
+  }
+  try{
+      execFile("git",['clone',req.body.repoLink,'./uploadDatabase/'+'temporaryGitClone'], (error, stdout, stderr) => {
+          if (error) {
+          console.error("stderr", stderr);
+          throw(error)
+          }
+          //For debugging purposes on the backend
+          console.log("stdout", stdout);
+          console.error(`stderr: ${stderr}`);
+          const options = {
+              algo: "sha256",
+              encoding: "hex",
+              files: {
+                exclude: ["*"],
+              },
+              folders: {
+                exclude: ["*"],
+              },
+          };
+          hashElement("./temporaryGitClone", "./uploadDatabase/", options).then((hash) => {
+              //--Insert code to check duplicate
+              console.log(hash.hash)
+              uploadFiles.checkDuplicateUpload(hash.hash,function(err1,result){
+                if(err1){
+                  res.status(500).send({'message':"Server error."});
+                }else{
+                  if(result){
+                    console.log(result)
+                    console.log("Database already exist, sending response back to frontend.")
+                    res.status(409).send({'message':'Repository already exist on server.'})
+                  }else{
+                    console.log(result)
+                    var matchRepoName=/^(?:git@|https:\/\/)github.com[:/](.*).git$/
+                    var data={
+                      'projectName':repoLink.match(matchRepoName)[1],
+                      'hash':hash.hash
+                    }
+                    uploadFiles.updateUploadFilesInfo(data,function(err3,results){
+                      if(err3){
+                        res.status(500).send({'message':"Server error."});
+                      }else{
+                        fs.rename('./uploadDatabase/temporaryGitClone','./uploadDatabase/'+results.insertId,function(err2){
+                          if(err2){
+                              console.log("Error renaming temporaryGitClone to its hash.");
+                              uploadFiles.deleteUploadFiles(results.insertId,(err4,results1)=>{
+                                  res.status(500).send({'message':"Server error."})
+                              })
+                          }else{
+                            console.log(results)
+                            res.status(201).send({'message':'Success. File loaded onto backend','projectID':results.insertId})
+                          }
+                        });
+                      }
+                    })  
+
+                  }
+                }
+              })
+
+          });
+          // ----Insert code for renaming repository folder----
+      });
+  }catch(error){
+      res.status(500).send({'message':"Server error."})
+  }
+}

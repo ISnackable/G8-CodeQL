@@ -11,11 +11,11 @@ const { exec, execFile } = require("child_process");
 const { hashElement } = require("folder-hash");
 const lineReader = require("line-reader");
 const createDB = require("../models/createDB.js");
-const sarifFileVerify = require('../models/sarifFileVerify.js');
+const sarifFileVerify = require("../models/sarifFileVerify.js");
 const projectDB = require("../models/projectid.js");
-
-// --------------------------   
-// standard functions 
+const uploadFiles = require("../models/uploadFiles.js");
+// --------------------------
+// standard functions
 // --------------------------
 
 function printDebugInfo(urlPattern, req) {
@@ -78,23 +78,21 @@ exports.query = (req, res) => {
   // );
 };
 
-// #sarifFileVerify.getSarifFileName# 
+// #sarifFileVerify.getSarifFileName#
 // http://localhost:8080/checkAnalysis
 exports.verifySarifFile = (req, res) => {
   var sarifFileName = req.body.sarifFileName;
   sarifFileVerify.getSarifFileName(sarifFileName, function (err, result) {
-        if (!err) {
-            if (result.length == 0) {
-                res.status(200).send("File not found");
-            }
-            else {
-                res.status(200).send(result);
-            }
-        }
-        else {
-            res.status(500).send("Some error");
-        }
-    });
+    if (!err) {
+      if (result.length == 0) {
+        res.status(200).send("File not found");
+      } else {
+        res.status(200).send(result);
+      }
+    } else {
+      res.status(500).send("Some error");
+    }
+  });
 };
 
 // Create Database
@@ -192,19 +190,131 @@ exports.createDatabase = (req, res) => {
   });
 };
 
-exports.projectid = (req,res) => {
-
+exports.projectid = (req, res) => {
   printDebugInfo("/teamname/api/getProjectID", req);
 
-  projectDB.projectid(function (err,result) {
+  projectDB.projectid(function (err, result) {
     if (!err) {
       res.status(200).send(result);
-    }
-    else {
+    } else {
       var output = {
-        "error" : "Unable to get all the project ids"
+        error: "Unable to get all the project ids",
       };
       res.status(500).send(JSON.stringify(output));
     }
   });
+};
+
+exports.repoLinkupload = (req, res) => {
+  try {
+    //Deletes or try to delete temporary folder before using
+    fs.rmdirSync("./uploadDatabase/temporaryGitClone", { recursive: true });
+    console.log(`./uploadDatabase/temporaryGitClone is deleted!`);
+  } catch (err) {
+    console.error(`Error while deleting ${dir}.`);
+  }
+  let repoLinkRegExp =
+    /^((http(s)?)|(git@[\w.]+))(:(\/\/)?)([\w.@:/\-~]+)(\.git)(\/)?$/;
+  var repoLink = req.body.repoLink;
+  if (!repoLinkRegExp.test(repoLink)) {
+    //Checking using regex.
+    res.status(400).send({ message: "The link provided is not supported." });
+  }
+  try {
+    execFile(
+      "git",
+      ["clone", req.body.repoLink, "./uploadDatabase/" + "temporaryGitClone"],
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error("stderr", stderr);
+          throw error;
+        }
+        //For debugging purposes on the backend
+        console.log("stdout", stdout);
+        console.error(`stderr: ${stderr}`);
+        const options = {
+          algo: "sha256",
+          encoding: "hex",
+          files: {
+            exclude: ["*"],
+          },
+          folders: {
+            exclude: ["*"],
+          },
+        };
+        hashElement("./temporaryGitClone", "./uploadDatabase/", options).then(
+          (hash) => {
+            //--Insert code to check duplicate
+            console.log(hash.hash);
+            uploadFiles.checkDuplicateUpload(
+              hash.hash,
+              function (err1, result) {
+                if (err1) {
+                  res.status(500).send({ message: "Server error." });
+                } else {
+                  if (result) {
+                    console.log(result);
+                    console.log(
+                      "Database already exist, sending response back to frontend."
+                    );
+                    res
+                      .status(409)
+                      .send({ message: "Repository already exist on server." });
+                  } else {
+                    console.log(result);
+                    var matchRepoName =
+                      /^(?:git@|https:\/\/)github.com[:/](.*).git$/;
+                    var data = {
+                      projectName: repoLink.match(matchRepoName)[1],
+                      hash: hash.hash,
+                    };
+                    uploadFiles.updateUploadFilesInfo(
+                      data,
+                      function (err3, results) {
+                        if (err3) {
+                          res.status(500).send({ message: "Server error." });
+                        } else {
+                          fs.rename(
+                            "./uploadDatabase/temporaryGitClone",
+                            "./uploadDatabase/" + results.insertId,
+                            function (err2) {
+                              if (err2) {
+                                console.log(
+                                  "Error renaming temporaryGitClone to its hash."
+                                );
+                                uploadFiles.deleteUploadFiles(
+                                  results.insertId,
+                                  (err4, results1) => {
+                                    res
+                                      .status(500)
+                                      .send({ message: "Server error." });
+                                  }
+                                );
+                              } else {
+                                console.log(results);
+                                res
+                                  .status(201)
+                                  .send({
+                                    message:
+                                      "Success. File loaded onto backend",
+                                    projectID: results.insertId,
+                                  });
+                              }
+                            }
+                          );
+                        }
+                      }
+                    );
+                  }
+                }
+              }
+            );
+          }
+        );
+        // ----Insert code for renaming repository folder----
+      }
+    );
+  } catch (error) {
+    res.status(500).send({ message: "Server error." });
+  }
 };

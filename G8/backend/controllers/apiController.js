@@ -11,6 +11,20 @@ const { exec, execFile } = require("child_process");
 const { hashElement } = require("folder-hash");
 const createDB = require("../models/createDB.js");
 const sarifFileVerify = require("../models/sarifFileVerify.js");
+const projectDB = require("../models/projectid.js");
+
+// --------------------------
+// standard functions
+// --------------------------
+
+function printDebugInfo(urlPattern, req) {
+  console.log("-----------------------------------------");
+  console.log("Servicing " + urlPattern + " ..");
+  console.log("Servicing " + req.url + " ..");
+
+  console.log("> req.params: " + JSON.stringify(req.params));
+  console.log("> req.body: " + JSON.stringify(req.body));
+}
 
 // --------------------------------------------------
 // end points
@@ -200,5 +214,20 @@ exports.createDatabase = (req, res) => {
         }
       }
     });
+  });
+};
+
+exports.projectid = (req, res) => {
+  printDebugInfo("/teamname/api/getProjectID", req);
+
+  projectDB.projectid(function (err, result) {
+    if (!err) {
+      res.status(200).send(result);
+    } else {
+      var output = {
+        error: "Unable to get all the project ids",
+      };
+      res.status(500).send(JSON.stringify(output));
+    }
   });
 };

@@ -21,4 +21,7 @@ router.get("/verifySarifFile", apiController.verifySarifFile);
 // Query current CodeQl database number in the counter
 router.get("/query/:id", apiController.query);
 
+// obtain all the projectid to display on the frontend 
+router.get("/projectid", apiController.projectid);
+
 module.exports = router; // https://expressjs.com/en/4x/api.html#app.mountpath Explains sub-app mount

@@ -7,13 +7,17 @@ console.log("------------------------------------");
 // --------------------------------------------------
 const fs = require("fs");
 const path = require("path");
+const multer = require("multer");
 const { exec, execFile } = require("child_process");
 const { hashElement } = require("folder-hash");
-const lineReader = require("line-reader");
 const createDB = require("../models/createDB.js");
 const sarifFileVerify = require("../models/sarifFileVerify.js");
 const projectDB = require("../models/projectid.js");
 const uploadFiles = require("../models/uploadFiles.js");
+const middlewares = require("../middlewares");
+const sevenBin = require("7zip-bin");
+const { extractFull } = require("node-7z");
+
 // --------------------------
 // standard functions
 // --------------------------
@@ -205,16 +209,55 @@ exports.projectid = (req, res) => {
   });
 };
 
+var upload = middlewares.upload.array("files", 100);
+
 exports.upload = (req, res) => {
-  // console.log(req.files);
-  // handle file moving and such?
-  // console.log("============================================================");
-  // console.log("Servicing " + req.url + " ..");
-  // console.log("> req.params: " + JSON.stringify(req.params));
-  // console.log("> req.body: " + JSON.stringify(req.body));
-  // console.log("============================================================");
-  res.setHeader("Content-Type", "text/plain");
-  res.send();
+  upload(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      // A Multer error occurred when uploading.
+      return res.status(500).send("Internal Server Error");
+    } else if (err) {
+      // An unknown error occurred when uploading.
+      if (req.fileValidationError)
+        return res.status(415).send(req.fileValidationError);
+      return res.status(500).send("Opps, Something went wrong");
+    } else if (!req.files) {
+      return res.status(400).send("No files selected");
+    }
+
+    req.files.forEach((file) => {
+      let { ext } = path.parse(file.path);
+      if (
+        file.mimetype === "application/x-7z-compressed" ||
+        file.mimetype === "application/x-zip-compressed" ||
+        file.mimetype === "application/zip" ||
+        file.mimetype === "application/x-tar" ||
+        file.mimetype === "application/x-gzip" ||
+        file.mimetype === "application/vnd.rar" ||
+        (file.mimetype === "application/octet-stream" &&
+          (ext === ".7z" || ext === ".zip"))
+      ) {
+        const pathTo7zip = sevenBin.path7za;
+
+        // ./${file.path} == backend/uploads/zippedfile
+        const seven = extractFull(`./${file.path}`, "./uploads/5/", {
+          $bin: pathTo7zip,
+          recursive: true,
+        });
+
+        seven.on("error", function (err) {
+          console.log(err);
+          // a standard error
+          // `err.stderr` is a string that can contain extra info about the error
+          return res.status(500).send("Opps, Something went wrong");
+        });
+      } else {
+        // Everything went fine.
+        res.setHeader("Content-Type", "text/plain");
+        return res.status(200).send("OK");
+      }
+    });
+  });
 };
 
 exports.repoLinkupload = (req, res) => {

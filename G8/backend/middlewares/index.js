@@ -15,7 +15,7 @@ var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     let filePath = path.posix.normalize(file.originalname);
     let { dir } = path.parse(filePath);
-    let newDestination = `uploads/5${dir}`;
+    let newDestination = `uploads/5/${dir}`;
     let stat = null;
     try {
       stat = fs.statSync(newDestination);
@@ -42,7 +42,6 @@ function fileFilter(req, file, cb) {
   var filename = file.originalname.split(path.sep).join(path.posix.sep);
   let filePath = path.posix.join(rootDirectory, filename);
 
-  console.error(filename);
   if (filename.indexOf("\0") !== -1) {
     req.fileValidationError = "path contains a illegal null byte character";
     return cb(new Error("path contains a illegal null byte character"), false);

@@ -219,10 +219,10 @@ exports.upload = (req, res) => {
     } else if (err) {
       // An unknown error occurred when uploading.
       if (req.fileValidationError)
-        return res.status(415).send(req.fileValidationError);
-      return res.status(500).send("Opps, Something went wrong");
+        return res.status(415).send({ message: req.fileValidationError });
+      return res.status(500).send({ message: "Opps, Something went wrong" });
     } else if (!req.files) {
-      return res.status(400).send("No files selected");
+      return res.status(400).send({ message: "No files selected" });
     }
 
     req.files.forEach((file) => {
@@ -245,18 +245,25 @@ exports.upload = (req, res) => {
           recursive: true,
         });
 
-        seven.on("error", function (err) {
-          console.log(err);
-          // a standard error
-          // `err.stderr` is a string that can contain extra info about the error
-          return res.status(500).send("Opps, Something went wrong");
+        seven.on("end", function () {
+          try {
+            // delete archive file
+            fs.unlinkSync(`./${file.path}`);
+          } catch (err) {
+            console.error(`Error while deleting ${file.path}.`);
+          }
         });
-      } else {
-        // Everything went fine.
-        res.setHeader("Content-Type", "text/plain");
-        return res.status(200).send("OK");
+
+        // cannot set res.status(500) here as callback is too slow, causes express http header error
+        seven.on("error", function (err) {
+          console.error(err);
+        });
       }
     });
+
+    // Assumed no error
+    res.setHeader("Content-Type", "text/plain");
+    return res.status(200).send({ message: "OK." });
   });
 };
 

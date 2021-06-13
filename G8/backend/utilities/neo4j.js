@@ -54,7 +54,6 @@ var FileLocArr = new Array();
 var LocRegionArr = new Array();
 var LocContextArr = new Array();
 var WarningArr = new Array();
-var ChildArr = new Array();
 var noOfError = 0,
   noOfWarnings = 0,
   noOfRecommendation = 0;

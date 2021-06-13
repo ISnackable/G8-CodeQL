@@ -240,13 +240,14 @@ const DashboardOverview = () => {
                       })
                         .then((response) => {
                           // passing the file id to FilePond
-                          load(response.data);
+                          load(response.data.message);
                         })
                         .catch((thrown) => {
                           if (axios.isCancel(thrown)) {
                             console.log("Request canceled", thrown.message);
                           } else {
-                            // handle error
+                            setFiles([fileitems[0].file]);
+                            error("oh no");
                           }
                         });
                     } else {

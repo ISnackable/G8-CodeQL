@@ -54,8 +54,9 @@ function fileFilter(req, file, cb) {
   if (filename.indexOf("\0") !== -1) {
     req.fileValidationError = "path contains a illegal null byte character";
     return cb(new Error("path contains a illegal null byte character"), false);
-  } else if (!/^[\w/\-\.]+$/.test(filename)) {
-    req.fileValidationError = "filename contains illegal character";
+  } else if (!/^[ /\w.()-/]+$/.test(filename)) {
+    // maybe it's better to check file name instead of the entire file path
+    req.fileValidationError = "filepath contains illegal character";
     return cb(new Error("filename contains illegal character"), false);
   } else if (filePath.indexOf(rootDirectory) !== 0) {
     req.fileValidationError = "trying to sneak out of the web root?";

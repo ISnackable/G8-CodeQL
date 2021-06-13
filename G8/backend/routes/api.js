@@ -8,6 +8,7 @@ console.log("------------------------------------");
 const express = require("express");
 const router = express.Router();
 const apiController = require("../controllers/apiController");
+const middlewares = require("../middlewares");
 
 // ------------------------------------------------------
 // end points
@@ -23,6 +24,6 @@ router.get("/query", apiController.query);
 // obtain all the projectid to display on the frontend
 router.get("/projectid", apiController.projectid);
 
-router.post("/upload", apiController.upload);
+router.post("/upload", apiController.upload, middlewares.checkDuplicateProject);
 
 module.exports = router; // https://expressjs.com/en/4x/api.html#app.mountpath Explains sub-app mount

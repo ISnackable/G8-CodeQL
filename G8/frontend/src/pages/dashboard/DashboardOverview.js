@@ -148,7 +148,7 @@ const DashboardOverview = () => {
             onClick={handleShowModalOne}
           >
             <FontAwesomeIcon icon={faFolder} className="me-2" />
-            Upload Folder
+            Upload
           </Button>
 
           <Modal

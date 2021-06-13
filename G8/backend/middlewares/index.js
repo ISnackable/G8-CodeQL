@@ -7,6 +7,9 @@ console.log("------------------------------------");
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
+const { exec, execFile } = require("child_process");
+const { hashElement } = require("folder-hash");
+const uploadFiles = require("../models/uploadFiles.js");
 
 // ------------------------------------------------------
 // Multer config
@@ -14,8 +17,14 @@ const multer = require("multer");
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     let filePath = path.posix.normalize(file.originalname);
-    let { dir } = path.parse(filePath);
-    let newDestination = `uploads/5/${dir}`;
+    let { dir, name } = path.parse(filePath);
+
+    let projectId = req.id;
+    if (!req.projectName) {
+      req.projectName = dir ? dir.split("/")[1] : name;
+    }
+
+    let newDestination = `uploads/${projectId}/${dir}`;
     let stat = null;
     try {
       stat = fs.statSync(newDestination);
@@ -71,3 +80,65 @@ module.exports.upload = multer({
     files: 100,
   },
 });
+
+module.exports.checkDuplicateProject = (req, res, next) => {
+  let projectId = req.id;
+  let projectName = req.projectName;
+
+  const options = {
+    algo: "md5",
+    encoding: "hex",
+    folders: {
+      ignoreRootName: true,
+    },
+  };
+
+  hashElement(`./uploads/${projectId}`, options).then((hash) => {
+    //--Insert code to check duplicate
+    console.log(hash.hash);
+    uploadFiles.checkDuplicateUpload(hash.hash, function (err, result) {
+      if (err) {
+        res.status(500).send({ message: "Internal Server Error" });
+      } else {
+        if (result) {
+          try {
+            //Deletes or try to delete temporary folder before using
+            fs.rmdirSync(`./uploads/${projectId}`, { recursive: true });
+          } catch (err) {
+            console.error(`Error while deleting ./uploads/${projectId}.`);
+          }
+          console.log(`./uploads/${projectId} is deleted!`);
+          console.log(
+            "Database already exist, sending response back to frontend."
+          );
+
+          // delete db
+          uploadFiles.deleteUploadFiles(projectId, function (err2, results) {
+            if (err2) {
+              console.error(err3);
+            }
+          });
+          res.status(409).send({ message: "Project already exist on server." });
+        } else {
+          let data = {
+            id: projectId,
+            projectName: projectName,
+            hash: hash.hash,
+          };
+          uploadFiles.updateUploadFilesInfo1(data, function (err3, results) {
+            if (!err3) {
+              console.log(results);
+              res.status(201).send({
+                message: "Success. File loaded onto backend",
+                projectID: results.insertId,
+              });
+            } else {
+              res.status(500).send({ message: "Internal Server Error" });
+              console.error(err3);
+            }
+          });
+        }
+      }
+    });
+  });
+};

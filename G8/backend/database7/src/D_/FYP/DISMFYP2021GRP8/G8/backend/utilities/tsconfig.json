@@ -1,7 +1,0 @@
-{
-    "compilerOptions": {
-        "types": ["node", "sarif"]
-    },
-    "baseUrl": "types",
-    "typeRoots": ["types"],
-}

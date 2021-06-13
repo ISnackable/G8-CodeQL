@@ -12,11 +12,7 @@ const { hashElement } = require("folder-hash");
 const createDB = require("../models/createDB.js");
 const sarifFileVerify = require("../models/sarifFileVerify.js");
 const projectDB = require("../models/projectid.js");
-<<<<<<< HEAD
-
-=======
 const uploadFiles = require("../models/uploadFiles.js");
->>>>>>> main
 // --------------------------
 // standard functions
 // --------------------------
@@ -153,14 +149,9 @@ exports.createDatabase = (req, res) => {
   // options can be viewed at https://www.npmjs.com/package/folder-hash
   // Default algo is SHA1 and encoding is base64, therefore we have to change it
   const options = {
-    algo: "sha256",
+    algo: "md5",
     encoding: "hex",
-    files: {
-      exclude: ["*"],
-    },
-    folders: {
-      exclude: ["*"],
-    },
+    folders: { exclude: ['node_modules'] }
   };
 
   // hashElement is a function from the folder-hash package

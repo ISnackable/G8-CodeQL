@@ -151,6 +151,7 @@ console.log("number of warning: " + noOfWarnings);
 console.log("number of recommendation: " + noOfRecommendation);
 console.log("number of queries " + queries.length);
 
+
 // Replaces " " and "-" with "_" in each array element
 for (i = 0; i < qNameArr.length; i++) {
   qNameArr[i] = qNameArr[i].replace(/ /g, "_");
@@ -166,18 +167,15 @@ var NoDupeQuery = Array.from(new Set(qNameArr));
 // Create Query
 var CreateQuery = "";
 for (a = 1; a <= NoDupeQuery.length; a++) {
-  CreateQuery += `CREATE (Q${a}:Query {Query:'${NoDupeQuery[a - 1]}'})\n`;
+  CreateQuery += `CREATE (Q${a}:Query {Query:"${NoDupeQuery[a - 1]}"})\n`;
 }
 
 // Create Alerts 
 var CreateAlert = "";
 for (b = 1; b <= results.length; b++) {
-  CreateAlert += `CREATE (A${b}:ALERT {RuleID:"${
-    RuleIDArr[b - 1]
-  }", Message_Text:"${ResultMsgTxtArr[b - 1]}", FileLocation:"${
-    FileLocArr[b - 1]
-  }, StartEndLine:"${LocRegionArr[b - 1]}
-  }"})\n`;
+  ResultMsgTxtArr[b-1] = ResultMsgTxtArr[b-1].replace(/[\"]/g, '\'')
+
+  CreateAlert += `CREATE (A${b}:ALERT {RuleID:'${RuleIDArr[b - 1]}', Message_Text:"${ResultMsgTxtArr[b - 1]}", FileLocation:'${FileLocArr[b - 1]}', StartEndLine:'${LocRegionArr[b - 1]}'})\n`;
 }
 
 // Replaces " " and "-" to "_" in WarningArr
@@ -197,7 +195,7 @@ for (c = 1; c <= NoDupeVuln.length; c++) {
 }
 
 // Create Child
-var CreateChild = "CREATE ";
+var CreateChild = "";
 var ChildVar = new Array();
 
 // Loops through all query names
@@ -214,9 +212,9 @@ for (d = 1; d <= qNameArr.length; d++) {
 
 // Loops through all alerts to create a child with the associated query
 for (f = 1; f <= results.length; f++) {
-  CreateChild += `(A${f}-[:Child {AlertNum:"A${f}", AlertName:"${
+  CreateChild += `CREATE (A${f})-[:Child {AlertNum:"A${f}", AlertName:"${
     RuleIDArr[f - 1]
-  }"} ]->(${ChildVar[f - 1]}),\n`;
+  }"} ]->(${ChildVar[f - 1]})\n`;
 }
 
 // Create Child>Vulnerability
@@ -233,7 +231,7 @@ var VulnChild = "";
 for (x = 1; x <= RuleIDArr.length; x++) {
   for (y = 1; y <= WarningArr.length; y++) {
     if (RuleIDArr[x - 1] == WarningArr[y - 1]) {
-      VulnChild += `(${VulnChildArr[y - 1]}-[:Child]->A${x}),\n`;
+      VulnChild += `CREATE (${VulnChildArr[y - 1]})-[:Child]->(A${x})\n`;
       break;
     }
   }
@@ -257,8 +255,6 @@ CREATE DATABASE SOMEHARDCODEDDATABASEFORNOW
   VulnChild +
   "\n" +
   `
-
-CREATE
 
 
 WITH XSSDOM as q

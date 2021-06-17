@@ -45,15 +45,12 @@ import {
   CommandsTable,
 } from "../../components/Tables";
 import { trafficShares } from "../../data/charts";
-import Progress from "../../components/Progress";
 // import Code from "../../components/Code";
 
 const DashboardOverview = () => {
   const filePondRef = useRef(null);
   const [files, setFiles] = useState([]);
   const [modalState, setModalState] = useState("close");
-  const [fileUploadPending, setFileUploadPending] = useState(true);
-  const [fileUploadProgress, setFileUploadProgress] = useState("0");
   const [validated, setValidated] = useState(false);
 
   const handleSubmit = (event) => {
@@ -87,49 +84,15 @@ const DashboardOverview = () => {
   };
 
   const handleClose = () => {
+    setFiles([]);
     setModalState("close");
   };
 
   // maybe just stick with normal 1 by 1 upload instead of all at once.
   // size of request is very large
   const handleUpload = () => {
-    // console.log(files);
-    if (!files.length) return;
-
     const pond = filePondRef.current;
-
-    // const formData = new FormData();
-    // files.forEach((file) => {
-    //   formData.append("file", file, file._relativePath || file.name);
-    // });
-    // axios({
-    //   url: `http://localhost:8080/upload`,
-    //   method: "POST",
-    //   data: formData,
-    // })
-    //   .then((response) => {
-    //     console.log(response.data);
-    //   })
-    //   .catch((error) => {
-    //     console.error("error");
-    //   });
-
-    // setFiles([]); // remove all files after uploaded
-    // setTimeout(() => {
-    //   setModalState("close");
-    // }, 1000);
-
-    // upload/process all files all once
-    // pond.processFiles().then((files) => {
-    //   console.log(files);
-    // });
-
-    // upload/process a single file
-    pond.processFile().then((file) => {
-      // File has been processed/uploaded
-
-      setFileUploadProgress((fileUploadProgress + 1 / files.length) * 100);
-    });
+    pond.processFiles();
   };
 
   return (
@@ -185,13 +148,12 @@ const DashboardOverview = () => {
             onClick={handleShowModalOne}
           >
             <FontAwesomeIcon icon={faFolder} className="me-2" />
-            Upload Folder
+            Upload
           </Button>
 
           <Modal
             dialogClassName="my-modal"
             size="lg"
-            as={Modal.Dialog}
             centered
             show={modalState === "modal-one"}
             onHide={handleClose}
@@ -205,31 +167,27 @@ const DashboardOverview = () => {
               />
             </Modal.Header>
             <Modal.Body>
-              <Progress variant="info" value={fileUploadProgress} />
               <FilePond
                 ref={filePondRef}
                 files={files}
                 allowProcess={false}
+                allowRevert={false}
                 instantUpload={false}
                 allowMultiple={true}
                 maxFiles={100}
+                maxParallelUploads={100} // buggy?
                 onwarning={(error, file, status) => {
                   if (error) {
-                    alert("something went wrong!");
-                    console.log(error);
-                    console.log(file);
-                    console.log(status);
+                    if (file.length > 100) {
+                      alert("Max file 100"); // Change to bootstrap alert later
+                    } else {
+                      alert("something went wrong!");
+                    }
                   }
                 }}
-                // server="http://localhost:8080/api"
-                name="files"
                 onupdatefiles={(fileItems) => {
                   // Set currently active file objects to this.state
-                  setFileUploadPending(false);
                   setFiles(fileItems.map((fileItem) => fileItem.file));
-                }}
-                onprocessfilestart={(file) => {
-                  console.log(file);
                 }}
                 // allowFileTypeValidation={true}
                 // acceptedFileTypes={[
@@ -247,44 +205,56 @@ const DashboardOverview = () => {
                     load,
                     error,
                     progress,
-                    abort,
-                    transfer,
-                    options
+                    abort
                   ) => {
-                    // set data
-                    const formData = new FormData();
-                    formData.append(
-                      "file",
-                      file,
-                      file._relativePath !== "" || file.name
-                    );
+                    const pond = filePondRef.current;
+                    // somehow files state is empty
+                    const fileitems = pond.getFiles();
 
                     // related to aborting the request
                     const CancelToken = axios.CancelToken;
                     const source = CancelToken.source();
 
-                    // the request itself
-                    axios({
-                      method: "post",
-                      url: "http://localhost:8080/upload",
-                      data: formData,
-                      cancelToken: source.token,
-                      onUploadProgress: (e) => {
-                        // updating progress indicator
-                        progress(e.lengthComputable, e.loaded, e.total);
-                      },
-                    })
-                      .then((response) => {
-                        // passing the file id to FilePond
-                        load(response.data.data.id);
-                      })
-                      .catch((thrown) => {
-                        if (axios.isCancel(thrown)) {
-                          console.log("Request canceled", thrown.message);
-                        } else {
-                          // handle error
-                        }
+                    // Only upload once (always true when clicked submit)
+                    // quite buggy
+                    if (fileitems[0].file === file) {
+                      // set data
+                      const formData = new FormData();
+                      fileitems.forEach((file) => {
+                        formData.append(
+                          "files",
+                          file.file,
+                          file.file._relativePath || file.file.name
+                        );
                       });
+
+                      axios({
+                        method: "post",
+                        url: "http://localhost:8080/teamname/api/upload",
+                        data: formData,
+                        cancelToken: source.token,
+                        onUploadProgress: (e) => {
+                          // updating progress indicator
+                          progress(e.lengthComputable, e.loaded, e.total);
+                        },
+                      })
+                        .then((response) => {
+                          // passing the file id to FilePond
+                          load(response.data.message);
+                        })
+                        .catch((thrown) => {
+                          if (axios.isCancel(thrown)) {
+                            console.log("Request canceled", thrown.message);
+                          } else {
+                            setFiles([fileitems[0].file]);
+                            error("oh no");
+                          }
+                        });
+                    } else {
+                      // just simulating upload complete
+                      progress(true, 10000, 10000);
+                      load("");
+                    }
 
                     // Setup abort interface
                     return {
@@ -301,7 +271,7 @@ const DashboardOverview = () => {
                 variant="primary"
                 className="ms-auto btn-block"
                 onClick={handleUpload}
-                disabled={fileUploadPending}
+                disabled={files.length === 0}
               >
                 Upload
               </Button>
@@ -319,7 +289,6 @@ const DashboardOverview = () => {
           </Button>
 
           <Modal
-            as={Modal.Dialog}
             centered
             show={modalState === "modal-two"}
             onHide={handleClose}

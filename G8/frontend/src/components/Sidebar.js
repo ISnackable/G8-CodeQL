@@ -180,7 +180,11 @@ const Sidebar = (props = {}) => {
                 link={Routes.Presentation.path}
                 image={G8Logo}
               />
-
+              <NavItem
+                title="Dashboard"
+                link={Routes.Dashboard.path}
+                icon={faChartPie}
+              />
               <NavItem
                 title="Overview"
                 link={Routes.Overview.path}

@@ -1,6 +1,7 @@
 export const Routes = {
   // pages
   Presentation: { path: "/" },
+  Dashboard: { path: "/dashboard" },
   Overview: { path: "/overview" },
   CodeQLAlerts: { path: "/codeql-alerts" },
   Settings: { path: "/settings" },

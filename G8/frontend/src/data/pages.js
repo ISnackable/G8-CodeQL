@@ -72,6 +72,12 @@ const pages = [
     image: ServerErrorImg,
     link: Routes.ServerError.path,
   },
+  {
+    id: 11,
+    name: "Dashboard",
+    image: OverviewImg,
+    link: Routes.Dashboard.path,
+  },
 ];
 
 export default pages;

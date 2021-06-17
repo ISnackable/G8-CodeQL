@@ -46,7 +46,7 @@ var driverRules = testSarifJson.runs[0].tool.driver.rules;
 // }
 // console.timeEnd('loop');
 
-// Global variable for query name
+// Global variables
 var qNameArr = new Array();
 var RuleIDArr = new Array();
 var FileName = new Array();
@@ -77,6 +77,8 @@ var _loop_1 = function (result) {
 
   // RuleID, Query Name
   RuleIDArr.push([result.ruleId, driverRules[index].properties.name]);
+
+  // Query Name
   qNameArr.push(driverRules[index].properties.name);
 
   ResultArr.push(result);
@@ -142,6 +144,9 @@ for (i = 0; i < qNameArr.length; i++) {
   qNameArr[i] = qNameArr[i].replace(/ /g, "_");
   qNameArr[i] = qNameArr[i].replace(/-/g, "_");
 }
+
+// 0 = Filename
+// 1 = RuleID
 for (i = 0; i < RuleIDArr.length; i++) {
   RuleIDArr[i][0] = RuleIDArr[i][0].replace(/ /g, "_");
   RuleIDArr[i][0] = RuleIDArr[i][0].replace(/-/g, "_");
@@ -200,6 +205,8 @@ for (i = 0; i < NoDupeFile.length; i++) {
 
       if (ResultArr[b].hasOwnProperty("codeFlows")) {
         var CodeFlowLen = ResultArr[b].codeFlows.length - 1;
+
+        // Loops through all Code Flow arrays
         // Create Code Flow
         for (
           z = 0;
@@ -220,10 +227,13 @@ for (i = 0; i < NoDupeFile.length; i++) {
             ", EndLine: " +
             ResultArr[b].codeFlows[CodeFlowLen].threadFlows[0].locations[z]
               .location.physicalLocation.contextRegion.endLine;
+          
+          // Replaces " with ' to avoid conflicts/errors
           CFMsg = CFMsg.replace(/[\"]/g, "'");
           CreateQuery += `CREATE (CF${CFCounter}:CodeFlows {Message:"${CFMsg}", StartEndLine:'${CFStartEnd}'})\n`;
           // Create Code Flow Childs
-            if(z==0) {
+            if(z==0) { // Checks if in a new loop (Creating code flows for another Alert)
+              // Creates Child for current Alert it is looping on
               CreateQuery += `CREATE (CF${CFCounter})-[:Child]->(A${b+1})\n`
             }
             else {
@@ -234,9 +244,8 @@ for (i = 0; i < NoDupeFile.length; i++) {
       }
     } // End of Create Alert If Loop
   } // End of Create Alert For Loop
-}
+} // End of Create File Loop
 
-console.log(CreateQuery);
 
 const query =
   `
@@ -245,6 +254,7 @@ CREATE DATABASE SOMEHARDCODEDDATABASEFORNOW
 :USE SOMEHARDCODEDDATABASEFORNOW
 
 ` +
+CreateQuery + "\n"
   `
 
 
@@ -252,7 +262,7 @@ CREATE DATABASE SOMEHARDCODEDDATABASEFORNOW
   WHERE q:Query
   RETURN q, a, v
 `;
-//console.log(query);
+console.log(query);
 /*
 const params = { name: "Alice" };
 

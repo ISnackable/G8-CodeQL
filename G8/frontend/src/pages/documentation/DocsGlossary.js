@@ -15,7 +15,8 @@ const DocsGlossary = () => (
               <h1 className="h2" id="glossary">
                 G8 Glossary
               </h1>
-              <Table responsive>
+
+              <Table striped bordered>
                 <thead className="thead-light">
                   <tr>
                     <th className="border-0">Term</th>
@@ -62,7 +63,7 @@ const DocsGlossary = () => (
                     <td className="border-0">Vulnerabilities</td>
                     <td className="border-0 fw-bold">
                       A flaw or weakness which occurs in an information system,
-                      program, security procedures or implementations that can
+                      program, security procedures or implementations <div className='pagebreak'></div> that can 
                       be exploited or triggered by a threat source.
                     </td>
                   </tr>
@@ -71,14 +72,14 @@ const DocsGlossary = () => (
                     <td className="border-0 fw-bold">
                       A list of records , each containing an identification
                       number , description, and public reference for publicly
-                      known cybersecurity vulnerabilities.
+                      known <div className='pagebreak'></div> cybersecurity vulnerabilities.
                     </td>
                   </tr>
                   <tr>
                     <td className="border-0">Bugs</td>
                     <td className="border-0 fw-bold">
                       Commonly known as “errors”, bugs are an unexpected defect,
-                      fault, flaw or imperfection in a computer program or
+                      fault, flaw or imperfection in a computer program or <div className='pagebreak'></div>
                       system.
                     </td>
                   </tr>
@@ -86,7 +87,7 @@ const DocsGlossary = () => (
                     <td className="border-0">Patches</td>
                     <td className="border-0 fw-bold">
                       A repair job for a piece of programming . An immediate
-                      solution to previously known flaws in a program . Commonly
+                      solution to previously known flaws in a program . Commonly <div className='pagebreak'></div>
                       known as a “fix”.
                     </td>
                   </tr>
@@ -99,6 +100,7 @@ const DocsGlossary = () => (
                   </tr>
                 </tbody>
               </Table>
+
             </article>
           </Card.Body>
         </Card>

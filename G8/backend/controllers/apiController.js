@@ -408,3 +408,20 @@ exports.repoLinkupload = (req, res) => {
     res.status(500).send({ message: "Server error." });
   }
 };
+
+
+
+exports.getExistingProject = (req, res) => {
+  printDebugInfo("/teamname/api/getExistingProject", req);
+
+  uploadFiles.getExistingProject(function (err, result) {
+    if (!err) {
+      res.status(200).send(result);
+    } else {
+      var output = {
+        error: "Unable to get all the existing project information",
+      };
+      res.status(500).send(JSON.stringify(output));
+    }
+  });
+};

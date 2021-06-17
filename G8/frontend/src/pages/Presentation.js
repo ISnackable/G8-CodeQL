@@ -221,7 +221,7 @@ explore dashboard button */}
                 <Button
                   variant="secondary"
                   as={Link}
-                  to={Routes.DashboardOverview.path}
+                  to={Routes.Overview.path}
                   className="text-dark me-3"
                 >
                   Explore dashboard{" "}
@@ -338,7 +338,7 @@ explore dashboard button */}
               </p>
               <Button
                 as={Link}
-                to={Routes.DashboardOverview.path}
+                to={Routes.Overview.path}
                 variant="secondary"
                 target="_blank"
               >

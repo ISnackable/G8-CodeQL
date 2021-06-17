@@ -19,6 +19,7 @@ var conn = mariadb.createConnection({
   password: config.password,
   database: config.database,
   dateStrings: true,
+  port:3306
 });
 
 conn.connect(function (err) {

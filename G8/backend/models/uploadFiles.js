@@ -78,6 +78,23 @@ var uploadFiles = {
       }
     );
   },
+
+  getExistingProject: function (callback) {
+
+    console.log("uploadFiles.getExistingProject() ...");
+    var sql = 'SELECT * FROM g8.projects';
+    db.query(sql, [], function (err, result) {
+        if (err) {
+            console.log(err);
+            return callback(err, null);
+        } 
+        else {
+            return callback(null, result);
+        }
+    });
+},
+
+
 };
 
 module.exports = uploadFiles;

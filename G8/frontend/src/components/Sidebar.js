@@ -128,7 +128,7 @@ const Sidebar = (props = {}) => {
         <Navbar.Brand
           className="me-lg-5"
           as={Link}
-          to={Routes.DashboardOverview.path}
+          to={Routes.Overview.path}
         >
           <Image src={G8Logo} className="navbar-brand-light" />
         </Navbar.Brand>
@@ -180,10 +180,14 @@ const Sidebar = (props = {}) => {
                 link={Routes.Presentation.path}
                 image={G8Logo}
               />
-
+              <NavItem
+                title="Dashboard"
+                link={Routes.Dashboard.path}
+                icon={faChartPie}
+              />
               <NavItem
                 title="Overview"
-                link={Routes.DashboardOverview.path}
+                link={Routes.Overview.path}
                 icon={faChartPie}
               />
               <NavItem

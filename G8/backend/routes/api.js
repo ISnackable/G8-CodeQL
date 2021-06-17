@@ -26,4 +26,9 @@ router.get("/projectid", apiController.projectid);
 
 router.post("/upload", apiController.upload, middlewares.checkDuplicateProject);
 
+
+// obtain all the information on the previous projects ( id , name and hash ) 
+router.get("/getExistingProject", apiController.getExistingProject);
+
+
 module.exports = router; // https://expressjs.com/en/4x/api.html#app.mountpath Explains sub-app mount

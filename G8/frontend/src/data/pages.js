@@ -16,7 +16,7 @@ const pages = [
     id: 1,
     name: "Overview",
     image: OverviewImg,
-    link: Routes.DashboardOverview.path,
+    link: Routes.Overview.path,
   },
   {
     id: 2,
@@ -71,6 +71,12 @@ const pages = [
     name: "500",
     image: ServerErrorImg,
     link: Routes.ServerError.path,
+  },
+  {
+    id: 11,
+    name: "Dashboard",
+    image: OverviewImg,
+    link: Routes.Dashboard.path,
   },
 ];
 

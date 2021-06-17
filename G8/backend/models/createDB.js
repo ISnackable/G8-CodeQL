@@ -47,6 +47,23 @@ var apiDB = {
       }
     });
   },
+  insertSarif: function (sarif_filename, id, callback) {
+    console.log("g8.projects.insertSarif()");
+
+    let sql = "UPDATE projects SET sarif_filename = ? WHERE id = ?";
+    db.query(sql, [sarif_filename, id], function (err, result) {
+      if (err) {
+        console.error(err);
+        return callback(err, null);
+      } else if (result.affectedRows == 1) {
+        console.log("Sarif file name added to database");
+        return callback(null, result);
+      } else {
+        console.log("Database update failed.");
+        return callback(null, result.affectedRows);
+      }
+    });
+  },
 };
 
 // ---------------------------------------------------------

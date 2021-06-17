@@ -19,7 +19,7 @@ router.get("/verifySarifFile", apiController.verifySarifFile);
 // http://localhost/teamname/api/createDatabase
 
 // Query current CodeQl database number in the counter
-router.get("/query", apiController.query);
+router.get("/query/:id", apiController.query);
 
 // obtain all the projectid to display on the frontend
 router.get("/projectid", apiController.projectid);

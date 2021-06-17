@@ -46,18 +46,11 @@ var driverRules = testSarifJson.runs[0].tool.driver.rules;
 // }
 // console.timeEnd('loop');
 
-// Global variable for query name
+// Global variables
 var qNameArr = new Array();
 var RuleIDArr = new Array();
-var ResultMsgTxtArr = new Array();
-var FileLocArr = new Array();
-var LocRegionArr = new Array();
-var LocContextArr = new Array();
-var WarningArr = new Array();
-var CFLineArr = new Array();
-var CFMsgArr = new Array();
-var CFCheck = new Array();
-var AlertCount = new Array();
+var FileName = new Array();
+var ResultArr = new Array();
 
 var noOfError = 0,
   noOfWarnings = 0,
@@ -80,52 +73,15 @@ var _loop_1 = function (result) {
   ) {
     noOfRecommendation++;
   }
-  RuleIDArr.push(result.ruleId);
-  ResultMsgTxtArr.push(result.message.text);
-  qNameArr.push(driverRules[index].properties.name);
-  FileLocArr.push(result.locations[0].physicalLocation.artifactLocation.uri);
-  LocRegionArr.push(
-    JSON.stringify(result.locations[0].physicalLocation.region)
-  );
-  LocContextArr.push(
-    (_b =
-      (_a = result.locations[0].physicalLocation.contextRegion) === null ||
-      _a === void 0
-        ? void 0
-        : _a.snippet) === null || _b === void 0
-      ? void 0
-      : _b.text
-  );
-  if (driverRules[index].properties["problem.severity"] == "warning") {
-    WarningArr.push(result.ruleId);
-  }
+  FileName.push(result.locations[0].physicalLocation.artifactLocation.uri);
 
-  // Check if codeFlows exist
-  // Since result is a JSON object, we can use hasOwnProperty to check if the codeFlows key exists
-  for(i=0; i<result.length; i++) {
-    if (result.hasOwnProperty("codeFlows")) {
-      var CodeFlowLen = result.codeFlows.length - 1;
-      for (
-        i = 0;
-        i < result.codeFlows[CodeFlowLen].threadFlows[0].locations.length;
-        i++
-      ) {
-        CFCheck.push(result.ruleId);
-        CFMsgArr.push(
-          result.codeFlows[CodeFlowLen].threadFlows[0].locations[i].location
-            .message.text
-        );
-        CFLineArr.push(
-          'StartLine: ' +
-            result.codeFlows[CodeFlowLen].threadFlows[0].locations[i].location
-              .physicalLocation.contextRegion.startLine +
-            ', EndLine: ' +
-            result.codeFlows[CodeFlowLen].threadFlows[0].locations[i].location
-              .physicalLocation.contextRegion.endLine
-        );
-      }
-    }
-  }
+  // RuleID, Query Name
+  RuleIDArr.push([result.ruleId, driverRules[index].properties.name]);
+
+  // Query Name
+  qNameArr.push(driverRules[index].properties.name);
+
+  ResultArr.push(result);
 
   console.log(
     "<<==============================++++   QUERY INFO   +++======================================>>"
@@ -183,90 +139,113 @@ console.log("number of warning: " + noOfWarnings);
 console.log("number of recommendation: " + noOfRecommendation);
 console.log("number of queries " + queries.length);
 
-console.log(AlertCount);
 // Replaces " " and "-" with "_" in each array element
 for (i = 0; i < qNameArr.length; i++) {
   qNameArr[i] = qNameArr[i].replace(/ /g, "_");
   qNameArr[i] = qNameArr[i].replace(/-/g, "_");
 }
-for (i = 0; i < RuleIDArr.length; i++) {
-  RuleIDArr[i] = RuleIDArr[i].replace(/ /g, "_");
-  RuleIDArr[i] = RuleIDArr[i].replace(/-/g, "_");
-}
-for (i = 0; i < CFCheck.length; i++) {
-  CFCheck[i] = CFCheck[i].replace(/ /g, "_");
-  CFCheck[i] = CFCheck[i].replace(/-/g, "_");
-}
-// Using Sets to remove duplicate queries in the array
-var NoDupeQuery = Array.from(new Set(qNameArr));
 
-// Create Query
+// 0 = Filename
+// 1 = RuleID
+for (i = 0; i < RuleIDArr.length; i++) {
+  RuleIDArr[i][0] = RuleIDArr[i][0].replace(/ /g, "_");
+  RuleIDArr[i][0] = RuleIDArr[i][0].replace(/-/g, "_");
+  RuleIDArr[i][1] = RuleIDArr[i][1].replace(/ /g, "_");
+  RuleIDArr[i][1] = RuleIDArr[i][1].replace(/-/g, "_");
+}
+
 var CreateQuery = "";
+var NoDupeQuery = Array.from(new Set(qNameArr));
 for (a = 1; a <= NoDupeQuery.length; a++) {
   CreateQuery += `CREATE (Q${a}:Query {Query:"${NoDupeQuery[a - 1]}"})\n`;
 }
 
-// Create Alerts
-var CreateAlert = "";
-for (b = 1; b <= results.length; b++) {
-  ResultMsgTxtArr[b - 1] = ResultMsgTxtArr[b - 1].replace(/[\"]/g, "'");
+var CFCounter = 1;
+var NoDupeFile = Array.from(new Set(FileName));
+// 0 = Filename
+// 1 = RuleID
+// For loop to loop through each different file available
+// Create File
+for (i = 0; i < NoDupeFile.length; i++) {
+  CreateQuery += `\nCREATE (F${i + 1}:File {File:"${NoDupeFile[i]}"})\n`;
 
-  CreateAlert += `CREATE (A${b}:ALERT {RuleID:'${
-    RuleIDArr[b - 1]
-  }', Message_Text:"${ResultMsgTxtArr[b - 1]}", FileLocation:'${
-    FileLocArr[b - 1]
-  }', StartEndLine:'${LocRegionArr[b - 1]}'})\n`;
-}
+  // Checks if current file name is related to the query by comparing rule id
+  // Loops through all alerts
+  // Create Alert
+  for (b = 0; b < ResultArr.length; b++) {
+    // If FileName == NoDupeFile
+    if (
+      ResultArr[b].locations[0].physicalLocation.artifactLocation.uri ==
+      NoDupeFile[i]
+    ) {
+      ResultArr[b].message.text = ResultArr[b].message.text.replace(
+        /[\"]/g,
+        "'"
+      );
+      CreateQuery += `CREATE (A${b + 1}:Alert {FileName:'${
+        NoDupeFile[i]
+      }', RuleID:'${ResultArr[b].ruleId}', Message_Text:"${
+        ResultArr[b].message.text
+      }", FileLocation:'${
+        ResultArr[b].locations[0].physicalLocation.artifactLocation.uri
+      }', StartEndLine:'${JSON.stringify(
+        ResultArr[b].locations[0].physicalLocation.region
+      )}'})\n`;
 
-// Replaces " " and "-" to "_" in WarningArr
-for (i = 0; i < WarningArr.length; i++) {
-  WarningArr[i] = WarningArr[i].replace(/ /g, "_");
-  WarningArr[i] = WarningArr[i].replace(/-/g, "_");
-}
+      // Loops through all queries
+      // Create Child
+      for (c = 0; c < NoDupeQuery.length; c++) {
+        // RuleID is paired with QueryName to create a child
+        // CREATE (t)-[:CHILD]->(parent)
+        if (RuleIDArr[b][1] == NoDupeQuery[c]) {
+          CreateQuery += `CREATE (A${b + 1})-[:Child]->(F${i + 1})\n`;
+          CreateQuery += `CREATE (A${b + 1})-[:Child]->(Q${c + 1})\n`;
+        }
+      } // End of Create Child
 
-// Removes duplicate elements
-var NoDupeVuln = Array.from(new Set(WarningArr));
+      if (ResultArr[b].hasOwnProperty("codeFlows")) {
+        var CodeFlowLen = ResultArr[b].codeFlows.length - 1;
 
-// Create CodeFlow
-var CreateCF = "";
-for (c = 0; c < CFMsgArr.length; c++) {
-  CFMsgArr[c] = CFMsgArr[c].replace(/[\"]/g, "'")
-  CreateCF += `CREATE (CF${c+1}:CodeFlow {Message:"${CFMsgArr[c]}", StartEndLine:"${CFLineArr[c]}"})\n`;
-}
+        // Loops through all Code Flow arrays
+        // Create Code Flow
+        for (
+          z = 0;
+          z <
+          ResultArr[b].codeFlows[CodeFlowLen].threadFlows[0].locations.length;
+          z++
+        ) {
+          // Code Flow Message Text
+          var CFMsg =
+            ResultArr[b].codeFlows[CodeFlowLen].threadFlows[0].locations[z]
+              .location.message.text;
 
-// Create Child
-var CreateChild = "";
-var ChildVar = new Array();
+          // Code Flow Context Region
+          var CFStartEnd =
+            "StartLine: " +
+            ResultArr[b].codeFlows[CodeFlowLen].threadFlows[0].locations[z]
+              .location.physicalLocation.contextRegion.startLine +
+            ", EndLine: " +
+            ResultArr[b].codeFlows[CodeFlowLen].threadFlows[0].locations[z]
+              .location.physicalLocation.contextRegion.endLine;
+          
+          // Replaces " with ' to avoid conflicts/errors
+          CFMsg = CFMsg.replace(/[\"]/g, "'");
+          CreateQuery += `CREATE (CF${CFCounter}:CodeFlows {Message:"${CFMsg}", StartEndLine:'${CFStartEnd}'})\n`;
+          // Create Code Flow Childs
+            if(z==0) { // Checks if in a new loop (Creating code flows for another Alert)
+              // Creates Child for current Alert it is looping on
+              CreateQuery += `CREATE (CF${CFCounter})-[:Child]->(A${b+1})\n`
+            }
+            else {
+              CreateQuery += `CREATE (CF${CFCounter-1})-[:Child]->(CF${CFCounter})\n`
+            }
+          CFCounter++;
+        }
+      }
+    } // End of Create Alert If Loop
+  } // End of Create Alert For Loop
+} // End of Create File Loop
 
-// Loops through all query names
-for (d = 1; d <= qNameArr.length; d++) {
-  // Loops query query names without duplicates
-  for (e = 1; e <= NoDupeQuery.length; e++) {
-    // Query names are in fixed order on how the program was run
-    // Takes the position of the query in NoDupeQuery and adds it to ChildVar for creation of the Child
-    if (qNameArr[d - 1] == NoDupeQuery[e - 1]) {
-      ChildVar.push(`Q${e}`);
-    }
-  }
-}
-
-// Loops through all alerts to create a child with the associated query
-for (f = 1; f <= results.length; f++) {
-  CreateChild += `CREATE (A${f})-[:Child {AlertNum:"A${f}", AlertName:"${
-    RuleIDArr[f - 1]
-  }"} ]->(${ChildVar[f - 1]})\n`;
-}
-
-//Create Child>CF
-var CFChild = "";
-// RuleIDArr = number of alerts there are
-for(g=1; g<=RuleIDArr.length; g++) {
-  for(h=1; h<=CFCheck.length; h++) {
-    if(RuleIDArr[g-1] == CFCheck[h-1]) {
-      CFChild+= `CREATE (CF${h})-[:Child]->(A${g})\n`
-    }
-  }
-}
 
 const query =
   `
@@ -275,16 +254,7 @@ CREATE DATABASE SOMEHARDCODEDDATABASEFORNOW
 :USE SOMEHARDCODEDDATABASEFORNOW
 
 ` +
-  CreateQuery +
-  "\n" +
-  CreateAlert +
- "\n" +
-  CreateCF +
-  "\n" +
-//   CreateChild +
-//   "\n" +
-//   CFChild +
-//   "\n" +
+CreateQuery + "\n"
   `
 
 

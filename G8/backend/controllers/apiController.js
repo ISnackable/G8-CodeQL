@@ -7,12 +7,17 @@ console.log("------------------------------------");
 // --------------------------------------------------
 const fs = require("fs");
 const path = require("path");
+const multer = require("multer");
 const { exec, execFile } = require("child_process");
 const { hashElement } = require("folder-hash");
 const createDB = require("../models/createDB.js");
 const sarifFileVerify = require("../models/sarifFileVerify.js");
 const projectDB = require("../models/projectid.js");
 const uploadFiles = require("../models/uploadFiles.js");
+const middlewares = require("../middlewares");
+const sevenBin = require("7zip-bin");
+const { extractFull } = require("node-7z");
+
 // --------------------------
 // standard functions
 // --------------------------
@@ -227,6 +232,95 @@ exports.projectid = (req, res) => {
   });
 };
 
+var upload = middlewares.upload.array("files", 100);
+
+exports.upload = (req, res, next) => {
+  uploadFiles.createNewProject(function (err, result) {
+    if (err) {
+      var output = {
+        error: "Unable to get all the project ids",
+      };
+      res.status(500).send(JSON.stringify(output));
+    } else {
+      let projectId = result.insertId;
+      req.id = projectId;
+
+      upload(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+          // A Multer error occurred when uploading.
+          return res.status(500).send("Internal Server Error");
+        } else if (err) {
+          // An unknown error occurred when uploading.
+          if (req.fileValidationError)
+            return res.status(415).send({ message: req.fileValidationError });
+          return res
+            .status(500)
+            .send({ message: "Opps, Something went wrong" });
+        } else if (!req.files) {
+          return res.status(400).send({ message: "No files selected" });
+        }
+        try {
+          req.files.forEach((file, index) => {
+            let { ext } = path.parse(file.path);
+            if (
+              file.mimetype === "application/x-7z-compressed" ||
+              file.mimetype === "application/x-zip-compressed" ||
+              file.mimetype === "application/zip" ||
+              file.mimetype === "application/x-tar" ||
+              file.mimetype === "application/x-gzip" ||
+              file.mimetype === "application/vnd.rar" ||
+              (file.mimetype === "application/octet-stream" &&
+                (ext === ".7z" || ext === ".zip"))
+            ) {
+              const pathTo7zip = sevenBin.path7za;
+
+              // ./${file.path} == backend/uploads/zippedfile
+              const seven = extractFull(
+                `./${file.path}`,
+                `./uploads/${projectId}/`,
+                {
+                  $bin: pathTo7zip,
+                  recursive: true,
+                }
+              );
+
+              seven.on("end", function () {
+                try {
+                  // delete archive file
+                  fs.unlinkSync(`./${file.path}`);
+
+                  // done extracting last archive in files
+                  if (req.files.length - 1 === index) {
+                    return next();
+                    // Assumed no error
+                    // res.setHeader("Content-Type", "text/plain");
+                    // return res.status(200).send({ message: "OK." });
+                  }
+                } catch (err) {
+                  console.error(`Error while deleting ${file.path}.`);
+                }
+              });
+
+              // cannot set res.status(500) here as callback is too slow, causes express http header error
+              seven.on("error", function (err) {
+                console.error(err);
+                throw new Error("Failed to extract file");
+              });
+            } else {
+              if (req.files.length - 1 === index) {
+                // Assumed no error
+                return next();
+              }
+            }
+          });
+        } catch (error) {
+          return res.status(500).send({ message: "Internal Server Error" });
+        }
+      });
+    }
+  });
+};
+
 exports.repoLinkupload = (req, res) => {
   try {
     //Deletes or try to delete temporary folder before using
@@ -314,13 +408,10 @@ exports.repoLinkupload = (req, res) => {
                                 );
                               } else {
                                 console.log(results);
-                                res
-                                  .status(201)
-                                  .send({
-                                    message:
-                                      "Success. File loaded onto backend",
-                                    projectID: results.insertId,
-                                  });
+                                res.status(201).send({
+                                  message: "Success. File loaded onto backend",
+                                  projectID: results.insertId,
+                                });
                               }
                             }
                           );

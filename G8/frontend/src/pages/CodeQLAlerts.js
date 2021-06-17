@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Col,
@@ -9,7 +9,7 @@ import {
   Button,
 } from "@themesberg/react-bootstrap";
 import AccordionComponent from "../components/AccordionComponent";
-import InfiniteScroll from "react-infinite-scroll-component";
+// import InfiniteScroll from "react-infinite-scroll-component";
 import Snippet from "../components/Snippet";
 import SnippetModal from "../components/SnippetModal";
 import useLocalStorageState from "use-local-storage-state";
@@ -83,8 +83,10 @@ const CodeQLAlerts = () => {
             badgeSeverity = "danger";
             break;
           case "note":
-            badgeSeverity = "danger";
+            badgeSeverity = "info";
             break;
+          default:
+            badgeSeverity = "warning";
         }
 
         snippets.push(
@@ -126,7 +128,7 @@ const CodeQLAlerts = () => {
               {alerts.map((alert, index) => {
                 const ploc = alert.locations[0].physicalLocation;
                 const codeFlow = alert.codeFlows;
-                console.log(query);
+
                 return (
                   <>
                     <Snippet

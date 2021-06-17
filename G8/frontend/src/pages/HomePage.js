@@ -4,7 +4,7 @@ import { Routes } from "../routes";
 
 // pages
 import Presentation from "./Presentation";
-import DashboardOverview from "./dashboard/DashboardOverview";
+import Overview from "./overview/Overview";
 import CodeQLAlerts from "./CodeQLAlerts";
 import Settings from "./Settings";
 import BootstrapTables from "./tables/BootstrapTables";
@@ -149,8 +149,8 @@ const HomePage = () => (
     {/* pages */}
     <RouteWithSidebar
       exact
-      path={Routes.DashboardOverview.path}
-      component={DashboardOverview}
+      path={Routes.Overview.path}
+      component={Overview}
     />
     <RouteWithSidebar
       exact

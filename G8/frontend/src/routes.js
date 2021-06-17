@@ -1,7 +1,7 @@
 export const Routes = {
   // pages
   Presentation: { path: "/" },
-  DashboardOverview: { path: "/dashboard/overview" },
+  Overview: { path: "/overview" },
   CodeQLAlerts: { path: "/codeql-alerts" },
   Settings: { path: "/settings" },
   BootstrapTables: { path: "/tables/bootstrap-tables" },
@@ -14,6 +14,7 @@ export const Routes = {
   Lock: { path: "/examples/lock" },
   NotFound: { path: "/examples/404" },
   ServerError: { path: "/examples/500" },
+  
 
   // docs
   DocsAbout: { path: "/documentation/about" },

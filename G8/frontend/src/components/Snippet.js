@@ -1,24 +1,34 @@
-import React, { useState, useEffect, useRef } from "react";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import {
-  Card,
-  Button,
-  Tooltip,
-  OverlayTrigger,
-} from "@themesberg/react-bootstrap";
+import React, { useEffect, useRef } from "react";
+import styled from "styled-components";
+import { Button } from "@themesberg/react-bootstrap";
 import Highlight, { Prism } from "prism-react-renderer";
 import themeStyle from "../assets/syntax-themes/ghcolors.json";
 import DOMPurify from "dompurify";
 
+const Pre = styled.pre`
+  text-align: left;
+  margin: 1em 0;
+  padding: 0.5em;
+  overflow: scroll;
+`;
+
+const Line = styled.div`
+  display: table-row;
+`;
+
+const LineNo = styled.span`
+  display: table-cell;
+  text-align: right;
+  padding-right: 1em;
+  user-select: none;
+  opacity: 0.5;
+`;
+
+const LineContent = styled.span``;
+
 const Snippet = (props) => {
   const { ploc, language = "javascript" } = props;
-  const [copied, setCopied] = useState(false);
   const elementRef = useRef(null);
-
-  const handleCopy = () => {
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   if (!ploc) return null;
   const { region, contextRegion } = ploc;
@@ -69,74 +79,39 @@ const Snippet = (props) => {
 
         element.innerHTML = clean.replace(
           new RegExp(`${delimeter}(.*)${delimeter}`, "g"),
-          `<span class="highlight-code">$1</span>`
+          `<code class="highlight-code">$1</code>`
         );
       }
-    }, [delimeter, elementRef]);
+    }, [delimeter]);
 
     return <div ref={elementRef}>{children}</div>;
   };
 
-  const CodeStyling = ({
-    className,
-    style,
-    tokens,
-    getLineProps,
-    getTokenProps,
-  }) => (
-    <Card className="position-relative pe-5 mb-2">
-      <Card.Body>
-        <pre className={className} style={style}>
-          {tokens.map((line, i) => {
-            if (contextRegion.startLine) i += contextRegion.startLine;
-            let lineProps = getLineProps({ line, key: i });
-            // if (shouldHighlightLine(i)) {
-            //   lineProps.className = `${lineProps.className} highlight-line`;
-            // }
-
-            return (
-              <div {...lineProps}>
-                {i}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                {line.map((token, key) => {
-                  let tokenProps = getTokenProps({ token, key });
-                  return <span {...tokenProps} />;
-                })}
-              </div>
-            );
-          })}
-        </pre>
-
-        {copied ? (
-          <span className="text-success copy-code-text">Copied</span>
-        ) : null}
-
-        <OverlayTrigger
-          trigger={["hover", "focus"]}
-          placement="top"
-          overlay={<Tooltip>Copy to clipboard</Tooltip>}
-        >
-          <CopyToClipboard
-            text={code.replace(new RegExp(`ƩƩƩƩƩƩ(.*)ƩƩƩƩƩƩ`, "g"), ``)}
-            onCopy={handleCopy}
-          >
-            <Button size="sm" variant="primary" className="copy-code-button">
-              Copy
-            </Button>
-          </CopyToClipboard>
-        </OverlayTrigger>
-      </Card.Body>
-    </Card>
-  );
-
   return (
-    <SuperHighlighter delimeter="ƩƩƩƩƩƩ">
+    <SuperHighlighter>
       <Highlight
         Prism={Prism}
         code={code}
         language={language}
         theme={themeStyle}
       >
-        {CodeStyling}
+        {({ className, style, tokens, getLineProps, getTokenProps }) => (
+          <Pre className={className} style={style}>
+            {tokens.map((line, i) => {
+              if (contextRegion.startLine) i += contextRegion.startLine;
+              return (
+                <Line key={i} {...getLineProps({ line, key: i })}>
+                  <LineNo>{i}</LineNo>
+                  <LineContent>
+                    {line.map((token, key) => (
+                      <span key={key} {...getTokenProps({ token, key })} />
+                    ))}
+                  </LineContent>
+                </Line>
+              );
+            })}
+          </Pre>
+        )}
       </Highlight>
     </SuperHighlighter>
   );

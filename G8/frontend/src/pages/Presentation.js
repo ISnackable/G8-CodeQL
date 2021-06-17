@@ -1,5 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import {
   faBook,
   faExternalLinkAlt,
@@ -13,6 +14,11 @@ import {
   faPager,
   faFileCode,
   faDownload,
+  faProjectDiagram,
+  fafileCode,
+  
+  
+
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faBootstrap,
@@ -20,6 +26,7 @@ import {
   faJs,
   faReact,
   faSass,
+  
 } from "@fortawesome/free-brands-svg-icons";
 import {
   Col,
@@ -52,6 +59,12 @@ import BS5IllustrationsImg from "../assets/img/illustrations/bs5-illustrations.s
 // import BS5Logo from "../assets/img/technologies/bootstrap-5-logo.svg";
 import ReactLogo from "../assets/img/technologies/react-logo.svg";
 import G8Logo from "../assets/img/g8-logo.png";
+import Neo4JLogo from "../assets/img/neo4j-logo.png";
+import CodeQLLogo from "../assets/img/codeql-logo.png";
+import ExpressJSLogo from "../assets/img/expressjs-logo.png";
+import CodeQLQuery from "../assets/img/codeql-query.jpg";
+import GithubLogo from "../assets/img/github-logo.png";
+import CodeQLQuery2 from "../assets/img/codeql-query-2.jpg";
 
 import pages from "../data/pages";
 import features from "../data/features";
@@ -182,6 +195,11 @@ const Presentation = () => {
           </div>
         </Container>
       </Navbar>
+
+
+
+
+
       <section
         className="section-header overflow-hidden pt-5 pt-lg-6 pb-9 pb-lg-12 bg-primary text-white"
         id="home"
@@ -196,11 +214,14 @@ const Presentation = () => {
               <p className="text-muted fw-light mb-5 h5">
                 Powered by CodeQL technology and React.js
               </p>
+{/* 
+explore dashboard button */}
+
               <div className="d-flex align-items-center justify-content-center">
                 <Button
                   variant="secondary"
                   as={Link}
-                  to={Routes.DashboardOverview.path}
+                  to={Routes.Overview.path}
                   className="text-dark me-3"
                 >
                   Explore dashboard{" "}
@@ -219,6 +240,11 @@ const Presentation = () => {
                   Star
                 </GitHubButton> */}
               </div>
+
+
+{/* end of explore dashboard */}
+
+
               <div className="d-flex justify-content-center flex-column mb-6 mb-lg-5 mt-5">
                 <div className="text-center">
                   {/* 
@@ -250,6 +276,10 @@ const Presentation = () => {
           </figure>
         </Container>
       </section>
+{/* 
+ the one with the 4 circles */}
+
+
       <div className="section pt-0">
         <Container className="mt-n10 mt-lg-n12 z-2">
           <Row className="justify-content-center">
@@ -260,39 +290,40 @@ const Presentation = () => {
           <Row className="justify-content-center mt-5 mt-lg-6">
             <Col xs={6} md={3} className="text-center mb-4">
               <div className="icon icon-shape icon-lg bg-white shadow-lg border-light rounded-circle mb-4">
-                <FontAwesomeIcon icon={faPager} className="text-secondary" />
+                <FontAwesomeIcon icon={faReact} className="text-secondary" />
               </div>
-              <h3 className="fw-bolder">10</h3>
-              <p className="text-gray">Example Pages</p>
+              <h3 className="fw-bolder">React JS</h3>
+              <p className="text-gray">Website Frontend</p>
             </Col>
             <Col xs={6} md={3} className="text-center mb-4">
               <div className="icon icon-shape icon-lg bg-white shadow-lg border-light rounded-circle mb-4">
-                <FontAwesomeIcon icon={faReact} className="text-secondary" />
+              <Image width="50" src={CodeQLLogo} />
               </div>
-              <h3 className="fw-bolder">100+</h3>
-              <p className="text-gray">React Components</p>
+              <h3 className="fw-bolder">CodeQL</h3>
+              <p className="text-gray">Query-based analysis</p>
             </Col>
             <Col xs={6} md={3} className="text-center">
               <div className="icon icon-shape icon-lg bg-white shadow-lg border-light rounded-circle mb-4">
-                <FontAwesomeIcon icon={faSass} className="text-secondary" />
+              <Image width="50" src={Neo4JLogo} />
               </div>
-              <h3 className="fw-bolder">Workflow</h3>
-              <p className="text-gray">Sass & react-app</p>
+              <h3 className="fw-bolder">Neo4J</h3>
+              <p className="text-gray">Node graph visualization</p>
             </Col>
             <Col xs={6} md={3} className="text-center">
               <div className="icon icon-shape icon-lg bg-white shadow-lg border-light rounded-circle mb-4">
-                <FontAwesomeIcon
-                  color="secondary"
-                  icon={faBootstrap}
-                  className="text-secondary"
-                />
+                <Image width="50" src={ExpressJSLogo} />
               </div>
-              <h3 className="fw-bolder">Bootstrap 5</h3>
-              <p className="text-gray">CSS Framework</p>
+              <h3 className="fw-bolder">Express JS</h3>
+              <p className="text-gray">Backend</p>
             </Col>
           </Row>
         </Container>
       </div>
+
+
+{/* start of powered by react.js that line */}
+
+
       <section className="section section-md bg-soft pt-lg-3" id="features">
         <Container>
           <Row className="justify-content-between align-items-center mb-5 mb-lg-7">
@@ -302,13 +333,12 @@ const Presentation = () => {
                 The most popular front-end library in the world
               </p>
               <p className="mb-4">
-                G8 Code Scanner is an admin dashboard template that is built
-                using React.js components using react hooks and a data-driven
-                structure that can kick-start your app in no time.
+                G8 Code Scanner is an code scanner which was built using React.js on the front end. With such amazing features , 
+                your experience on this website will be impeccable.
               </p>
               <Button
                 as={Link}
-                to={Routes.DashboardOverview.path}
+                to={Routes.Overview.path}
                 variant="secondary"
                 target="_blank"
               >
@@ -329,20 +359,21 @@ const Presentation = () => {
               <Image src={ReactMockupImg} alt="Calendar Preview" />
             </Col>
           </Row>
+{/* 
+codeql feature  */}
+
+
           <Row className="justify-content-between align-items-center mb-5 mb-lg-7">
             <Col lg={5}>
-              <h2>React.js Components</h2>
+              <h2>CodeQL Technology</h2>
               <p className="mb-3 lead fw-bold">
-                100+ premium UI elements based on Bootstrap 5
+                One of the best static analysis tool engines 
               </p>
               <p className="mb-4">
-                We've built over 100 React.js powered components to be used
-                throughout your application saving you time kickstarting your
-                project.
+               We've implemented CodeQL queries which are written to scan for Javascript vulnerabilities. 
               </p>
               <p className="mb-4">
-                Check out the components and use our live React.js component
-                editor to try the code.
+                Examples : Cross Site Scripting ( XSS ) , SQL Injection , Broken Access Control etc.
               </p>
               <Button
                 as={Link}
@@ -356,62 +387,48 @@ const Presentation = () => {
               </Button>
             </Col>
             <Col lg={6} className="rounded shadow pt-3">
-              <Code
-                scope={{ Form, Button }}
-                code={`<Form>
-  <Form.Group id="frameworks" className="mb-3">
-    <Form.Label>Example select</Form.Label>
-    <Form.Select>
-      <option defaultValue>Open this select menu</option>
-      <option>One</option>
-      <option>Two</option>
-      <option>Three</option>
-    </Form.Select>
-  </Form.Group>
-  <Button variant="primary" className="m-1">Primary</Button>
-</Form>`}
-                language="jsx"
-              />
+              <Image src={CodeQLQuery} />
             </Col>
           </Row>
+
+
+
+{/* where the pro features are stored */}
+
+          
           <Row className="justify-content-between align-items-center mb-5 mb-lg-7">
             <Col lg={5} className="order-lg-2 mb-5 mb-lg-0">
               <h2 className="d-flex align-items-center">
-                Mapbox{" "}
+                Neo4J{" "}
                 <Badge
                   pill
                   bg="secondary"
                   text="dark"
                   className="badge-md ms-3 mb-0 fs-6"
                 >
-                  Pro
+                  Added Feature
                 </Badge>
               </h2>
               <p className="mb-3 lead fw-bold">
-                Markers and cards integration with Leaflet.js
+                Node Graph for better visualization
               </p>
               <p className="mb-4">
-                You can use this map to add markers with custom cards and show
-                them on a map using our custom MapBox integration with
-                Leaflet.js
+                With our newly implemented Neo4J graph feature , users can expect to understand their codes and alerts
+                in a more visually appealing and understandable way
               </p>
+                {/* glink to user guide in code */}
               <Button
-                href="https://demo.themesberg.com/volt-pro-react/#/map"
-                className="me-3"
-                variant="secondary"
-                target="_blank"
-              >
-                <FontAwesomeIcon icon={faMapMarkedAlt} className="me-2" /> Demo
-                Map
-              </Button>
-              <Button
-                href="https://demo.themesberg.com/volt-pro-react/#/plugins/map"
+                href="https://demo.themesberg.com/volt-pro-react/#/plugins/map" 
                 variant="outline-primary"
                 target="_blank"
               >
                 <FontAwesomeIcon icon={faBook} className="me-2" /> Guide
               </Button>
             </Col>
+
+
+          {/* replace with neo4j screenshot*/}
+
             <Col lg={6} className="order-lg-1">
               <Image
                 src={MapboxImg}
@@ -419,6 +436,9 @@ const Presentation = () => {
               />
             </Col>
           </Row>
+
+
+  
           <Row className="justify-content-between align-items-center mb-5 mb-lg-7">
             <Col lg={5}>
               <h2 className="d-flex align-items-center">
@@ -433,7 +453,7 @@ const Presentation = () => {
                 </Badge>
               </h2>
               <p className="mb-3 lead fw-bold">
-                Advanced FullCalendar.js integration
+                Any other new feature we included
               </p>
               <p className="mb-4">
                 We created a fully editable calendar where you can add, edit and
@@ -460,6 +480,8 @@ const Presentation = () => {
               <Image src={CalendarImg} alt="Calendar Preview" />
             </Col>
           </Row>
+
+{/*}
           <Row className="justify-content-between align-items-center">
             <Col lg={5} className="order-lg-2 mb-5 mb-lg-0">
               <h2>Bootstrap 5</h2>
@@ -474,9 +496,18 @@ const Presentation = () => {
               <Image src={BS5IllustrationsImg} alt="Front pages overview" />
             </Col>
           </Row>
+
+
+*/}
         </Container>
       </section>
-      <section className="section section-sm pt-0" id="pages">
+
+
+
+{/* 10 hand crafted pages section , deleted because we are not going to have links to any pages herer */}
+
+
+      {/* <section className="section section-sm pt-0" id="pages">
         <Container>
           <Row className="justify-content-center mb-5 mb-lg-6">
             <Col xs={12} className="text-center">
@@ -493,7 +524,17 @@ const Presentation = () => {
             ))}
           </Row>
         </Container>
-      </section>
+      </section> */}
+
+
+
+
+{/* rfeatures section , code uses database to extract all the features so need to edit from there  */}
+
+
+
+
+{/* 
       <section className="section section-lg bg-primary text-white">
         <Container>
           <Row className="justify-content-center mb-5 mb-lg-6">
@@ -511,8 +552,12 @@ const Presentation = () => {
             ))}
           </Row>
         </Container>
-      </section>
-      <section className="section section-lg line-bottom-soft" id="folder">
+      </section> */}
+
+{/* whats inside section */}
+
+
+      {/* <section className="section section-lg bg-primary text-white" id="folder">
         <Container>
           <Row className="justify-content-center mb-5 mb-lg-6">
             <Col xs={12} className="text-center">
@@ -628,45 +673,34 @@ const Presentation = () => {
             </Col>
           </Row>
         </Container>
-      </section>
+      </section> */}
+
+{/* Dark blue less work more flow section */}
+
+
       <section className="section section-lg bg-primary" id="getting-started">
         <Container>
           <Row className="justify-content-center text-center text-white mb-5">
             <Col xs={12}>
               <h2 className="fw-light mb-3">
                 Less <span className="fw-bold">work</span>, more{" "}
-                <span className="fw-bold">flow</span>.
+                <span className="fw-bold">speed</span>.
               </h2>
               <p className="lead px-lg-8">
-                Boost productivity with BrowserSync. Sass changes are reflected
-                instantly and pages scroll and refresh on devices as you work.
+                Boost accuracy and efficiency with CodeQL. Alerts are present to show you vulnerabilities
+                Saves time for everyone
               </p>
             </Col>
           </Row>
+
+
+{/* white container with the "code" */}
+
+
           <Row className="justify-content-center">
-            <Col md={10} xl={9}>
+            <Col md={10} xl={6}>
               <div className="position-relative">
-                <div className="rounded bg-white p-4 text-dark mb-2">
-                  <div className="mb-3">
-                    <div className="fw-bold">
-                      &gt; $ yarn install{" "}
-                      <span className="text-gray-600">(or npm install)</span>
-                    </div>
-                    <div className="text-gray">Everything’s installed!</div>
-                  </div>
-                  <div className="mb-3">
-                    <div className="fw-bold">
-                      &gt; $ yarn start{" "}
-                      <span className="text-gray-600">(or npm run start)</span>
-                    </div>
-                    <div className="text-gray">SCSS watching</div>
-                    <div className="text-gray">Opening localhost:3000</div>
-                  </div>
-                  <div>
-                    <div className="fw-bold">&gt; $ that's it?</div>
-                    <div className="text-gray">It's that simple!</div>
-                  </div>
-                </div>
+                <Image width='200%' src={CodeQLQuery2} />
               </div>
               <p className="mt-4 text-white text-center mb-0">
                 Looks unfamiliar? Don’t worry! Our{" "}
@@ -685,11 +719,11 @@ const Presentation = () => {
       </section>
       <section className="section section-lg bg-white" id="download">
         <Container>
-          <Row>
+          {/* <Row>
             <Col xs={12} lg={8}>
               <h2 className="fw-light mb-3">Download or upgrade to pro</h2>
               <p className="lead mb-4 me-lg-6">
-                Do you want to take React development to the next level? Check
+                Do you want to take Code Scanning to the next level? Check
                 out the premium version of G8 Code Scanner Dashboard in the
                 following comparison table.
               </p>
@@ -699,9 +733,12 @@ const Presentation = () => {
                 <FontAwesomeIcon icon={faGithub} />
               </div>
             </Col>
-          </Row>
+          </Row> */}
+{/* 
+free version column */}
+
           <Row className="mt-6">
-            <Col xs={12} md={6} lg={4} className="mb-5 mb-lg-0">
+            {/* <Col xs={12} md={6} lg={4} className="mb-5 mb-lg-0">
               <Card border="light" className="p-4">
                 <Card.Header className="bg-white border-0 pb-0">
                   <span className="d-block">
@@ -772,8 +809,11 @@ const Presentation = () => {
                   Download
                 </Button>
               </Card>
-            </Col>
-            <Col xs={12} md={6} lg={4} className="mb-5 mb-lg-0">
+            </Col> */}
+
+{/* this is the pro version column  */}
+
+            {/* <Col xs={12} md={6} lg={4} className="mb-5 mb-lg-0">
               <Card border="light" className="p-4 py-5 mt-lg-n5">
                 <Card.Header className="bg-white border-0 pb-0">
                   <span className="d-block">
@@ -847,9 +887,9 @@ const Presentation = () => {
                   <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-1" />
                 </Button>
               </Card>
-            </Col>
+            </Col> */}
           </Row>
-          <Row className="mt-lg-6">
+          <Row className="mt-lg-3">
             <Col xs={12} className="text-center">
               <h2 className="h5 text-gray fw-normal mb-4">
                 Available in the following technologies:
@@ -875,9 +915,7 @@ const Presentation = () => {
                     }
                   >
                     <Image
-                      src={
-                        "https://github.gallerycdn.vsassets.io/extensions/github/vscode-codeql/1.4.8/1620233288995/Microsoft.VisualStudio.Services.Icons.Default"
-                      }
+                      src={CodeQLLogo}
                       className="image image-sm"
                     />
                   </OverlayTrigger>
@@ -901,11 +939,36 @@ const Presentation = () => {
                     <Image src={ReactLogo} className="image image-sm" />
                   </OverlayTrigger>
                 </Card.Link>
+                <Card.Link
+                  href="https://www.github.com"
+                  target="_blank"
+                  className="me-3"
+                >
+                  <OverlayTrigger
+                    placement="top"
+                    trigger={["hover", "focus"]}
+                    overlay={
+                      <Tooltip>
+                        Github - where developers from all over the world share copde , work together and create miracles
+                      </Tooltip>
+                    }
+                  >
+                    <Image 
+                      src={GithubLogo}
+                      className="image image-sm"
+                    />
+                  </OverlayTrigger>
+                </Card.Link>
               </div>
             </Col>
           </Row>
         </Container>
       </section>
+
+{/* 
+the below part */}
+
+
       <footer className="footer py-6 bg-dark text-white">
         <Container>
           <Row>
@@ -923,8 +986,12 @@ const Presentation = () => {
                 built with ReactJS.
               </p>
             </Col>
-            <Col xs={6} md={2} className="mb-5 mb-lg-0">
-              <span className="h5">Themesberg</span>
+
+
+            
+
+            {/* <Col xs={6} md={2} className="mb-5 mb-lg-0">
+              <span className="h5">Group 68</span>
               <ul className="links-vertical mt-2">
                 <li>
                   <Card.Link target="_blank" href="https://themesberg.com/blog">
@@ -956,8 +1023,8 @@ const Presentation = () => {
                   </Card.Link>
                 </li>
               </ul>
-            </Col>
-            <Col xs={6} md={2} className="mb-5 mb-lg-0">
+            </Col> */}
+            <Col xs={6} md={4} className="mb-5 mb-lg-0">
               <span className="h5">Other</span>
               <ul className="links-vertical mt-2">
                 <li>
@@ -1043,8 +1110,9 @@ const Presentation = () => {
                 <p className="font-weight-normal font-small mb-0">
                   Copyright © Themesberg 2019-
                   <span className="current-year">2021</span>. All rights
-                  reserved.
+                  reserved. 
                 </p>
+                
               </div>
             </Col>
           </Row>

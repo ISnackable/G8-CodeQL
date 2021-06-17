@@ -44,10 +44,25 @@
 
 // write your custom styles here!
 .highlight-code {
-  background-color: rgba(255, 93, 17, 0.418) !important;
+  background-color: rgba(255, 232, 178, 0.5) !important;
+  padding: 0em;
+}
+
+.highlight-line {
+  background-color: rgba(226, 19, 19, 0.363);
+  padding-left: 4em;
   &:before {
     content: ""; // Able to add content with CSS2 capable browser
   }
+}
+
+.violation-groups {
+  padding: 0.5em 12rem 0.5em 1em;
+  line-height: 1.8em;
+  position: relative;
+  background-color: #e85a5a;
+  color: #fff;
+  font-weight: 700;
 }
 
 .filepond--item {

@@ -13,6 +13,7 @@ import {
   faSignOutAlt,
   faTable,
   faTimes,
+  faSearch,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   Nav,
@@ -125,11 +126,7 @@ const Sidebar = (props = {}) => {
         variant="dark"
         className="navbar-theme-primary px-4 d-md-none"
       >
-        <Navbar.Brand
-          className="me-lg-5"
-          as={Link}
-          to={Routes.Overview.path}
-        >
+        <Navbar.Brand className="me-lg-5" as={Link} to={Routes.Overview.path}>
           <Image src={G8Logo} className="navbar-brand-light" />
         </Navbar.Brand>
         <Navbar.Toggle
@@ -206,6 +203,12 @@ const Sidebar = (props = {}) => {
               /> */}
 
               <Dropdown.Divider className="my-3 border-indigo" />
+
+              <NavItem
+                title="Sarif Viewer"
+                icon={faSearch}
+                link={Routes.SarifViewer.path}
+              />
 
               <NavItem
                 title="Settings"

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
-import { Button } from "@themesberg/react-bootstrap";
+// import { Button } from "@themesberg/react-bootstrap";
 import Highlight, { Prism } from "prism-react-renderer";
 import themeStyle from "../assets/syntax-themes/ghcolors.json";
 import DOMPurify from "dompurify";

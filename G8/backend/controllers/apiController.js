@@ -324,8 +324,8 @@ exports.upload = (req, res, next) => {
 exports.repoLinkupload = (req, res) => {
   try {
     //Deletes or try to delete temporary folder before using
-    fs.rmdirSync("./uploadDatabase/temporaryGitClone", { recursive: true });
-    console.log(`./uploadDatabase/temporaryGitClone is deleted!`);
+    fs.rmdirSync("./uploads/temporaryGitClone", { recursive: true });
+    console.log(`./uploads/temporaryGitClone is deleted!`);
   } catch (err) {
     console.error(`Error while deleting ${dir}.`);
   }
@@ -335,11 +335,12 @@ exports.repoLinkupload = (req, res) => {
   if (!repoLinkRegExp.test(repoLink)) {
     //Checking using regex.
     res.status(400).send({ message: "The link provided is not supported." });
+    return
   }
   try {
     execFile(
       "git",
-      ["clone", req.body.repoLink, "./uploadDatabase/" + "temporaryGitClone"],
+      ["clone", req.body.repoLink, "./uploads/" + "temporaryGitClone"],
       (error, stdout, stderr) => {
         if (error) {
           console.error("stderr", stderr);
@@ -358,7 +359,7 @@ exports.repoLinkupload = (req, res) => {
             exclude: ["*"],
           },
         };
-        hashElement("./temporaryGitClone", "./uploadDatabase/", options).then(
+        hashElement("./temporaryGitClone", "./uploads/", options).then(
           (hash) => {
             //--Insert code to check duplicate
             console.log(hash.hash);
@@ -391,8 +392,8 @@ exports.repoLinkupload = (req, res) => {
                           res.status(500).send({ message: "Server error." });
                         } else {
                           fs.rename(
-                            "./uploadDatabase/temporaryGitClone",
-                            "./uploadDatabase/" + results.insertId,
+                            "./uploads/temporaryGitClone",
+                            "./uploads/" + results.insertId,
                             function (err2) {
                               if (err2) {
                                 console.log(

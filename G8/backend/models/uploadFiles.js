@@ -30,7 +30,7 @@ var uploadFiles = {
   },
   updateUploadFilesInfo: function (data, callback) {
     console.log("Checking whether database already exist.");
-    let sql = "INSERT INTO projects (projectname,hash) VALUES(?,?);"; //Returns 1 if exist else 0
+    let sql = "INSERT INTO projects (project_name,hash) VALUES(?,?);"; //Returns 1 if exist else 0
     db.query(sql, [data.projectName, data.hash], function (err, result) {
       if (err) {
         //err
@@ -64,7 +64,7 @@ var uploadFiles = {
   },
   updateUploadFilesInfo1: function (data, callback) {
     console.log("Checking whether database already exist.");
-    let sql = "UPDATE projects SET projectname = ?, hash = ? WHERE id = ?;";
+    let sql = "UPDATE projects SET project_name = ?, hash = ? WHERE id = ?;";
     db.query(
       sql,
       [data.projectName, data.hash, data.id],

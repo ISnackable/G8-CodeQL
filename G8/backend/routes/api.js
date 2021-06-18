@@ -26,7 +26,7 @@ router.get("/projectid", apiController.projectid);
 
 router.post("/upload", apiController.upload, middlewares.checkDuplicateProject);
 
-
+router.post("/upload/repoLink",apiController.repoLinkupload);
 // obtain all the information on the previous projects ( id , name and hash ) 
 router.get("/getExistingProject", apiController.getExistingProject);
 

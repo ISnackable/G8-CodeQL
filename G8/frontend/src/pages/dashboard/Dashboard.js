@@ -230,7 +230,7 @@ const Dashboard = () => {
 
                       axios({
                         method: "post",
-                        url: "http://localhost:8080/teamname/api/upload",
+                        url: "http://localhost:8080/teamname/api/projects/folder",
                         data: formData,
                         cancelToken: source.token,
                         onUploadProgress: (e) => {

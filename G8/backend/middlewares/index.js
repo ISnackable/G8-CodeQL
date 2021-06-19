@@ -7,9 +7,9 @@ console.log("------------------------------------");
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
-const { exec, execFile } = require("child_process");
+const { execFile } = require("child_process");
 const { hashElement } = require("folder-hash");
-const uploadFiles = require("../models/uploadFiles.js");
+const projectDB = require("../models/projects.js");
 
 // ------------------------------------------------------
 // Multer config
@@ -19,12 +19,11 @@ var storage = multer.diskStorage({
     let filePath = path.posix.normalize(file.originalname);
     let { dir, name } = path.parse(filePath);
 
-    let projectId = req.id;
     if (!req.projectName) {
       req.projectName = dir ? dir.split("/")[1] : name;
     }
 
-    let newDestination = `uploads/${projectId}/${dir}`;
+    let newDestination = `uploads/temporaryMulterUpload/${dir}`;
     let stat = null;
     try {
       stat = fs.statSync(newDestination);
@@ -69,21 +68,17 @@ function fileFilter(req, file, cb) {
 // ------------------------------------------------------
 //  middleware functions
 // ------------------------------------------------------
-const middleware = {};
 
-module.exports = middleware;
-module.exports.upload = multer({
+exports.multer = multer({
   storage: storage,
   fileFilter: fileFilter,
   preservePath: true,
   limits: {
-    fieldSize: 0,
     files: 100,
   },
 });
 
-module.exports.checkDuplicateProject = (req, res, next) => {
-  let projectId = req.id;
+exports.checkDuplicateProject = (req, res, next) => {
   let projectName = req.projectName;
 
   const options = {
@@ -92,52 +87,111 @@ module.exports.checkDuplicateProject = (req, res, next) => {
     folders: { ignoreRootName: true, exclude: ["node_modules"] },
   };
 
-  hashElement(`./uploads/${projectId}`, options).then((hash) => {
+  hashElement(`./uploads/temporaryMulterUpload`, options).then((hash) => {
     //--Insert code to check duplicate
     console.log(hash.hash);
-    uploadFiles.checkDuplicateUpload(hash.hash, function (err, result) {
+    projectDB.getProjectHash(hash.hash, function (err, result) {
       if (err) {
         res.status(500).send({ message: "Internal Server Error" });
       } else {
         if (result) {
           try {
-            //Deletes or try to delete temporary folder before using
-            fs.rmdirSync(`./uploads/${projectId}`, { recursive: true });
+            //Deletes temporary folder
+            fs.rmdirSync(`./uploads/temporaryMulterUpload`, {
+              recursive: true,
+            });
+            console.log(`./uploads/temporaryMulterUpload is deleted!`);
+            console.log(
+              "Database already exist, sending response back to frontend."
+            );
           } catch (err) {
-            console.error(`Error while deleting ./uploads/${projectId}.`);
+            console.error(
+              `Error while deleting ./uploads/temporaryMulterUpload.`
+            );
           }
-          console.log(`./uploads/${projectId} is deleted!`);
-          console.log(
-            "Database already exist, sending response back to frontend."
-          );
-
-          // delete db
-          uploadFiles.deleteUploadFiles(projectId, function (err2, results) {
-            if (err2) {
-              console.error(err3);
-            }
-          });
           res.status(409).send({ message: "Project already exist on server." });
         } else {
-          let data = {
-            id: projectId,
+          var data = {
             projectName: projectName,
             hash: hash.hash,
           };
-          uploadFiles.updateUploadFilesInfo1(data, function (err3, results) {
-            if (!err3) {
-              console.log(results);
-              res.status(201).send({
-                message: "Success. File loaded onto backend",
-                projectID: results.insertId,
-              });
+
+          projectDB.addProject(data, function (err3, results) {
+            if (err3) {
+              res.status(500).send({ message: "Server error." });
             } else {
-              res.status(500).send({ message: "Internal Server Error" });
-              console.error(err3);
+              fs.rename(
+                "./uploads/temporaryMulterUpload",
+                "./uploads/" + results.insertId,
+                function (err2) {
+                  if (err2) {
+                    console.log(
+                      "Error renaming temporaryMulterUpload to its projectId."
+                    );
+                    projectDB.removeProject(
+                      results.insertId,
+                      (err4, results1) => {
+                        res.status(500).send({ message: "Server error." });
+                      }
+                    );
+                  } else {
+                    console.log(results);
+                    res.status(201).send({
+                      message: "Success. File loaded onto backend",
+                      projectID: results.insertId,
+                    });
+                  }
+                }
+              );
             }
           });
         }
       }
     });
+  });
+};
+
+// Create Database
+exports.createCodeQLDatabase = (req, res, next) => {
+  const id = req.params.id;
+
+  const args = [
+    "database", // first argv
+    "create", // second argv
+    `./databases/database${id}`, // database name to be created
+    `--source-root=./uploads/${id}`, // source code folder
+    "--language=javascript", // programming language
+  ];
+
+  // Command to create a database
+  // Let the database finish creating or db-javascript will be missing.
+  var child = execFile("codeql", args, (error, stdout, stderr) => {
+    if (error) {
+      console.error(error);
+      console.error(`stderr: ${stderr}`);
+      if (stderr.includes("Invalid source root")) {
+        return res.status(400).send({ message: "Database does not exists" });
+      } else if (stderr.includes("exists and is not an empty directory")) {
+        return res.status(409).send({ message: "Database already exists" });
+      }
+
+      // in stdout
+      if (stdout.includes("No JavaScript or TypeScript code found")) {
+        return res.status(400).send({ message: "No JavaScript code found" });
+      }
+      // console.error("stderr", stderr);
+      return res.status(500).send({ message: "Internal Server Error" });
+    }
+
+    console.log(stdout);
+    next();
+    // res.status(204).send("Database updated with new hash.");
+  });
+  // for debugging purposes only
+  child.stdout.on("data", function (data) {
+    console.log("[STDOUT]: ", data.toString());
+  });
+  child.stderr.on("data", function (data) {
+    console.log("[STDERR]: ", data.toString());
   });
 };

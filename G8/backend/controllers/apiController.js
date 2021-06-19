@@ -8,11 +8,11 @@ console.log("------------------------------------");
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
-const { exec, execFile } = require("child_process");
+const { execFile } = require("child_process");
 const { hashElement } = require("folder-hash");
 const createDB = require("../models/createDB.js");
 const sarifFileVerify = require("../models/sarifFileVerify.js");
-const projectDB = require("../models/projectid.js");
+const projectDB = require("../models/projects.js");
 const uploadFiles = require("../models/uploadFiles.js");
 const middlewares = require("../middlewares");
 const sevenBin = require("7zip-bin");
@@ -136,20 +136,18 @@ exports.getProjectById = (req, res) => {
   const projectIDpath = `/api/projects/${projectid}`;
 
   fs.access(projectIDpath, fs.F_OK, (err) => {
-      uploadFiles.getProjectId(projectid, function (err, result) {
-          if (!err) {
-              if (result.length == 0) {
-                  res.status(200).send("Project not found");
-              }
-              else {
-                  res.status(200).send(result);
-              }
-          }
-          else {
-              res.status(500).send("Some error");
-          }
-      });
-  })
+    uploadFiles.getProjectId(projectid, function (err, result) {
+      if (!err) {
+        if (result.length == 0) {
+          res.status(200).send("Project not found");
+        } else {
+          res.status(200).send(result);
+        }
+      } else {
+        res.status(500).send("Some error");
+      }
+    });
+  });
 };
 
 // Create Database
@@ -179,7 +177,7 @@ exports.createDatabase = (req, res) => {
   const options = {
     algo: "md5",
     encoding: "hex",
-    folders: { exclude: ['node_modules'] }
+    folders: { exclude: ["node_modules"] },
   };
 
   // hashElement is a function from the folder-hash package
@@ -205,19 +203,15 @@ exports.createDatabase = (req, res) => {
           // Command to create a database
           // result.insertId is the ID of the database inserted
           // Let the database finish creating or db-javascript will be missing.
-          var child = require("child_process").execFile(
-            "codeql",
-            args,
-            (error, stdout, stderr) => {
-              if (error) {
-                console.error("stderr", stderr);
-                throw error;
-              }
-
-              console.error(`stderr: ${stderr}`);
-              res.status(204).send("Database updated with new hash.");
+          execFile("codeql", args, (error, stdout, stderr) => {
+            if (error) {
+              console.error("stderr", stderr);
+              throw error;
             }
-          );
+
+            console.error(`stderr: ${stderr}`);
+            res.status(204).send("Database updated with new hash.");
+          });
           child.stdout.on("data", function (data) {
             console.log("[STDOUT]: ", data.toString());
           });
@@ -358,7 +352,7 @@ exports.repoLinkupload = (req, res) => {
   if (!repoLinkRegExp.test(repoLink)) {
     //Checking using regex.
     res.status(400).send({ message: "The link provided is not supported." });
-    return
+    return;
   }
   try {
     execFile(
@@ -373,81 +367,88 @@ exports.repoLinkupload = (req, res) => {
         console.log("stdout", stdout);
         console.error(`stderr: ${stderr}`);
         const options = {
-          algo: "sha256",
+          algo: "md5",
           encoding: "hex",
-          files: {
-            exclude: ["*"],
-          },
-          folders: {
-            exclude: ["*"],
-          },
+          folders: { exclude: ["node_modules"] },
         };
-        hashElement("./temporaryGitClone", "./uploads/", options).then(
-          (hash) => {
-            //--Insert code to check duplicate
-            console.log(hash.hash);
-            uploadFiles.checkDuplicateUpload(
-              hash.hash,
-              function (err1, result) {
-                if (err1) {
-                  res.status(500).send({ message: "Server error." });
+        execFile(
+          "git",
+          ["-C", "./uploads/temporaryGitClone", "rev-parse", "HEAD"],
+          (error, stdout, stderr) => {
+            if (error) {
+              console.error("stderr", stderr);
+            }
+
+            let hash = stdout;
+            if (!hash)
+              return res.status(500).send({ message: "Server error." });
+            uploadFiles.checkDuplicateUpload(hash, function (err1, result) {
+              if (err1) {
+                res.status(500).send({ message: "Server error." });
+              } else {
+                if (result) {
+                  console.log(result);
+                  console.log(
+                    "Database already exist, sending response back to frontend."
+                  );
+                  res
+                    .status(409)
+                    .send({ message: "Repository already exist on server." });
                 } else {
-                  if (result) {
-                    console.log(result);
-                    console.log(
-                      "Database already exist, sending response back to frontend."
-                    );
-                    res
-                      .status(409)
-                      .send({ message: "Repository already exist on server." });
-                  } else {
-                    console.log(result);
-                    var matchRepoName =
-                      /^(?:git@|https:\/\/)github.com[:/](.*).git$/;
-                    var data = {
-                      projectName: repoLink.match(matchRepoName)[1],
-                      hash: hash.hash,
-                    };
-                    uploadFiles.updateUploadFilesInfo(
-                      data,
-                      function (err3, results) {
-                        if (err3) {
-                          res.status(500).send({ message: "Server error." });
-                        } else {
-                          fs.rename(
-                            "./uploads/temporaryGitClone",
-                            "./uploads/" + results.insertId,
-                            function (err2) {
-                              if (err2) {
-                                console.log(
-                                  "Error renaming temporaryGitClone to its hash."
-                                );
-                                uploadFiles.deleteUploadFiles(
-                                  results.insertId,
-                                  (err4, results1) => {
-                                    res
-                                      .status(500)
-                                      .send({ message: "Server error." });
-                                  }
-                                );
-                              } else {
-                                console.log(results);
-                                res.status(201).send({
-                                  message: "Success. File loaded onto backend",
-                                  projectID: results.insertId,
-                                });
-                              }
+                  console.log(result);
+                  var matchRepoName =
+                    /^(?:git@|https:\/\/)github.com[:/](.*).git$/;
+                  var data = {
+                    projectName: repoLink.match(matchRepoName)[1],
+                    hash: hash,
+                  };
+                  uploadFiles.updateUploadFilesInfo(
+                    data,
+                    function (err3, results) {
+                      if (err3) {
+                        res.status(500).send({ message: "Server error." });
+                      } else {
+                        fs.rename(
+                          "./uploads/temporaryGitClone",
+                          "./uploads/" + results.insertId,
+                          function (err2) {
+                            if (err2) {
+                              console.log(
+                                "Error renaming temporaryGitClone to its hash."
+                              );
+                              uploadFiles.deleteUploadFiles(
+                                results.insertId,
+                                (err4, results1) => {
+                                  res
+                                    .status(500)
+                                    .send({ message: "Server error." });
+                                }
+                              );
+                            } else {
+                              console.log(results);
+                              res.status(201).send({
+                                message: "Success. File loaded onto backend",
+                                projectID: results.insertId,
+                              });
                             }
-                          );
-                        }
+                          }
+                        );
                       }
-                    );
-                  }
+                    }
+                  );
                 }
               }
-            );
+            });
           }
         );
+        // hashElement("./temporaryGitClone", "./uploads/", options).then(
+        //   (hash) => {
+        //     console.log(hash);
+        //     //--Insert code to check duplicate
+        //     console.log(hash.hash);
+
+        //   }
+        // );
         // ----Insert code for renaming repository folder----
       }
     );

@@ -89,9 +89,7 @@ module.exports.checkDuplicateProject = (req, res, next) => {
   const options = {
     algo: "md5",
     encoding: "hex",
-    folders: {
-      ignoreRootName: true,
-    },
+    folders: { ignoreRootName: true, exclude: ["node_modules"] },
   };
 
   hashElement(`./uploads/${projectId}`, options).then((hash) => {

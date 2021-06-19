@@ -1,5 +1,5 @@
 console.log("------------------------------------");
-console.log("models > projectid.js");
+console.log("models > projects.js");
 console.log("------------------------------------");
 
 // ---------------------------------------------------------
@@ -19,7 +19,6 @@ var projectDB = {
         console.log(err);
         return callback(err, null);
       } else {
-
         console.log(result);
         if (result.length == 0) {
           return callback(null, null);

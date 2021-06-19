@@ -58,13 +58,14 @@ var uploadFiles = {
       if (err) {
         return callback(err, null);
       } else {
+        console.log(result);
         return callback(null, result);
       }
     });
   },
   updateUploadFilesInfo1: function (data, callback) {
     console.log("Checking whether database already exist.");
-    let sql = "UPDATE projects SET projectname = ?, hash = ? WHERE id = ?;";
+    let sql = "UPDATE projects SET project_name = ?, hash = ? WHERE id = ?;";
     db.query(
       sql,
       [data.projectName, data.hash, data.id],
@@ -94,6 +95,28 @@ var uploadFiles = {
     });
 },
 
+getProjectId: function (id, callback) {
+  console.log("uploadFiles.getProjectId() ...");
+
+  // displaying all properties of a certain project
+  var sql = 'SELECT * FROM g8.projects WHERE id = ?';
+
+  db.query(sql, [id], function (err, result) {
+      if (err) {
+          console.log(err);
+          return callback(err, null);
+      } 
+      else {
+          if (result.length == 0) {
+              return callback(null, result);
+          }
+          else {
+              return callback(null, result[0]);
+          }
+      }
+  });
+  console.log("end of getProjectId()");
+},
 
 };
 

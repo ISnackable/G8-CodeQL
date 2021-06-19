@@ -113,7 +113,7 @@ exports.query = (req, res) => {
 };
 
 // #sarifFileVerify.getSarifFileName#
-// http://localhost:8080/checkAnalysis
+// http://localhost:8080/teamname/api/verifySarifFile
 exports.verifySarifFile = (req, res) => {
   var sarifFileName = req.body.sarifFileName;
   sarifFileVerify.getSarifFileName(sarifFileName, function (err, result) {
@@ -127,6 +127,29 @@ exports.verifySarifFile = (req, res) => {
       res.status(500).send("Some error");
     }
   });
+};
+
+// #uploadFiles.getProjectById#
+// http://localhost:8080/teamname/api/projects/:id
+exports.getProjectById = (req, res) => {
+  var projectid = req.params.id;
+  const projectIDpath = `/api/projects/${projectid}`;
+
+  fs.access(projectIDpath, fs.F_OK, (err) => {
+      uploadFiles.getProjectId(projectid, function (err, result) {
+          if (!err) {
+              if (result.length == 0) {
+                  res.status(200).send("Project not found");
+              }
+              else {
+                  res.status(200).send(result);
+              }
+          }
+          else {
+              res.status(500).send("Some error");
+          }
+      });
+  })
 };
 
 // Create Database
@@ -432,8 +455,6 @@ exports.repoLinkupload = (req, res) => {
     res.status(500).send({ message: "Server error." });
   }
 };
-
-
 
 exports.getExistingProject = (req, res) => {
   printDebugInfo("/teamname/api/getExistingProject", req);

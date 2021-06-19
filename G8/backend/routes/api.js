@@ -30,5 +30,7 @@ router.post("/upload/repoLink",apiController.repoLinkupload);
 // obtain all the information on the previous projects ( id , name and hash ) 
 router.get("/getExistingProject", apiController.getExistingProject);
 
+// get project by numeric identifier 
+router.get("/projects/:id", apiController.getProjectById);
 
 module.exports = router; // https://expressjs.com/en/4x/api.html#app.mountpath Explains sub-app mount

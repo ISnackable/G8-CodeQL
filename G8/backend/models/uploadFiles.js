@@ -79,45 +79,39 @@ var uploadFiles = {
       }
     );
   },
-
   getExistingProject: function (callback) {
-
     console.log("uploadFiles.getExistingProject() ...");
-    var sql = 'SELECT * FROM g8.projects';
+    var sql = "SELECT * FROM g8.projects";
     db.query(sql, [], function (err, result) {
-        if (err) {
-            console.log(err);
-            return callback(err, null);
-        } 
-        else {
-            return callback(null, result);
-        }
-    });
-},
-
-getProjectId: function (id, callback) {
-  console.log("uploadFiles.getProjectId() ...");
-
-  // displaying all properties of a certain project
-  var sql = 'SELECT * FROM g8.projects WHERE id = ?';
-
-  db.query(sql, [id], function (err, result) {
       if (err) {
-          console.log(err);
-          return callback(err, null);
-      } 
-      else {
-          if (result.length == 0) {
-              return callback(null, result);
-          }
-          else {
-              return callback(null, result[0]);
-          }
+        console.log(err);
+        return callback(err, null);
+      } else {
+        return callback(null, result);
       }
-  });
-  console.log("end of getProjectId()");
-},
+    });
+  },
 
+  getProjectId: function (id, callback) {
+    console.log("uploadFiles.getProjectId() ...");
+
+    // displaying all properties of a certain project
+    var sql = "SELECT * FROM g8.projects WHERE id = ?";
+
+    db.query(sql, [id], function (err, result) {
+      if (err) {
+        console.log(err);
+        return callback(err, null);
+      } else {
+        if (result.length == 0) {
+          return callback(null, result);
+        } else {
+          return callback(null, result[0]);
+        }
+      }
+    });
+    console.log("end of getProjectId()");
+  },
 };
 
 module.exports = uploadFiles;

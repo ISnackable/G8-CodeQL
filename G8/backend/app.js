@@ -15,7 +15,6 @@ const express = require("express");
 const cors = require("cors");
 const config = require("./config");
 const routes = require("./routes");
-const db = require("./models/databaseConfig.js");
 const app = express();
 
 app.disable("x-powered-by");

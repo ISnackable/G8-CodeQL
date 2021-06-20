@@ -4,29 +4,25 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBook,
   faExternalLinkAlt,
-  faTimesCircle,
-  faCheckCircle,
+  // faTimesCircle,
+  // faCheckCircle,
   faCalendarAlt,
-  faCodeBranch,
+  // faCodeBranch,
   faShoppingCart,
-  faFolder,
-  faMapMarkedAlt,
-  faPager,
-  faFileCode,
+  // faFolder,
+  // faMapMarkedAlt,
+  // faPager,
+  // faFileCode,
   faDownload,
-  faProjectDiagram,
-  fafileCode,
-  
-  
-
+  // faProjectDiagram,
+  // fafileCode,
 } from "@fortawesome/free-solid-svg-icons";
 import {
-  faBootstrap,
-  faGithub,
-  faJs,
+  // faBootstrap,
+  // faGithub,
+  // faJs,
   faReact,
-  faSass,
-  
+  // faSass,
 } from "@fortawesome/free-brands-svg-icons";
 import {
   Col,
@@ -35,17 +31,18 @@ import {
   Image,
   Button,
   Container,
-  ListGroup,
+  // ListGroup,
   Tooltip,
   OverlayTrigger,
-  Form,
+  // Form,
   Navbar,
   Nav,
   Badge,
 } from "@themesberg/react-bootstrap";
 import { Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
-import Code from "../components/CodeEditor";
+import Code from "../components/Code";
+import Snippet from "../components/Snippet";
 // import GitHubButton from "react-github-btn";
 
 import { Routes } from "../routes";
@@ -55,90 +52,110 @@ import MockupPresentation from "../assets/img/mockup-presentation.png";
 import MapboxImg from "../assets/img/mockup-map-presentation.png";
 import CalendarImg from "../assets/img/mockup-calendar-presentation.png";
 import ReactMockupImg from "../assets/img/react-mockup.png";
-import BS5IllustrationsImg from "../assets/img/illustrations/bs5-illustrations.svg";
+// import BS5IllustrationsImg from "../assets/img/illustrations/bs5-illustrations.svg";
 // import BS5Logo from "../assets/img/technologies/bootstrap-5-logo.svg";
 import ReactLogo from "../assets/img/technologies/react-logo.svg";
 import G8Logo from "../assets/img/g8-logo.png";
 import Neo4JLogo from "../assets/img/neo4j-logo.png";
 import CodeQLLogo from "../assets/img/codeql-logo.png";
 import ExpressJSLogo from "../assets/img/expressjs-logo.png";
-import CodeQLQuery from "../assets/img/codeql-query.jpg";
+// import CodeQLQuery from "../assets/img/codeql-query.jpg";
 import GithubLogo from "../assets/img/github-logo.png";
-import CodeQLQuery2 from "../assets/img/codeql-query-2.jpg";
+// import CodeQLQuery2 from "../assets/img/codeql-query-2.jpg";
 
-import pages from "../data/pages";
-import features from "../data/features";
+// import pages from "../data/pages";
+// import features from "../data/features";
 
 const Presentation = () => {
-  const PagePreview = (props) => {
-    const { name, image, link } = props;
-
-    return (
-      <Col xs={6} className="mb-5">
-        <Card.Link
-          as={Link}
-          to={link}
-          className="page-preview page-preview-lg scale-up-hover-2"
-        >
-          <Image
-            src={image}
-            className="shadow-lg rounded scale"
-            alt="Dashboard page preview"
-          />
-
-          <div className="text-center show-on-hover">
-            <h6 className="m-0 text-center text-white">
-              {name}{" "}
-              <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-2" />
-            </h6>
-          </div>
-        </Card.Link>
-      </Col>
-    );
+  const tempPloc = {
+    artifactLocation: {
+      uri: "login.htm",
+      uriBaseId: "%SRCROOT%",
+      index: 66,
+    },
+    region: {
+      startLine: 1390,
+      startColumn: 53,
+      endColumn: 70,
+    },
+    contextRegion: {
+      startLine: 1388,
+      endLine: 1392,
+      snippet: {
+        text: "                count--;\r\n                buttonError($('#pc-cloud-btn'), timesText.replace('$', count), true);\r\n                inputError($('#ph-cloud-password'), timesText.replace('$', count), true);\r\n                window.setTimeout(arguments.callee, 1000);\r\n            }, 1000);\r\n",
+      },
+    },
   };
 
-  const Feature = (props) => {
-    const { title, description, icon } = props;
+  // const PagePreview = (props) => {
+  //   const { name, image, link } = props;
 
-    return (
-      <Col xs={12} sm={6} lg={3}>
-        <Card className="bg-white shadow-soft text-primary rounded mb-4">
-          <div className="px-3 px-lg-4 py-5 text-center">
-            <span className="icon icon-lg mb-4">
-              <FontAwesomeIcon icon={icon} />
-            </span>
-            <h5 className="fw-bold text-primary">{title}</h5>
-            <p>{description}</p>
-          </div>
-        </Card>
-      </Col>
-    );
-  };
+  //   return (
+  //     <Col xs={6} className="mb-5">
+  //       <Card.Link
+  //         as={Link}
+  //         to={link}
+  //         className="page-preview page-preview-lg scale-up-hover-2"
+  //       >
+  //         <Image
+  //           src={image}
+  //           className="shadow-lg rounded scale"
+  //           alt="Dashboard page preview"
+  //         />
 
-  const FolderItem = (props) => {
-    const { name, icon, tooltip, iconColor } = props;
-    const color = iconColor ? `text-${iconColor}` : "";
+  //         <div className="text-center show-on-hover">
+  //           <h6 className="m-0 text-center text-white">
+  //             {name}{" "}
+  //             <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-2" />
+  //           </h6>
+  //         </div>
+  //       </Card.Link>
+  //     </Col>
+  //   );
+  // };
 
-    return (
-      <OverlayTrigger
-        trigger={["hover", "focus"]}
-        placement="left"
-        overlay={<Tooltip>{tooltip}</Tooltip>}
-      >
-        <li
-          data-toggle="tooltip"
-          data-placement="left"
-          title="Main folder that you will be working with"
-        >
-          <FontAwesomeIcon
-            icon={icon ? icon : faFolder}
-            className={`${color} me-2`}
-          />{" "}
-          {name}
-        </li>
-      </OverlayTrigger>
-    );
-  };
+  // const Feature = (props) => {
+  //   const { title, description, icon } = props;
+
+  //   return (
+  //     <Col xs={12} sm={6} lg={3}>
+  //       <Card className="bg-white shadow-soft text-primary rounded mb-4">
+  //         <div className="px-3 px-lg-4 py-5 text-center">
+  //           <span className="icon icon-lg mb-4">
+  //             <FontAwesomeIcon icon={icon} />
+  //           </span>
+  //           <h5 className="fw-bold text-primary">{title}</h5>
+  //           <p>{description}</p>
+  //         </div>
+  //       </Card>
+  //     </Col>
+  //   );
+  // };
+
+  // const FolderItem = (props) => {
+  //   const { name, icon, tooltip, iconColor } = props;
+  //   const color = iconColor ? `text-${iconColor}` : "";
+
+  //   return (
+  //     <OverlayTrigger
+  //       trigger={["hover", "focus"]}
+  //       placement="left"
+  //       overlay={<Tooltip>{tooltip}</Tooltip>}
+  //     >
+  //       <li
+  //         data-toggle="tooltip"
+  //         data-placement="left"
+  //         title="Main folder that you will be working with"
+  //       >
+  //         <FontAwesomeIcon
+  //           icon={icon ? icon : faFolder}
+  //           className={`${color} me-2`}
+  //         />{" "}
+  //         {name}
+  //       </li>
+  //     </OverlayTrigger>
+  //   );
+  // };
 
   return (
     <>
@@ -196,10 +213,6 @@ const Presentation = () => {
         </Container>
       </Navbar>
 
-
-
-
-
       <section
         className="section-header overflow-hidden pt-5 pt-lg-6 pb-9 pb-lg-12 bg-primary text-white"
         id="home"
@@ -214,7 +227,7 @@ const Presentation = () => {
               <p className="text-muted fw-light mb-5 h5">
                 Powered by CodeQL technology and React.js
               </p>
-{/* 
+              {/* 
 explore dashboard button */}
 
               <div className="d-flex align-items-center justify-content-center">
@@ -241,9 +254,7 @@ explore dashboard button */}
                 </GitHubButton> */}
               </div>
 
-
-{/* end of explore dashboard */}
-
+              {/* end of explore dashboard */}
 
               <div className="d-flex justify-content-center flex-column mb-6 mb-lg-5 mt-5">
                 <div className="text-center">
@@ -276,9 +287,8 @@ explore dashboard button */}
           </figure>
         </Container>
       </section>
-{/* 
+      {/* 
  the one with the 4 circles */}
-
 
       <div className="section pt-0">
         <Container className="mt-n10 mt-lg-n12 z-2">
@@ -297,14 +307,14 @@ explore dashboard button */}
             </Col>
             <Col xs={6} md={3} className="text-center mb-4">
               <div className="icon icon-shape icon-lg bg-white shadow-lg border-light rounded-circle mb-4">
-              <Image width="50" src={CodeQLLogo} />
+                <Image width="50" src={CodeQLLogo} />
               </div>
               <h3 className="fw-bolder">CodeQL</h3>
               <p className="text-gray">Query-based analysis</p>
             </Col>
             <Col xs={6} md={3} className="text-center">
               <div className="icon icon-shape icon-lg bg-white shadow-lg border-light rounded-circle mb-4">
-              <Image width="50" src={Neo4JLogo} />
+                <Image width="50" src={Neo4JLogo} />
               </div>
               <h3 className="fw-bolder">Neo4J</h3>
               <p className="text-gray">Node graph visualization</p>
@@ -320,9 +330,7 @@ explore dashboard button */}
         </Container>
       </div>
 
-
-{/* start of powered by react.js that line */}
-
+      {/* start of powered by react.js that line */}
 
       <section className="section section-md bg-soft pt-lg-3" id="features">
         <Container>
@@ -333,8 +341,9 @@ explore dashboard button */}
                 The most popular front-end library in the world
               </p>
               <p className="mb-4">
-                G8 Code Scanner is an code scanner which was built using React.js on the front end. With such amazing features , 
-                your experience on this website will be impeccable.
+                G8 Code Scanner is an code scanner which was built using
+                React.js on the front end. With such amazing features , your
+                experience on this website will be impeccable.
               </p>
               <Button
                 as={Link}
@@ -359,21 +368,22 @@ explore dashboard button */}
               <Image src={ReactMockupImg} alt="Calendar Preview" />
             </Col>
           </Row>
-{/* 
+          {/* 
 codeql feature  */}
 
-
           <Row className="justify-content-between align-items-center mb-5 mb-lg-7">
-            <Col lg={5}>
+            <Col lg={4}>
               <h2>CodeQL Technology</h2>
               <p className="mb-3 lead fw-bold">
-                One of the best static analysis tool engines 
+                One of the best static analysis tool engines
               </p>
               <p className="mb-4">
-               We've implemented CodeQL queries which are written to scan for Javascript vulnerabilities. 
+                We've implemented CodeQL queries which are written to scan for
+                Javascript vulnerabilities.
               </p>
               <p className="mb-4">
-                Examples : Cross Site Scripting ( XSS ) , SQL Injection , Broken Access Control etc.
+                Examples : Cross Site Scripting ( XSS ) , SQL Injection , Broken
+                Access Control etc.
               </p>
               <Button
                 as={Link}
@@ -386,16 +396,29 @@ codeql feature  */}
                 examples
               </Button>
             </Col>
-            <Col lg={6} className="rounded shadow pt-3">
-              <Image src={CodeQLQuery} />
+            <Col lg={8} className="rounded shadow pt-3">
+              <Code
+                code={`import javascript
+import semmle.javascript.security.dataflow.DomBasedXss::DomBasedXss
+import DataFlow::PathGraph
+
+from DataFlow::Configuration cfg, DataFlow::PathNode source, DataFlow::PathNode sink
+where
+  (
+    cfg instanceof HtmlInjectionConfiguration or
+    cfg instanceof JQueryHtmlOrSelectorInjectionConfiguration
+  ) and
+  cfg.hasFlowPath(source, sink)
+select sink.getNode(), source, sink,
+  sink.getNode().(Sink).getVulnerabilityKind() + " vulnerability due to $@.", source.getNode(),
+  "user-provided value"`}
+              />
+              {/* <Image src={CodeQLQuery} /> */}
             </Col>
           </Row>
 
+          {/* where the pro features are stored */}
 
-
-{/* where the pro features are stored */}
-
-          
           <Row className="justify-content-between align-items-center mb-5 mb-lg-7">
             <Col lg={5} className="order-lg-2 mb-5 mb-lg-0">
               <h2 className="d-flex align-items-center">
@@ -413,12 +436,13 @@ codeql feature  */}
                 Node Graph for better visualization
               </p>
               <p className="mb-4">
-                With our newly implemented Neo4J graph feature , users can expect to understand their codes and alerts
-                in a more visually appealing and understandable way
+                With our newly implemented Neo4J graph feature , users can
+                expect to understand their codes and alerts in a more visually
+                appealing and understandable way
               </p>
-                {/* glink to user guide in code */}
+              {/* glink to user guide in code */}
               <Button
-                href="https://demo.themesberg.com/volt-pro-react/#/plugins/map" 
+                href="https://demo.themesberg.com/volt-pro-react/#/plugins/map"
                 variant="outline-primary"
                 target="_blank"
               >
@@ -426,8 +450,7 @@ codeql feature  */}
               </Button>
             </Col>
 
-
-          {/* replace with neo4j screenshot*/}
+            {/* replace with neo4j screenshot*/}
 
             <Col lg={6} className="order-lg-1">
               <Image
@@ -437,8 +460,6 @@ codeql feature  */}
             </Col>
           </Row>
 
-
-  
           <Row className="justify-content-between align-items-center mb-5 mb-lg-7">
             <Col lg={5}>
               <h2 className="d-flex align-items-center">
@@ -481,7 +502,7 @@ codeql feature  */}
             </Col>
           </Row>
 
-{/*}
+          {/*}
           <Row className="justify-content-between align-items-center">
             <Col lg={5} className="order-lg-2 mb-5 mb-lg-0">
               <h2>Bootstrap 5</h2>
@@ -502,10 +523,7 @@ codeql feature  */}
         </Container>
       </section>
 
-
-
-{/* 10 hand crafted pages section , deleted because we are not going to have links to any pages herer */}
-
+      {/* 10 hand crafted pages section , deleted because we are not going to have links to any pages herer */}
 
       {/* <section className="section section-sm pt-0" id="pages">
         <Container>
@@ -526,15 +544,9 @@ codeql feature  */}
         </Container>
       </section> */}
 
+      {/* rfeatures section , code uses database to extract all the features so need to edit from there  */}
 
-
-
-{/* rfeatures section , code uses database to extract all the features so need to edit from there  */}
-
-
-
-
-{/* 
+      {/* 
       <section className="section section-lg bg-primary text-white">
         <Container>
           <Row className="justify-content-center mb-5 mb-lg-6">
@@ -554,8 +566,7 @@ codeql feature  */}
         </Container>
       </section> */}
 
-{/* whats inside section */}
-
+      {/* whats inside section */}
 
       {/* <section className="section section-lg bg-primary text-white" id="folder">
         <Container>
@@ -675,8 +686,7 @@ codeql feature  */}
         </Container>
       </section> */}
 
-{/* Dark blue less work more flow section */}
-
+      {/* Dark blue less work more flow section */}
 
       <section className="section section-lg bg-primary" id="getting-started">
         <Container>
@@ -687,20 +697,23 @@ codeql feature  */}
                 <span className="fw-bold">speed</span>.
               </h2>
               <p className="lead px-lg-8">
-                Boost accuracy and efficiency with CodeQL. Alerts are present to show you vulnerabilities
-                Saves time for everyone
+                Boost accuracy and efficiency with CodeQL. Alerts are present to
+                show you vulnerabilities Saves time for everyone
               </p>
             </Col>
           </Row>
 
-
-{/* white container with the "code" */}
-
+          {/* white container with the "code" */}
 
           <Row className="justify-content-center">
             <Col md={10} xl={6}>
               <div className="position-relative">
-                <Image width='200%' src={CodeQLQuery2} />
+                {/* <Image width="200%" src={CodeQLQuery2} /> */}
+                <Card className="position-relative mb-4">
+                  <Card.Body>
+                    <Snippet ploc={tempPloc} language="javascript"></Snippet>
+                  </Card.Body>
+                </Card>
               </div>
               <p className="mt-4 text-white text-center mb-0">
                 Looks unfamiliar? Don’t worry! Our{" "}
@@ -734,7 +747,7 @@ codeql feature  */}
               </div>
             </Col>
           </Row> */}
-{/* 
+          {/* 
 free version column */}
 
           <Row className="mt-6">
@@ -811,7 +824,7 @@ free version column */}
               </Card>
             </Col> */}
 
-{/* this is the pro version column  */}
+            {/* this is the pro version column  */}
 
             {/* <Col xs={12} md={6} lg={4} className="mb-5 mb-lg-0">
               <Card border="light" className="p-4 py-5 mt-lg-n5">
@@ -914,10 +927,7 @@ free version column */}
                       </Tooltip>
                     }
                   >
-                    <Image
-                      src={CodeQLLogo}
-                      className="image image-sm"
-                    />
+                    <Image src={CodeQLLogo} className="image image-sm" />
                   </OverlayTrigger>
                 </Card.Link>
 
@@ -949,14 +959,12 @@ free version column */}
                     trigger={["hover", "focus"]}
                     overlay={
                       <Tooltip>
-                        Github - where developers from all over the world share copde , work together and create miracles
+                        Github - where developers from all over the world share
+                        copde , work together and create miracles
                       </Tooltip>
                     }
                   >
-                    <Image 
-                      src={GithubLogo}
-                      className="image image-sm"
-                    />
+                    <Image src={GithubLogo} className="image image-sm" />
                   </OverlayTrigger>
                 </Card.Link>
               </div>
@@ -965,9 +973,8 @@ free version column */}
         </Container>
       </section>
 
-{/* 
+      {/* 
 the below part */}
-
 
       <footer className="footer py-6 bg-dark text-white">
         <Container>
@@ -986,9 +993,6 @@ the below part */}
                 built with ReactJS.
               </p>
             </Col>
-
-
-            
 
             {/* <Col xs={6} md={2} className="mb-5 mb-lg-0">
               <span className="h5">Group 68</span>
@@ -1110,9 +1114,8 @@ the below part */}
                 <p className="font-weight-normal font-small mb-0">
                   Copyright © Themesberg 2019-
                   <span className="current-year">2021</span>. All rights
-                  reserved. 
+                  reserved.
                 </p>
-                
               </div>
             </Col>
           </Row>

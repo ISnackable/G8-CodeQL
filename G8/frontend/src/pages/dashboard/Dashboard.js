@@ -38,11 +38,7 @@ import {
   // AcquisitionWidget,
 } from "../../components/Widgets";
 import {
-  PageVisitsTable,
-  PageTrafficTable,
-  RankingTable,
-  TransactionsTable,
-  CommandsTable,
+  ExistingProjectTable
 } from "../../components/Tables";
 import { trafficShares } from "../../data/charts";
 // import Code from "../../components/Code";
@@ -54,18 +50,28 @@ const Dashboard = () => {
   const [validated, setValidated] = useState(false);
 
   const handleSubmit = (event) => {
+    event.preventDefault();
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
-      event.preventDefault();
       event.stopPropagation();
     }
-
+    handleUploadRepo(event.target[0].value)
     setValidated(true);
   };
+  const handleUploadRepo= (repoLink)=>{
+    var data={'repoLink':repoLink}
+    axios.post(`http://localhost:8080/teamname/api/projects/repo`,data)
+    .then((response)=>{
+      alert("Success")
+    })
+    .catch((error)=>{
+      alert(error)
+    })
+  }
 
   const handleChangeGit = (event) => {
     const gitRegex = new RegExp(
-      "^((http(s)?)|(git@[w.]+))(:(//)?)([w.@:/-~]+)(.git)(/)?$"
+      "^[a-zA-Z]+[://@]+github.com+(/|:)?[a-zA-Z-!@#$%^&*()+]+(/)?[a-zA-Z]+\.git$"
     );
 
     if (gitRegex.test(event.target.value)) {
@@ -74,6 +80,8 @@ const Dashboard = () => {
       setValidated(false);
     }
   };
+
+
 
   const handleShowModalOne = () => {
     setModalState("modal-one");
@@ -315,18 +323,21 @@ const Dashboard = () => {
                       required
                       type="text"
                       placeholder="https://github.com/username/helloworld.git"
+                      id="repoLink"
+                      name="repoLink"
                     />
                     <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      disabled={!validated}
+                      className="btn-block mt-2"
+                    >
+                      Submit
+                    </Button>
                   </Form.Group>
                 </Row>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  disabled={!validated}
-                  className="btn-block"
-                >
-                  Submit
-                </Button>
+
               </Form>
             </Modal.Body>
           </Modal>
@@ -334,54 +345,12 @@ const Dashboard = () => {
       </Row>
 
       <Row className="justify-content-md-center">
-        {/* <Code code="$ yarn install" language="bash" /> */}
-        <Col xs={12} sm={6} xl={4} className="mb-4">
-          <CounterWidget
-            category="Customers"
-            title="Errors"
-            period="Feb 1 - Apr 1"
-            percentage={18.2}
-            icon={faChartLine}
-            iconColor="shape-secondary"
-          />
-        </Col>
-
-        <Col xs={12} sm={6} xl={4} className="mb-4">
-          <CounterWidget
-            category="Revenue"
-            title="Warnings"
-            period="Feb 1 - Apr 1"
-            percentage={28.4}
-            icon={faCashRegister}
-            iconColor="shape-tertiary"
-          />
-        </Col>
-
-        <Col xs={12} sm={6} xl={4} className="mb-4">
-          <CircleChartWidget title="Recommendations" data={trafficShares} />
-        </Col>
-        <Col xs={12} sm={12} xl={8} className="mb-4">
-          <SalesValueWidget title="Neo4J Graph" />
-        </Col>
-        <Col xs={12} sm={12} xl={4} className="mb-4">
-          <PageVisitsTable />
+        <Col xs={12} sm={12} xl={12} className="mb-4">
+          <ExistingProjectTable />
         </Col>
       </Row>
 
-      <Row>
-        <Col xs={12} className="mb-4">
-          <PageTrafficTable />
-        </Col>
-        <Col xs={12} className="mb-4">
-          <RankingTable />
-        </Col>
-        <Col xs={12} className="mb-4">
-          <TransactionsTable />
-        </Col>
-        <Col xs={12} className="mb-4">
-          <CommandsTable />
-        </Col>
-      </Row>
+
     </>
   );
 };

@@ -23,6 +23,56 @@ const Overview = () => {
   const [logs, setLogs] = useLocalStorageState("log", []); // setlog function is a function to replace it
   // function to parse the information from the sarif file into readable human format
 
+  function Addingalertstothetable() {
+    if (logs.length === 0) return;
+
+    var results = logs[0].runs[0].results;
+    var driverRules = logs[0].runs[0].tool.driver.rules;
+
+    // group the related alets together
+    var grouped = {};
+    for (let i = 0, len = results.length, r; i < len; i++) {
+      r = results[i];
+      // if (grouped[i] === undefined) grouped[i] = {};
+      if (grouped[r.ruleIndex] === undefined) grouped[r.ruleIndex] = {};
+      if (
+        grouped[r.ruleIndex][
+          driverRules[results[i].ruleIndex].properties["problem.severity"]
+        ] === undefined
+      )
+        grouped[r.ruleIndex][
+          driverRules[results[i].ruleIndex].properties["problem.severity"]
+        ] = [];
+      grouped[r.ruleIndex][
+        driverRules[results[i].ruleIndex].properties["problem.severity"]
+      ].push(driverRules[results[i].ruleIndex].properties["problem.severity"]);
+    }
+
+    // you can modifiy to return a
+    var tableJsx = [];
+    for (const ruleIndex in grouped) {
+      var severity = Object.keys(grouped[ruleIndex])[0];
+      var numberof = Object.values(grouped[ruleIndex]);
+      var alertdetected = driverRules[ruleIndex].properties["name"];
+
+      
+
+      // all the arrays in the web browser console
+      console.log(Object.values(grouped[ruleIndex]));
+      tableJsx.push(
+        <>
+          <tr>
+            <td>{alertdetected}</td>
+            <td>{severity}</td>
+            <td>{numberof}</td>
+          </tr>
+        </>
+      );
+    }
+
+    return tableJsx;
+  }
+
   function Printthejsonparsething() {
     // setLogs([])
 
@@ -48,6 +98,8 @@ const Overview = () => {
       var severity =
         driverRules[results[i].ruleIndex].properties["problem.severity"];
 
+      var alertdetected = driverRules[results[i].ruleIndex].properties["name"];
+
       // incrementing the number of errors , warnings and recommendation which will be inputted
       // into the boxes at the top of the webpage
 
@@ -60,10 +112,26 @@ const Overview = () => {
       }
     }
 
+    // function Addingalertstothetable() {
+    //   for(var x=0; x < ; x++){
+    //     console.log(x)
+    //     return(
+    //       <tr>
+    //                 <td>{alertdetected}</td>
+    //                 <td>{typedetected}</td>
+    //                 <td>{x}</td>
+    //       </tr>
+    //     )
+    //   }  var counter =
+
+    // }
+
     // prints out the results from above
     console.log(noOfError);
     console.log(noOfWarnings);
     console.log(noOfRecommendation);
+    console.log(alertdetected);
+    console.log(severity);
 
     // the html that returned when there is a poroject that is analysed
     return (
@@ -98,7 +166,7 @@ const Overview = () => {
           <Col lg={4}>
             <Card style={{ width: "18rem", backgroundColor: "lightgreen" }}>
               <Card.Body>
-                <Card.Text className="h1">{noOfError}</Card.Text>
+                <Card.Text className="h1">{noOfRecommendation}</Card.Text>
                 <Card.Text className="h4">Recommendations</Card.Text>
                 <Card.Link href="http://localhost:3000/#/codeql-alerts">
                   Check it out{" "}
@@ -137,17 +205,9 @@ const Overview = () => {
                     <th style={{ width: "10px" }}>#</th>
                   </tr>
                 </thead>
+
                 <tbody>
-                  <tr>
-                    <td>js/something</td>
-                    <td>Low</td>
-                    <td>2</td>
-                  </tr>
-                  <tr>
-                    <td>js/something</td>
-                    <td>High</td>
-                    <td>4</td>
-                  </tr>
+                  <Addingalertstothetable />
                 </tbody>
               </Table>
             </Card>
@@ -159,7 +219,7 @@ const Overview = () => {
 
   function Printnoresultthing() {
     return (
-      <Card className="text-center" >
+      <Card className="text-center">
         <Card.Body>
           <Card.Title>No Projects were found!</Card.Title>
           <Card.Text>

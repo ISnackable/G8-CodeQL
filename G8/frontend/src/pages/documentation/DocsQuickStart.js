@@ -19,7 +19,7 @@ const DocsQuickStart = () => {
                 <p>
                   G8 provides useful insights and code quality information for
                   all sorts of people participating in software
-                  development—whether you:
+                  development - whether you:
                 </p>
 
                 {/* <h2 className="fs-5 mt-4" id="using-yarn">

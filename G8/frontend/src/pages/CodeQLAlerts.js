@@ -1,60 +1,163 @@
-import React, { useState } from "react";
+import React from "react";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Col,
   Row,
   Card,
-  // Form,
   Container,
   // Alert,
-  // Button,
-  // ButtonGroup,
-  // Breadcrumb,
-  // InputGroup,
-  // Dropdown,
+  Button,
 } from "@themesberg/react-bootstrap";
-import InfiniteScroll from "react-infinite-scroll-component";
+import AccordionComponent from "../components/AccordionComponent";
+// import InfiniteScroll from "react-infinite-scroll-component";
 import Snippet from "../components/Snippet";
-// import { TransactionsTable } from "../components/Tables";
+import SnippetModal from "../components/SnippetModal";
 import useLocalStorageState from "use-local-storage-state";
 
 const CodeQLAlerts = () => {
   const [logs, setLogs] = useLocalStorageState("log", []);
-  const [hasMore, setHasMore] = useState(true);
+  // const [hasMore, setHasMore] = useState(true);
 
-  var snippet = [];
-  const fetchData = () => {
-    if (snippet.length >= 120) {
-      setHasMore(false);
+  const SnippetsCards = () => {
+    var snippets = [];
+    // const fetchData = () => {
+    //   if (snippets.length > 120) {
+    //     setHasMore(false);
+    //     return;
+    //   }
+
+    //   // a fake async api call like which sends
+    //   // 20 more records in .5 secs
+    //   setTimeout(() => {}, 500);
+    // };
+
+    // Fix bad code, will die
+    if (!logs) return []; // Undef interpreted as loading.
+    // filter out outdated sarif
+    const runs = [].concat(
+      ...logs.filter((log) => log.version === "2.1.0").map((log) => log.runs)
+    );
+
+    if (runs[0]?.results === undefined) return [];
+
+    var grouped = {};
+    for (let i = 0, len = runs[0].results.length, r; i < len; i++) {
+      r = runs[0].results[i];
+      // if (grouped[i] === undefined) grouped[i] = {};
+      if (grouped[r.ruleId] === undefined) grouped[r.ruleId] = {};
+      if (
+        grouped[r.ruleId][
+          r.locations[0].physicalLocation.artifactLocation.uri
+        ] === undefined
+      )
+        grouped[r.ruleId][
+          r.locations[0].physicalLocation.artifactLocation.uri
+        ] = [];
+      grouped[r.ruleId][
+        r.locations[0].physicalLocation.artifactLocation.uri
+      ].push(r);
     }
+
+    var i = 0;
+    for (const rule in grouped) {
+      // console.log(`${property}:`, grouped[property]);
+      let files = grouped[rule];
+      // console.log(`${rule} has ${Object.keys(files).length} files`);
+      for (const file in files) {
+        i++;
+        let alerts = files[file];
+        let query =
+          runs[0].tool.driver.rules[alerts[0].ruleIndex].properties.name;
+        let description =
+          runs[0].tool.driver.rules[alerts[0].ruleIndex].fullDescription.text;
+        let severity =
+          runs[0].tool.driver.rules[alerts[0].ruleIndex].properties[
+            "problem.severity"
+          ];
+        let tags =
+          runs[0].tool.driver.rules[alerts[0].ruleIndex].properties.tags;
+
+        let badgeSeverity = "warning";
+        switch (severity) {
+          case "error":
+            badgeSeverity = "danger";
+            break;
+          case "note":
+            badgeSeverity = "info";
+            break;
+          default:
+            badgeSeverity = "warning";
+        }
+
+        snippets.push(
+          <Card
+            className="position-relative mb-4 shadow"
+            key={"c" + alerts[0].ruleId + "-" + file + i}
+          >
+            <Card.Body key={"cb" + alerts[0].ruleId + "-" + file + i}>
+              <AccordionComponent
+                data={[
+                  {
+                    id: 1,
+                    eventKey: "panel-1",
+                    title: i + ". " + query + " in " + file,
+                    description: description,
+                  },
+                ]}
+                key={"ac" + alerts[0].ruleId + "-" + file}
+              />
+              <Button
+                variant={"outline-" + badgeSeverity}
+                className="m-2"
+                size="sm"
+              >
+                {severity}
+              </Button>
+              {tags?.map((tag, index) => {
+                return (
+                  <Button
+                    variant="light"
+                    size="sm"
+                    className="m-2"
+                    key={"btn" + alerts[0].ruleId + "-" + file + "-" + index}
+                  >
+                    {tag}
+                  </Button>
+                );
+              })}
+              {alerts.map((alert, index) => {
+                const ploc = alert.locations[0].physicalLocation;
+                const codeFlow = alert.codeFlows;
+
+                return (
+                  <>
+                    <Snippet
+                      key={"s" + index}
+                      ploc={ploc}
+                      language="javascript"
+                    ></Snippet>
+                    {(codeFlow?.length && (
+                      <div className="violation-groups">
+                        <span className="mx-3">
+                          This alert flows to other parts of the code.{" "}
+                        </span>
+
+                        <SnippetModal codeFlow={codeFlow} modalTitle={query} />
+                      </div>
+                    )) ||
+                      ""}
+                    {index < alerts.length - 1 && <hr key={"hr" + index} />}
+                  </>
+                );
+              })}
+            </Card.Body>
+          </Card>
+        );
+      }
+    }
+
+    return snippets;
   };
-
-  // Fix bad code, will die
-  if (!logs) return []; // Undef interpreted as loading.
-  // filter out outdated sarif
-  const runs = [].concat(
-    ...logs.filter((log) => log.version === "2.1.0").map((log) => log.runs)
-  );
-
-  const isResult = (item) => item?.message !== undefined;
-  if (isResult(runs[0]?.results[0])) {
-    snippet = runs[0].results.map((result, index) => {
-      const qname = runs[0].tool.driver.rules[result.ruleIndex].properties.name;
-      const ploc = result.locations[0].physicalLocation;
-      return (
-        <section key={index}>
-          <h2 key={"q" + index} className="fs-5 mt-4" id="using-yarn">
-            {index + 1}. {qname}
-          </h2>
-          <Snippet
-            key={"s" + index}
-            ploc={ploc}
-            language="javascript"
-          ></Snippet>
-        </section>
-      );
-    });
-  }
 
   return (
     <Container className="px-0">
@@ -74,11 +177,8 @@ const CodeQLAlerts = () => {
                   Please follow these steps to install the required
                   technologies:
                 </p>
-                {/* Implement some sort of lazy loading 
-                    render large lists in React
-                */}
-                <InfiniteScroll
-                  dataLength={snippet.length} //This is important field to render the next data
+                {/* <InfiniteScroll
+                  dataLength={snippets.length} //This is important field to render the next data
                   next={fetchData}
                   hasMore={hasMore}
                   loader={<h4>Loading...</h4>}
@@ -87,9 +187,8 @@ const CodeQLAlerts = () => {
                       <b>You reached the end!</b>
                     </p>
                   }
-                >
-                  {snippet}
-                </InfiniteScroll>
+                ></InfiniteScroll> */}
+                <SnippetsCards />
               </article>
             </Card.Body>
           </Card>
@@ -98,61 +197,5 @@ const CodeQLAlerts = () => {
     </Container>
   );
 };
-
-// export default () => {
-//   return (
-//     <>
-//       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
-//         <div className="d-block mb-4 mb-md-0">
-//           <Breadcrumb className="d-none d-md-inline-block" listProps={{ className: "breadcrumb-dark breadcrumb-transparent" }}>
-//             <Breadcrumb.Item><FontAwesomeIcon icon={faHome} /></Breadcrumb.Item>
-//             <Breadcrumb.Item>Volt</Breadcrumb.Item>
-//             <Breadcrumb.Item active>Transactions</Breadcrumb.Item>
-//           </Breadcrumb>
-//           <h4>Transactions</h4>
-//           <p className="mb-0">Your web analytics dashboard template.</p>
-//         </div>
-//         <div className="btn-toolbar mb-2 mb-md-0">
-//           <ButtonGroup>
-//             <Button variant="outline-primary" size="sm">Share</Button>
-//             <Button variant="outline-primary" size="sm">Export</Button>
-//           </ButtonGroup>
-//         </div>
-//       </div>
-
-//       <div className="table-settings mb-4">
-//         <Row className="justify-content-between align-items-center">
-//           <Col xs={8} md={6} lg={3} xl={4}>
-//             <InputGroup>
-//               <InputGroup.Text>
-//                 <FontAwesomeIcon icon={faSearch} />
-//               </InputGroup.Text>
-//               <Form.Control type="text" placeholder="Search" />
-//             </InputGroup>
-//           </Col>
-//           <Col xs={4} md={2} xl={1} className="ps-md-0 text-end">
-//             <Dropdown as={ButtonGroup}>
-//               <Dropdown.Toggle split as={Button} variant="link" className="text-dark m-0 p-0">
-//                 <span className="icon icon-sm icon-gray">
-//                   <FontAwesomeIcon icon={faCog} />
-//                 </span>
-//               </Dropdown.Toggle>
-//               <Dropdown.Menu className="dropdown-menu-xs dropdown-menu-right">
-//                 <Dropdown.Item className="fw-bold text-dark">Show</Dropdown.Item>
-//                 <Dropdown.Item className="d-flex fw-bold">
-//                   10 <span className="icon icon-small ms-auto"><FontAwesomeIcon icon={faCheck} /></span>
-//                 </Dropdown.Item>
-//                 <Dropdown.Item className="fw-bold">20</Dropdown.Item>
-//                 <Dropdown.Item className="fw-bold">30</Dropdown.Item>
-//               </Dropdown.Menu>
-//             </Dropdown>
-//           </Col>
-//         </Row>
-//       </div>
-
-//       <TransactionsTable />
-//     </>
-//   );
-// };
 
 export default CodeQLAlerts;

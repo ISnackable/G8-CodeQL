@@ -20,7 +20,8 @@ const DocsExploring = () => (
                 which you can use to help you understand the different elements
                 of the information.
               </p>
-              <ul className="docs-list">
+
+              {/* <ul className="docs-list">
                 <li>
                   <Card.Link href="#" target="_blank">
                     Searching
@@ -41,7 +42,8 @@ const DocsExploring = () => (
                     Exploring data flow paths
                   </Card.Link>
                 </li>
-              </ul>
+              </ul> */}
+
             </article>
           </Card.Body>
         </Card>

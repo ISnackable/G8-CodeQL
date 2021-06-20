@@ -8,6 +8,7 @@ import Overview from "./overview/Overview";
 import Dashboard from "./dashboard/Dashboard";
 import CodeQLAlerts from "./CodeQLAlerts";
 import Settings from "./Settings";
+import SarifViewer from "./SarifViewer";
 import BootstrapTables from "./tables/BootstrapTables";
 import Signin from "./examples/Signin";
 import Signup from "./examples/Signup";
@@ -148,11 +149,7 @@ const HomePage = () => (
     />
 
     {/* pages */}
-    <RouteWithSidebar
-      exact
-      path={Routes.Overview.path}
-      component={Overview}
-    />
+    <RouteWithSidebar exact path={Routes.Overview.path} component={Overview} />
     <RouteWithSidebar
       exact
       path={Routes.Dashboard.path}
@@ -162,6 +159,11 @@ const HomePage = () => (
       exact
       path={Routes.CodeQLAlerts.path}
       component={CodeQLAlerts}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.SarifViewer.path}
+      component={SarifViewer}
     />
     <RouteWithSidebar exact path={Routes.Settings.path} component={Settings} />
     <RouteWithSidebar

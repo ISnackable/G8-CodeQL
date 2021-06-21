@@ -48,6 +48,17 @@ var driverRules = testSarifJson.runs[0].tool.driver.rules;
 
 // Global variable for query name
 var qNameArr = new Array();
+var RuleIDArr = new Array();
+var ResultMsgTxtArr = new Array();
+var FileLocArr = new Array();
+var LocRegionArr = new Array();
+var LocContextArr = new Array();
+var WarningArr = new Array();
+var CFLineArr = new Array();
+var CFMsgArr = new Array();
+var CFCheck = new Array();
+var AlertCount = new Array();
+
 var noOfError = 0,
   noOfWarnings = 0,
   noOfRecommendation = 0;
@@ -69,7 +80,53 @@ var _loop_1 = function (result) {
   ) {
     noOfRecommendation++;
   }
+  RuleIDArr.push(result.ruleId);
+  ResultMsgTxtArr.push(result.message.text);
   qNameArr.push(driverRules[index].properties.name);
+  FileLocArr.push(result.locations[0].physicalLocation.artifactLocation.uri);
+  LocRegionArr.push(
+    JSON.stringify(result.locations[0].physicalLocation.region)
+  );
+  LocContextArr.push(
+    (_b =
+      (_a = result.locations[0].physicalLocation.contextRegion) === null ||
+      _a === void 0
+        ? void 0
+        : _a.snippet) === null || _b === void 0
+      ? void 0
+      : _b.text
+  );
+  if (driverRules[index].properties["problem.severity"] == "warning") {
+    WarningArr.push(result.ruleId);
+  }
+
+  // Check if codeFlows exist
+  // Since result is a JSON object, we can use hasOwnProperty to check if the codeFlows key exists
+  for(i=0; i<result.length; i++) {
+    if (result.hasOwnProperty("codeFlows")) {
+      var CodeFlowLen = result.codeFlows.length - 1;
+      for (
+        i = 0;
+        i < result.codeFlows[CodeFlowLen].threadFlows[0].locations.length;
+        i++
+      ) {
+        CFCheck.push(result.ruleId);
+        CFMsgArr.push(
+          result.codeFlows[CodeFlowLen].threadFlows[0].locations[i].location
+            .message.text
+        );
+        CFLineArr.push(
+          'StartLine: ' +
+            result.codeFlows[CodeFlowLen].threadFlows[0].locations[i].location
+              .physicalLocation.contextRegion.startLine +
+            ', EndLine: ' +
+            result.codeFlows[CodeFlowLen].threadFlows[0].locations[i].location
+              .physicalLocation.contextRegion.endLine
+        );
+      }
+    }
+  }
+
   console.log(
     "<<==============================++++   QUERY INFO   +++======================================>>"
   );
@@ -126,20 +183,89 @@ console.log("number of warning: " + noOfWarnings);
 console.log("number of recommendation: " + noOfRecommendation);
 console.log("number of queries " + queries.length);
 
-console.log(qNameArr);
+console.log(AlertCount);
 // Replaces " " and "-" with "_" in each array element
-for (i = 0; i < qNameArr.length; i++) {  
+for (i = 0; i < qNameArr.length; i++) {
   qNameArr[i] = qNameArr[i].replace(/ /g, "_");
   qNameArr[i] = qNameArr[i].replace(/-/g, "_");
 }
+for (i = 0; i < RuleIDArr.length; i++) {
+  RuleIDArr[i] = RuleIDArr[i].replace(/ /g, "_");
+  RuleIDArr[i] = RuleIDArr[i].replace(/-/g, "_");
+}
+for (i = 0; i < CFCheck.length; i++) {
+  CFCheck[i] = CFCheck[i].replace(/ /g, "_");
+  CFCheck[i] = CFCheck[i].replace(/-/g, "_");
+}
 // Using Sets to remove duplicate queries in the array
 var NoDupeQuery = Array.from(new Set(qNameArr));
-console.log(NoDupeQuery);
 
+// Create Query
 var CreateQuery = "";
+for (a = 1; a <= NoDupeQuery.length; a++) {
+  CreateQuery += `CREATE (Q${a}:Query {Query:"${NoDupeQuery[a - 1]}"})\n`;
+}
 
-for (a = 0; a < NoDupeQuery.length; a++) {
-  CreateQuery += `CREATE (${NoDupeQuery[a]}:Query {born:'${NoDupeQuery[a]}'})\n`;
+// Create Alerts
+var CreateAlert = "";
+for (b = 1; b <= results.length; b++) {
+  ResultMsgTxtArr[b - 1] = ResultMsgTxtArr[b - 1].replace(/[\"]/g, "'");
+
+  CreateAlert += `CREATE (A${b}:ALERT {RuleID:'${
+    RuleIDArr[b - 1]
+  }', Message_Text:"${ResultMsgTxtArr[b - 1]}", FileLocation:'${
+    FileLocArr[b - 1]
+  }', StartEndLine:'${LocRegionArr[b - 1]}'})\n`;
+}
+
+// Replaces " " and "-" to "_" in WarningArr
+for (i = 0; i < WarningArr.length; i++) {
+  WarningArr[i] = WarningArr[i].replace(/ /g, "_");
+  WarningArr[i] = WarningArr[i].replace(/-/g, "_");
+}
+
+// Removes duplicate elements
+var NoDupeVuln = Array.from(new Set(WarningArr));
+
+// Create CodeFlow
+var CreateCF = "";
+for (c = 0; c < CFMsgArr.length; c++) {
+  CFMsgArr[c] = CFMsgArr[c].replace(/[\"]/g, "'")
+  CreateCF += `CREATE (CF${c+1}:CodeFlow {Message:"${CFMsgArr[c]}", StartEndLine:"${CFLineArr[c]}"})\n`;
+}
+
+// Create Child
+var CreateChild = "";
+var ChildVar = new Array();
+
+// Loops through all query names
+for (d = 1; d <= qNameArr.length; d++) {
+  // Loops query query names without duplicates
+  for (e = 1; e <= NoDupeQuery.length; e++) {
+    // Query names are in fixed order on how the program was run
+    // Takes the position of the query in NoDupeQuery and adds it to ChildVar for creation of the Child
+    if (qNameArr[d - 1] == NoDupeQuery[e - 1]) {
+      ChildVar.push(`Q${e}`);
+    }
+  }
+}
+
+// Loops through all alerts to create a child with the associated query
+for (f = 1; f <= results.length; f++) {
+  CreateChild += `CREATE (A${f})-[:Child {AlertNum:"A${f}", AlertName:"${
+    RuleIDArr[f - 1]
+  }"} ]->(${ChildVar[f - 1]})\n`;
+}
+
+//Create Child>CF
+var CFChild = "";
+// RuleIDArr = number of alerts there are
+for(g=1; g<=RuleIDArr.length; g++) {
+  for(h=1; h<=CFCheck.length; h++) {
+    if(RuleIDArr[g-1] == CFCheck[h-1]) {
+      CFChild+= `CREATE (CF${h})-[:Child]->(A${g})\n`
+    }
+  }
 }
 
 const query =
@@ -150,24 +276,21 @@ CREATE DATABASE SOMEHARDCODEDDATABASEFORNOW
 
 ` +
   CreateQuery +
+  "\n" +
+  CreateAlert +
+ "\n" +
+  CreateCF +
+  "\n" +
+//   CreateChild +
+//   "\n" +
+//   CFChild +
+//   "\n" +
   `
-CREATE (A1:Alert {born:"Alert 1"})
-CREATE (A2:Alert {born:"Alert 2"}) // ALERT 2
 
-CREATE (V1:Vulnerability {born:"code1"}) // Vulnerability 1
-CREATE (V2:Vulnerability {born:"code2"}) // Vulnerability 2
-CREATE (V3:Vulnerability {born:"code3"}) // Vulnerability 3
 
-CREATE
-(A1)-[:Child {roles:['Path1']}]->(XSSDOM),
-(A2)-[:Child {roles:['Path1']}]->(XSSDOM),
-
-(V1)-[:Child]->(A1),
-(V2)-[:Child]->(A2),
-(V3)-[:Child]->(V2)
-
-WITH XSSDOM as q
-MATCH (q)<-[:Child*]-(a)<-[:Child*]-(v) RETURN q,a, v;
+  OPTIONAL MATCH (q)<-[:Child*0..]-(a)<-[:Child*0..]-(v)
+  WHERE q:Query
+  RETURN q, a, v
 `;
 console.log(query);
 /*

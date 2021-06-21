@@ -5,15 +5,17 @@ import { CSSTransition } from "react-transition-group";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBook,
-  faBoxOpen,
+  // faBoxOpen,
   faChartPie,
-  faCog,
-  faFileAlt,
-  faHandHoldingUsd,
-  faSignOutAlt,
-  faTable,
+  // faCog,
+  // faFileAlt,
+  // faSignOutAlt,
+  // faTable,
   faTimes,
+  faSearch,
+  faBug,
 } from "@fortawesome/free-solid-svg-icons";
+import { faCodepen } from "@fortawesome/free-brands-svg-icons";
 import {
   Nav,
   Badge,
@@ -28,7 +30,7 @@ import { Link } from "react-router-dom";
 import { Routes } from "../routes";
 // import ReactHero from "../assets/img/technologies/react-hero-logo.svg";
 import G8Logo from "../assets/img/g8-logo.png";
-import ProfilePicture from "../assets/img/team/profile-picture-3.jpg";
+// import ProfilePicture from "../assets/img/team/profile-picture-3.jpg";
 
 const Sidebar = (props = {}) => {
   const location = useLocation();
@@ -128,7 +130,7 @@ const Sidebar = (props = {}) => {
         <Navbar.Brand
           className="me-lg-5"
           as={Link}
-          to={Routes.DashboardOverview.path}
+          to={Routes.Presentation.path}
         >
           <Image src={G8Logo} className="navbar-brand-light" />
         </Navbar.Brand>
@@ -147,7 +149,7 @@ const Sidebar = (props = {}) => {
           <div className="sidebar-inner px-4 pt-3">
             <div className="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
               <div className="d-flex align-items-center">
-                <div className="user-avatar lg-avatar me-4">
+                {/* <div className="user-avatar lg-avatar me-4">
                   <Image
                     src={ProfilePicture}
                     className="card-img-top rounded-circle border-white"
@@ -165,7 +167,7 @@ const Sidebar = (props = {}) => {
                     <FontAwesomeIcon icon={faSignOutAlt} className="me-2" />{" "}
                     Sign Out
                   </Button>
-                </div>
+                </div> */}
               </div>
               <Nav.Link
                 className="collapse-close d-md-none"
@@ -180,22 +182,26 @@ const Sidebar = (props = {}) => {
                 link={Routes.Presentation.path}
                 image={G8Logo}
               />
-
               <NavItem
-                title="Overview"
-                link={Routes.DashboardOverview.path}
+                title="Dashboard"
+                link={Routes.Dashboard.path}
                 icon={faChartPie}
               />
               <NavItem
+                title="Overview"
+                link={Routes.Overview.path}
+                icon={faCodepen}
+              />
+              <NavItem
                 title="CodeQL Alerts"
-                icon={faHandHoldingUsd}
+                icon={faBug}
                 link={Routes.CodeQLAlerts.path}
               />
               {/* 
               <NavItem
                 external
                 title="Plugins"
-                link="https://demo.themesberg.com/volt-pro-react/#/plugins/charts"
+                link="/#/plugins/charts"
                 target="_blank"
                 badgeText="Pro"
                 icon={faChartPie}
@@ -204,10 +210,19 @@ const Sidebar = (props = {}) => {
               <Dropdown.Divider className="my-3 border-indigo" />
 
               <NavItem
+                title="Sarif Viewer"
+                icon={faSearch}
+                link={Routes.SarifViewer.path}
+              />
+
+              <Dropdown.Divider className="my-3 border-indigo" />
+
+              {/* 
+              <NavItem
                 title="Settings"
                 icon={faCog}
                 link={Routes.Settings.path}
-              />
+              /> */}
 
               <CollapsableNavItem
                 eventKey="documentation/"
@@ -229,7 +244,7 @@ const Sidebar = (props = {}) => {
                 <NavItem title="Changelog" link={Routes.DocsChangelog.path} />
               </CollapsableNavItem>
 
-              <CollapsableNavItem
+              {/* <CollapsableNavItem
                 eventKey="tables/"
                 title="Tables"
                 icon={faTable}
@@ -239,7 +254,6 @@ const Sidebar = (props = {}) => {
                   link={Routes.BootstrapTables.path}
                 />
               </CollapsableNavItem>
-
               <CollapsableNavItem
                 eventKey="examples/"
                 title="Page Examples"
@@ -291,7 +305,7 @@ const Sidebar = (props = {}) => {
                 <NavItem title="Tabs" link={Routes.Tabs.path} />
                 <NavItem title="Toasts" link={Routes.Toasts.path} />
                 <NavItem title="Tooltips" link={Routes.Tooltips.path} />
-              </CollapsableNavItem>
+              </CollapsableNavItem> */}
               {/* <NavItem
                 external
                 title="Themesberg"

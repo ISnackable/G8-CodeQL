@@ -14,6 +14,7 @@ const router = express.Router();
 // ------------------------------------------------------
 router.use("/api", api);
 
+// move frontend html to here
 // GET, POST, PUT, DELETE, or any other HTTP request method for any other routes
 router.all("*", (req, res) => {
   res.status(404).send("Url not found!");

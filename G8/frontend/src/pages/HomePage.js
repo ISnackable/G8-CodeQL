@@ -4,17 +4,19 @@ import { Routes } from "../routes";
 
 // pages
 import Presentation from "./Presentation";
-import DashboardOverview from "./dashboard/DashboardOverview";
+import Overview from "./overview/Overview";
+import Dashboard from "./dashboard/Dashboard";
 import CodeQLAlerts from "./CodeQLAlerts";
 import Settings from "./Settings";
+import SarifViewer from "./SarifViewer";
 import BootstrapTables from "./tables/BootstrapTables";
 import Signin from "./examples/Signin";
 import Signup from "./examples/Signup";
 import ForgotPassword from "./examples/ForgotPassword";
 import ResetPassword from "./examples/ResetPassword";
 import Lock from "./examples/Lock";
-import NotFoundPage from "./examples/NotFound";
-import ServerError from "./examples/ServerError";
+import NotFoundPage from "./NotFound";
+import ServerError from "./ServerError";
 
 // documentation pages
 import DocsAbout from "./documentation/DocsAbout";
@@ -27,7 +29,7 @@ import DocsChangelog from "./documentation/DocsChangelog";
 
 // components
 import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
+// import Navbar from "../components/Navbar";
 // import Footer from "../components/Footer";
 import Preloader from "../components/Preloader";
 
@@ -102,7 +104,7 @@ const RouteWithSidebar = ({ component: Component, ...rest }) => {
           <Sidebar />
 
           <main className="content">
-            <Navbar />
+            {/* <Navbar /> */}
             <Component {...props} />
             {/* <Footer
               toggleSettings={toggleSettings}
@@ -147,15 +149,21 @@ const HomePage = () => (
     />
 
     {/* pages */}
+    <RouteWithSidebar exact path={Routes.Overview.path} component={Overview} />
     <RouteWithSidebar
       exact
-      path={Routes.DashboardOverview.path}
-      component={DashboardOverview}
+      path={Routes.Dashboard.path}
+      component={Dashboard}
     />
     <RouteWithSidebar
       exact
       path={Routes.CodeQLAlerts.path}
       component={CodeQLAlerts}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.SarifViewer.path}
+      component={SarifViewer}
     />
     <RouteWithSidebar exact path={Routes.Settings.path} component={Settings} />
     <RouteWithSidebar

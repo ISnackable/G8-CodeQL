@@ -1,8 +1,10 @@
 export const Routes = {
   // pages
   Presentation: { path: "/" },
-  DashboardOverview: { path: "/dashboard/overview" },
+  Dashboard: { path: "/dashboard" },
+  Overview: { path: "/overview" },
   CodeQLAlerts: { path: "/codeql-alerts" },
+  SarifViewer: { path: "/sarifviewer" },
   Settings: { path: "/settings" },
   BootstrapTables: { path: "/tables/bootstrap-tables" },
   Billing: { path: "/examples/billing" },
@@ -12,8 +14,8 @@ export const Routes = {
   ForgotPassword: { path: "/examples/forgot-password" },
   ResetPassword: { path: "/examples/reset-password" },
   Lock: { path: "/examples/lock" },
-  NotFound: { path: "/examples/404" },
-  ServerError: { path: "/examples/500" },
+  NotFound: { path: "/404" },
+  ServerError: { path: "/500" },
 
   // docs
   DocsAbout: { path: "/documentation/about" },

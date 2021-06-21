@@ -1,25 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { LiveProvider, LiveEditor } from "react-live";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import themeStyle from "../assets/syntax-themes/ghcolors.json";
+
 import {
   faBook,
   faExternalLinkAlt,
-  faTimesCircle,
-  faCheckCircle,
-  faCalendarAlt,
-  faCodeBranch,
-  faShoppingCart,
-  faFolder,
-  faMapMarkedAlt,
-  faPager,
-  faFileCode,
-  faDownload,
+  // faTimesCircle,
+  // faCheckCircle,
+  // faCalendarAlt,
+  // faCodeBranch,
+  // faShoppingCart,
+  // faFolder,
+  // faMapMarkedAlt,
+  // faPager,
+  // faFileCode,
+  // faDownload,
+  // faProjectDiagram,
+  // fafileCode,
 } from "@fortawesome/free-solid-svg-icons";
 import {
-  faBootstrap,
-  faGithub,
-  faJs,
+  // faBootstrap,
+  // faGithub,
+  // faJs,
   faReact,
-  faSass,
+  // faSass,
 } from "@fortawesome/free-brands-svg-icons";
 import {
   Col,
@@ -28,104 +34,152 @@ import {
   Image,
   Button,
   Container,
-  ListGroup,
+  // ListGroup,
   Tooltip,
   OverlayTrigger,
-  Form,
+  // Form,
   Navbar,
   Nav,
   Badge,
 } from "@themesberg/react-bootstrap";
 import { Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
-import Code from "../components/CodeEditor";
+// import Code from "../components/Code";
+import Snippet from "../components/Snippet";
 // import GitHubButton from "react-github-btn";
 
 import { Routes } from "../routes";
 // import ThemesbergLogoIcon from "../assets/img/themesberg.svg";
-import ThemesbergLogo from "../assets/img/themesberg-logo.svg";
+// import ThemesbergLogo from "../assets/img/themesberg-logo.svg";
 import MockupPresentation from "../assets/img/mockup-presentation.png";
 import MapboxImg from "../assets/img/mockup-map-presentation.png";
-import CalendarImg from "../assets/img/mockup-calendar-presentation.png";
+// import CalendarImg from "../assets/img/mockup-calendar-presentation.png";
 import ReactMockupImg from "../assets/img/react-mockup.png";
-import BS5IllustrationsImg from "../assets/img/illustrations/bs5-illustrations.svg";
+// import BS5IllustrationsImg from "../assets/img/illustrations/bs5-illustrations.svg";
 // import BS5Logo from "../assets/img/technologies/bootstrap-5-logo.svg";
 import ReactLogo from "../assets/img/technologies/react-logo.svg";
 import G8Logo from "../assets/img/g8-logo.png";
+import Neo4JLogo from "../assets/img/neo4j-logo.png";
+import CodeQLLogo from "../assets/img/codeql-logo.png";
+import ExpressJSLogo from "../assets/img/expressjs-logo.png";
+// import CodeQLQuery from "../assets/img/codeql-query.jpg";
+import GithubLogo from "../assets/img/github-logo.png";
+// import CodeQLQuery2 from "../assets/img/codeql-query-2.jpg";
 
-import pages from "../data/pages";
-import features from "../data/features";
+// import pages from "../data/pages";
+// import features from "../data/features";
 
 const Presentation = () => {
-  const PagePreview = (props) => {
-    const { name, image, link } = props;
+  // eslint-disable-next-line no-unused-vars
+  const [code, setCode] = useState(`import javascript
+import semmle.javascript.security.dataflow.DomBasedXss::DomBasedXss
+import DataFlow::PathGraph
 
-    return (
-      <Col xs={6} className="mb-5">
-        <Card.Link
-          as={Link}
-          to={link}
-          className="page-preview page-preview-lg scale-up-hover-2"
-        >
-          <Image
-            src={image}
-            className="shadow-lg rounded scale"
-            alt="Dashboard page preview"
-          />
-
-          <div className="text-center show-on-hover">
-            <h6 className="m-0 text-center text-white">
-              {name}{" "}
-              <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-2" />
-            </h6>
-          </div>
-        </Card.Link>
-      </Col>
-    );
+from DataFlow::Configuration cfg, DataFlow::PathNode source, DataFlow::PathNode sink
+where
+  (
+    cfg instanceof HtmlInjectionConfiguration or
+    cfg instanceof JQueryHtmlOrSelectorInjectionConfiguration
+  ) and
+  cfg.hasFlowPath(source, sink)
+select sink.getNode(), source, sink,
+  sink.getNode().(Sink).getVulnerabilityKind() + " vulnerability due to $@.", source.getNode(),
+  "user-provided value"`);
+  const [copied, setCopied] = useState(false);
+  const tempPloc = {
+    artifactLocation: {
+      uri: "login.htm",
+      uriBaseId: "%SRCROOT%",
+      index: 66,
+    },
+    region: {
+      startLine: 1390,
+      startColumn: 53,
+      endColumn: 70,
+    },
+    contextRegion: {
+      startLine: 1388,
+      endLine: 1392,
+      snippet: {
+        text: "                count--;\r\n                buttonError($('#pc-cloud-btn'), timesText.replace('$', count), true);\r\n                inputError($('#ph-cloud-password'), timesText.replace('$', count), true);\r\n                window.setTimeout(arguments.callee, 1000);\r\n            }, 1000);\r\n",
+      },
+    },
   };
 
-  const Feature = (props) => {
-    const { title, description, icon } = props;
-
-    return (
-      <Col xs={12} sm={6} lg={3}>
-        <Card className="bg-white shadow-soft text-primary rounded mb-4">
-          <div className="px-3 px-lg-4 py-5 text-center">
-            <span className="icon icon-lg mb-4">
-              <FontAwesomeIcon icon={icon} />
-            </span>
-            <h5 className="fw-bold text-primary">{title}</h5>
-            <p>{description}</p>
-          </div>
-        </Card>
-      </Col>
-    );
+  const handleCopy = () => {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const FolderItem = (props) => {
-    const { name, icon, tooltip, iconColor } = props;
-    const color = iconColor ? `text-${iconColor}` : "";
+  // const PagePreview = (props) => {
+  //   const { name, image, link } = props;
 
-    return (
-      <OverlayTrigger
-        trigger={["hover", "focus"]}
-        placement="left"
-        overlay={<Tooltip>{tooltip}</Tooltip>}
-      >
-        <li
-          data-toggle="tooltip"
-          data-placement="left"
-          title="Main folder that you will be working with"
-        >
-          <FontAwesomeIcon
-            icon={icon ? icon : faFolder}
-            className={`${color} me-2`}
-          />{" "}
-          {name}
-        </li>
-      </OverlayTrigger>
-    );
-  };
+  //   return (
+  //     <Col xs={6} className="mb-5">
+  //       <Card.Link
+  //         as={Link}
+  //         to={link}
+  //         className="page-preview page-preview-lg scale-up-hover-2"
+  //       >
+  //         <Image
+  //           src={image}
+  //           className="shadow-lg rounded scale"
+  //           alt="Dashboard page preview"
+  //         />
+
+  //         <div className="text-center show-on-hover">
+  //           <h6 className="m-0 text-center text-white">
+  //             {name}{" "}
+  //             <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-2" />
+  //           </h6>
+  //         </div>
+  //       </Card.Link>
+  //     </Col>
+  //   );
+  // };
+
+  // const Feature = (props) => {
+  //   const { title, description, icon } = props;
+
+  //   return (
+  //     <Col xs={12} sm={6} lg={3}>
+  //       <Card className="bg-white shadow-soft text-primary rounded mb-4">
+  //         <div className="px-3 px-lg-4 py-5 text-center">
+  //           <span className="icon icon-lg mb-4">
+  //             <FontAwesomeIcon icon={icon} />
+  //           </span>
+  //           <h5 className="fw-bold text-primary">{title}</h5>
+  //           <p>{description}</p>
+  //         </div>
+  //       </Card>
+  //     </Col>
+  //   );
+  // };
+
+  // const FolderItem = (props) => {
+  //   const { name, icon, tooltip, iconColor } = props;
+  //   const color = iconColor ? `text-${iconColor}` : "";
+
+  //   return (
+  //     <OverlayTrigger
+  //       trigger={["hover", "focus"]}
+  //       placement="left"
+  //       overlay={<Tooltip>{tooltip}</Tooltip>}
+  //     >
+  //       <li
+  //         data-toggle="tooltip"
+  //         data-placement="left"
+  //         title="Main folder that you will be working with"
+  //       >
+  //         <FontAwesomeIcon
+  //           icon={icon ? icon : faFolder}
+  //           className={`${color} me-2`}
+  //         />{" "}
+  //         {name}
+  //       </li>
+  //     </OverlayTrigger>
+  //   );
+  // };
 
   return (
     <>
@@ -141,7 +195,7 @@ const Presentation = () => {
             to="#home"
             className="me-lg-3 d-flex align-items-center"
           >
-            <Image src={G8Logo} />
+            <Image src={G8Logo} className="image image-sm" alt="G8 Logo" />
             <span className="ms-2 brand-text d-none d-md-inline">
               G8 Code Scanner
             </span>
@@ -153,35 +207,32 @@ const Presentation = () => {
                 <Nav.Link as={HashLink} to="#features">
                   Features
                 </Nav.Link>
-                <Nav.Link as={HashLink} to="#pages">
-                  Pages
+                <Nav.Link as={HashLink} to="#codeql">
+                  CodeQL
                 </Nav.Link>
-                <Nav.Link
-                  as={HashLink}
-                  to="#folder"
-                  className="d-sm-none d-xl-inline"
-                >
-                  Folder Structure
+                <Nav.Link as={HashLink} to="#neo4j">
+                  Neo4J
                 </Nav.Link>
-                <Nav.Link as={HashLink} to="#getting-started">
+                <Nav.Link as={Link} to={Routes.DocsQuickStart.path}>
                   Getting Started
                 </Nav.Link>
-                <Nav.Link as={HashLink} to="#download">
+                {/* <Nav.Link as={HashLink} to="#download">
                   Upgrade to Pro
-                </Nav.Link>
+                </Nav.Link> */}
               </Nav>
             </Navbar.Collapse>
-            <Button
+            {/* <Button
               as={HashLink}
               to="#download"
               variant="outline-white"
               className="ms-3"
             >
               <FontAwesomeIcon icon={faDownload} className="me-1" /> Download
-            </Button>
+            </Button> */}
           </div>
         </Container>
       </Navbar>
+
       <section
         className="section-header overflow-hidden pt-5 pt-lg-6 pb-9 pb-lg-12 bg-primary text-white"
         id="home"
@@ -190,17 +241,21 @@ const Presentation = () => {
           <Row>
             <Col xs={12} className="text-center">
               <div className="react-big-icon d-none d-lg-block">
-                <span className="fab fa-react"></span>
+                <span>
+                  <Image src={G8Logo} className="image" alt="G8 Logo" />
+                </span>
               </div>
               <h1 className="fw-bolder text-secondary">G8 Code Scanner</h1>
               <p className="text-muted fw-light mb-5 h5">
                 Powered by CodeQL technology and React.js
               </p>
+
+              {/* explore dashboard button */}
               <div className="d-flex align-items-center justify-content-center">
                 <Button
                   variant="secondary"
                   as={Link}
-                  to={Routes.DashboardOverview.path}
+                  to={Routes.Dashboard.path}
                   className="text-dark me-3"
                 >
                   Explore dashboard{" "}
@@ -219,6 +274,9 @@ const Presentation = () => {
                   Star
                 </GitHubButton> */}
               </div>
+
+              {/* end of explore dashboard */}
+
               <div className="d-flex justify-content-center flex-column mb-6 mb-lg-5 mt-5">
                 <div className="text-center">
                   {/* 
@@ -250,6 +308,9 @@ const Presentation = () => {
           </figure>
         </Container>
       </section>
+      {/* 
+ the one with the 4 circles */}
+
       <div className="section pt-0">
         <Container className="mt-n10 mt-lg-n12 z-2">
           <Row className="justify-content-center">
@@ -260,158 +321,241 @@ const Presentation = () => {
           <Row className="justify-content-center mt-5 mt-lg-6">
             <Col xs={6} md={3} className="text-center mb-4">
               <div className="icon icon-shape icon-lg bg-white shadow-lg border-light rounded-circle mb-4">
-                <FontAwesomeIcon icon={faPager} className="text-secondary" />
+                <FontAwesomeIcon icon={faReact} className="text-secondary" />
               </div>
-              <h3 className="fw-bolder">10</h3>
-              <p className="text-gray">Example Pages</p>
+              <h3 className="fw-bolder">React JS</h3>
+              <p className="text-gray">Website Frontend</p>
             </Col>
             <Col xs={6} md={3} className="text-center mb-4">
               <div className="icon icon-shape icon-lg bg-white shadow-lg border-light rounded-circle mb-4">
-                <FontAwesomeIcon icon={faReact} className="text-secondary" />
+                <Image width="50" src={CodeQLLogo} alt="CodeQL Logo" />
               </div>
-              <h3 className="fw-bolder">100+</h3>
-              <p className="text-gray">React Components</p>
+              <h3 className="fw-bolder">CodeQL</h3>
+              <p className="text-gray">Query-based analysis</p>
             </Col>
             <Col xs={6} md={3} className="text-center">
               <div className="icon icon-shape icon-lg bg-white shadow-lg border-light rounded-circle mb-4">
-                <FontAwesomeIcon icon={faSass} className="text-secondary" />
+                <Image width="50" src={Neo4JLogo} alt="Neo4J Logo" />
               </div>
-              <h3 className="fw-bolder">Workflow</h3>
-              <p className="text-gray">Sass & react-app</p>
+              <h3 className="fw-bolder">Neo4J</h3>
+              <p className="text-gray">Node graph visualization</p>
             </Col>
             <Col xs={6} md={3} className="text-center">
               <div className="icon icon-shape icon-lg bg-white shadow-lg border-light rounded-circle mb-4">
-                <FontAwesomeIcon
-                  color="secondary"
-                  icon={faBootstrap}
-                  className="text-secondary"
-                />
+                <Image width="50" src={ExpressJSLogo} alt="ExpressJS Logo" />
               </div>
-              <h3 className="fw-bolder">Bootstrap 5</h3>
-              <p className="text-gray">CSS Framework</p>
+              <h3 className="fw-bolder">Express JS</h3>
+              <p className="text-gray">Backend</p>
             </Col>
           </Row>
         </Container>
       </div>
+
+      {/* start of powered by react.js that line */}
       <section className="section section-md bg-soft pt-lg-3" id="features">
         <Container>
           <Row className="justify-content-between align-items-center mb-5 mb-lg-7">
             <Col lg={5} className="order-lg-2 mb-5 mb-lg-0">
-              <h2>Powered by React.js</h2>
-              <p className="mb-3 lead fw-bold">
-                The most popular front-end library in the world
-              </p>
-              <p className="mb-4">
-                G8 Code Scanner is an admin dashboard template that is built
-                using React.js components using react hooks and a data-driven
-                structure that can kick-start your app in no time.
-              </p>
-              <Button
-                as={Link}
-                to={Routes.DashboardOverview.path}
-                variant="secondary"
-                target="_blank"
-              >
-                Live Demo{" "}
-                <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-1" />
-              </Button>
-              <Button
-                as={HashLink}
-                to="#download"
-                variant="outline-primary"
-                className="ms-3"
-              >
-                <FontAwesomeIcon icon={faShoppingCart} className="me-1" />{" "}
-                Download
-              </Button>
-            </Col>
-            <Col lg={6} className="order-lg-1">
-              <Image src={ReactMockupImg} alt="Calendar Preview" />
-            </Col>
-          </Row>
-          <Row className="justify-content-between align-items-center mb-5 mb-lg-7">
-            <Col lg={5}>
-              <h2>React.js Components</h2>
-              <p className="mb-3 lead fw-bold">
-                100+ premium UI elements based on Bootstrap 5
-              </p>
-              <p className="mb-4">
-                We've built over 100 React.js powered components to be used
-                throughout your application saving you time kickstarting your
-                project.
-              </p>
-              <p className="mb-4">
-                Check out the components and use our live React.js component
-                editor to try the code.
-              </p>
-              <Button
-                as={Link}
-                to={Routes.Forms.path}
-                variant="secondary"
-                className="mb-5 mb-lg-0"
-                target="_blank"
-              >
-                <FontAwesomeIcon icon={faReact} className="me-1" /> Components
-                examples
-              </Button>
-            </Col>
-            <Col lg={6} className="rounded shadow pt-3">
-              <Code
-                scope={{ Form, Button }}
-                code={`<Form>
-  <Form.Group id="frameworks" className="mb-3">
-    <Form.Label>Example select</Form.Label>
-    <Form.Select>
-      <option defaultValue>Open this select menu</option>
-      <option>One</option>
-      <option>Two</option>
-      <option>Three</option>
-    </Form.Select>
-  </Form.Group>
-  <Button variant="primary" className="m-1">Primary</Button>
-</Form>`}
-                language="jsx"
-              />
-            </Col>
-          </Row>
-          <Row className="justify-content-between align-items-center mb-5 mb-lg-7">
-            <Col lg={5} className="order-lg-2 mb-5 mb-lg-0">
               <h2 className="d-flex align-items-center">
-                Mapbox{" "}
+                Powered by React.js
                 <Badge
                   pill
                   bg="secondary"
                   text="dark"
                   className="badge-md ms-3 mb-0 fs-6"
                 >
-                  Pro
+                  Top 1
                 </Badge>
               </h2>
               <p className="mb-3 lead fw-bold">
-                Markers and cards integration with Leaflet.js
+                The most popular front-end library in the world
               </p>
               <p className="mb-4">
-                You can use this map to add markers with custom cards and show
-                them on a map using our custom MapBox integration with
-                Leaflet.js
+                G8 Code Scanner is an code scanner which was built using
+                React.js on the front end. With such amazing features , your
+                experience on this website will be impeccable.
               </p>
               <Button
-                href="https://demo.themesberg.com/volt-pro-react/#/map"
-                className="me-3"
                 variant="secondary"
-                target="_blank"
+                as={Link}
+                to={Routes.Dashboard.path}
+                className="text-dark me-3"
               >
-                <FontAwesomeIcon icon={faMapMarkedAlt} className="me-2" /> Demo
-                Map
+                <FontAwesomeIcon icon={faReact} className="me-1" /> Live Demo
               </Button>
               <Button
-                href="https://demo.themesberg.com/volt-pro-react/#/plugins/map"
+                href="/#/documentation/quick-start"
                 variant="outline-primary"
                 target="_blank"
               >
                 <FontAwesomeIcon icon={faBook} className="me-2" /> Guide
               </Button>
             </Col>
+            <Col lg={6} className="order-lg-1">
+              <Image src={ReactMockupImg} alt="Calendar Preview" />
+            </Col>
+          </Row>
+
+          <Row className="justify-content-between align-items-center mb-5 mb-lg-7">
+            <Col lg={5} className="mb-5 mb-lg-0">
+              <h2>Powered by Express.js</h2>
+              <p className="mb-3 lead fw-bold">
+                The most popular back end web application framework for Node.js
+              </p>
+              <p className="mb-4">
+                G8 Code Scanner is an code scanner which was built using
+                Express.js on the back end. With such amazing features , your
+                experience on this website will be impeccable.
+              </p>
+              <Button
+                href="/#/documentation/quick-start"
+                variant="outline-primary"
+                target="_blank"
+              >
+                <FontAwesomeIcon icon={faBook} className="me-2" /> Guide
+              </Button>
+            </Col>
+            <Col lg={6} className="order-lg-1">
+              <Image src={ReactMockupImg} alt="Calendar Preview" />
+            </Col>
+          </Row>
+
+          {/* codeql feature  */}
+          <Row
+            className="justify-content-between align-items-center mb-5 mb-lg-7"
+            id="codeql"
+          >
+            <Col lg={5}>
+              <h2>CodeQL Technology</h2>
+              <p className="mb-3 lead fw-bold">
+                One of the best static analysis tool engines
+              </p>
+              <p className="mb-4">
+                We've implemented CodeQL queries which are written to scan for
+                Javascript vulnerabilities.
+              </p>
+              <p className="mb-4">
+                Examples : Cross Site Scripting ( XSS ) , SQL Injection , Broken
+                Access Control etc.
+              </p>
+              <Button
+                as={Link}
+                to={Routes.Dashboard.path}
+                variant="secondary"
+                className="mb-5 mb-lg-0"
+                target="_blank"
+              >
+                Explore dashboard{" "}
+                <FontAwesomeIcon
+                  icon={faExternalLinkAlt}
+                  className="d-none d-sm-inline ms-1"
+                />
+              </Button>
+            </Col>
+            <Col lg={6} className="rounded shadow pt-3">
+              <LiveProvider
+                // noInline={noInline}
+                code={code}
+                language={"jsx"}
+                theme={themeStyle}
+              >
+                <Row>
+                  {/* <Col xs={12} className="mb-4">
+                    <Card>
+                      <Card.Body>
+                        <LivePreview />
+                      </Card.Body>
+                    </Card>
+                  </Col> */}
+                  <Col xs={12} className="mb-4">
+                    <Card>
+                      <Card.Body className="position-relative">
+                        <LiveEditor
+                          // onChange={handleCodeChange}
+                          className="live-editor"
+                        />
+
+                        {copied ? (
+                          <span className="text-success copy-code-text">
+                            Copied
+                          </span>
+                        ) : null}
+
+                        <OverlayTrigger
+                          trigger={["hover", "focus"]}
+                          placement="top"
+                          overlay={<Tooltip>Copy to clipboard</Tooltip>}
+                        >
+                          <CopyToClipboard text={code} onCopy={handleCopy}>
+                            <Button
+                              size="sm"
+                              variant="primary"
+                              className="copy-code-button"
+                            >
+                              Copy
+                            </Button>
+                          </CopyToClipboard>
+                        </OverlayTrigger>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                </Row>
+              </LiveProvider>
+              {/* <Image src={CodeQLQuery} /> */}
+            </Col>
+          </Row>
+
+          {/* where the pro features are stored */}
+
+          <Row
+            className="justify-content-between align-items-center mb-5 mb-lg-7"
+            id="neo4j"
+          >
+            <Col lg={5} className="order-lg-2 mb-5 mb-lg-0">
+              <h2 className="d-flex align-items-center">
+                Neo4J{" "}
+                <Badge
+                  pill
+                  bg="secondary"
+                  text="dark"
+                  className="badge-md ms-3 mb-0 fs-6"
+                >
+                  Added Feature
+                </Badge>
+              </h2>
+              <p className="mb-3 lead fw-bold">
+                Node Graph for better visualization
+              </p>
+              <p className="mb-4">
+                With our newly implemented Neo4J graph feature , users can
+                expect to understand their codes and alerts in a more visually
+                appealing and understandable way
+              </p>
+              {/* glink to user guide in code */}
+              <Button
+                as={Link}
+                to={Routes.Dashboard.path}
+                variant="secondary"
+                className="text-dark me-3"
+                target="_blank"
+              >
+                Explore dashboard{" "}
+                <FontAwesomeIcon
+                  icon={faExternalLinkAlt}
+                  className="d-none d-sm-inline ms-1"
+                />
+              </Button>
+              <Button
+                href="/#/documentation/quick-start"
+                variant="outline-primary"
+                target="_blank"
+              >
+                <FontAwesomeIcon icon={faBook} className="me-2" /> Guide
+              </Button>
+            </Col>
+
+            {/* replace with neo4j screenshot*/}
+
             <Col lg={6} className="order-lg-1">
               <Image
                 src={MapboxImg}
@@ -419,47 +563,8 @@ const Presentation = () => {
               />
             </Col>
           </Row>
-          <Row className="justify-content-between align-items-center mb-5 mb-lg-7">
-            <Col lg={5}>
-              <h2 className="d-flex align-items-center">
-                Calendar{" "}
-                <Badge
-                  pill
-                  bg="secondary"
-                  text="dark"
-                  className="badge-md ms-3 mb-0 fs-6"
-                >
-                  Pro
-                </Badge>
-              </h2>
-              <p className="mb-3 lead fw-bold">
-                Advanced FullCalendar.js integration
-              </p>
-              <p className="mb-4">
-                We created a fully editable calendar where you can add, edit and
-                delete events for your admin dashboard.
-              </p>
-              <Button
-                href="https://demo.themesberg.com/volt-pro-react/#/calendar"
-                className="me-3"
-                variant="secondary"
-                target="_blank"
-              >
-                <FontAwesomeIcon icon={faCalendarAlt} className="me-2" /> Demo
-                Calendar
-              </Button>
-              <Button
-                href="https://demo.themesberg.com/volt-pro-react/#/plugins/calendar"
-                variant="outline-primary"
-                target="_blank"
-              >
-                <FontAwesomeIcon icon={faBook} className="me-2" /> Guide
-              </Button>
-            </Col>
-            <Col lg={6}>
-              <Image src={CalendarImg} alt="Calendar Preview" />
-            </Col>
-          </Row>
+
+          {/*}
           <Row className="justify-content-between align-items-center">
             <Col lg={5} className="order-lg-2 mb-5 mb-lg-0">
               <h2>Bootstrap 5</h2>
@@ -474,9 +579,15 @@ const Presentation = () => {
               <Image src={BS5IllustrationsImg} alt="Front pages overview" />
             </Col>
           </Row>
+
+
+*/}
         </Container>
       </section>
-      <section className="section section-sm pt-0" id="pages">
+
+      {/* 10 hand crafted pages section , deleted because we are not going to have links to any pages herer */}
+
+      {/* <section className="section section-sm pt-0" id="pages">
         <Container>
           <Row className="justify-content-center mb-5 mb-lg-6">
             <Col xs={12} className="text-center">
@@ -493,7 +604,11 @@ const Presentation = () => {
             ))}
           </Row>
         </Container>
-      </section>
+      </section> */}
+
+      {/* features section , code uses database to extract all the features so need to edit from there  */}
+
+      {/* 
       <section className="section section-lg bg-primary text-white">
         <Container>
           <Row className="justify-content-center mb-5 mb-lg-6">
@@ -511,8 +626,11 @@ const Presentation = () => {
             ))}
           </Row>
         </Container>
-      </section>
-      <section className="section section-lg line-bottom-soft" id="folder">
+      </section> */}
+
+      {/* whats inside section */}
+
+      {/* <section className="section section-lg bg-primary text-white" id="folder">
         <Container>
           <Row className="justify-content-center mb-5 mb-lg-6">
             <Col xs={12} className="text-center">
@@ -628,45 +746,36 @@ const Presentation = () => {
             </Col>
           </Row>
         </Container>
-      </section>
-      <section className="section section-lg bg-primary" id="getting-started">
+      </section> */}
+
+      {/* Dark blue less work more flow section */}
+
+      <section className="section section-lg bg-primary">
         <Container>
           <Row className="justify-content-center text-center text-white mb-5">
             <Col xs={12}>
               <h2 className="fw-light mb-3">
                 Less <span className="fw-bold">work</span>, more{" "}
-                <span className="fw-bold">flow</span>.
+                <span className="fw-bold">speed</span>.
               </h2>
               <p className="lead px-lg-8">
-                Boost productivity with BrowserSync. Sass changes are reflected
-                instantly and pages scroll and refresh on devices as you work.
+                Boost accuracy and efficiency with CodeQL. Alerts are present to
+                show you vulnerabilities Saves time for everyone
               </p>
             </Col>
           </Row>
+
+          {/* white container with the "code" */}
+
           <Row className="justify-content-center">
-            <Col md={10} xl={9}>
+            <Col md={10} xl={10}>
               <div className="position-relative">
-                <div className="rounded bg-white p-4 text-dark mb-2">
-                  <div className="mb-3">
-                    <div className="fw-bold">
-                      &gt; $ yarn install{" "}
-                      <span className="text-gray-600">(or npm install)</span>
-                    </div>
-                    <div className="text-gray">Everything’s installed!</div>
-                  </div>
-                  <div className="mb-3">
-                    <div className="fw-bold">
-                      &gt; $ yarn start{" "}
-                      <span className="text-gray-600">(or npm run start)</span>
-                    </div>
-                    <div className="text-gray">SCSS watching</div>
-                    <div className="text-gray">Opening localhost:3000</div>
-                  </div>
-                  <div>
-                    <div className="fw-bold">&gt; $ that's it?</div>
-                    <div className="text-gray">It's that simple!</div>
-                  </div>
-                </div>
+                {/* <Image width="200%" src={CodeQLQuery2} /> */}
+                <Card className="position-relative mb-4">
+                  <Card.Body>
+                    <Snippet ploc={tempPloc} language="javascript" />
+                  </Card.Body>
+                </Card>
               </div>
               <p className="mt-4 text-white text-center mb-0">
                 Looks unfamiliar? Don’t worry! Our{" "}
@@ -683,13 +792,13 @@ const Presentation = () => {
           </Row>
         </Container>
       </section>
-      <section className="section section-lg bg-white" id="download">
+      <section className="section section-lg bg-white">
         <Container>
-          <Row>
+          {/* <Row>
             <Col xs={12} lg={8}>
               <h2 className="fw-light mb-3">Download or upgrade to pro</h2>
               <p className="lead mb-4 me-lg-6">
-                Do you want to take React development to the next level? Check
+                Do you want to take Code Scanning to the next level? Check
                 out the premium version of G8 Code Scanner Dashboard in the
                 following comparison table.
               </p>
@@ -699,8 +808,11 @@ const Presentation = () => {
                 <FontAwesomeIcon icon={faGithub} />
               </div>
             </Col>
-          </Row>
-          <Row className="mt-6">
+          </Row> */}
+          {/* 
+free version column */}
+
+          {/* <Row className="mt-6">
             <Col xs={12} md={6} lg={4} className="mb-5 mb-lg-0">
               <Card border="light" className="p-4">
                 <Card.Header className="bg-white border-0 pb-0">
@@ -772,8 +884,11 @@ const Presentation = () => {
                   Download
                 </Button>
               </Card>
-            </Col>
-            <Col xs={12} md={6} lg={4} className="mb-5 mb-lg-0">
+            </Col> */}
+
+          {/* this is the pro version column  */}
+
+          {/* <Col xs={12} md={6} lg={4} className="mb-5 mb-lg-0">
               <Card border="light" className="p-4 py-5 mt-lg-n5">
                 <Card.Header className="bg-white border-0 pb-0">
                   <span className="d-block">
@@ -838,7 +953,7 @@ const Presentation = () => {
                   </ListGroup>
                 </Card.Body>
                 <Button
-                  href="https://demo.themesberg.com/volt-pro-react/#/"
+                  href="/#/"
                   target="_blank"
                   variant="secondary"
                   className="w-100 m-0 mt-3"
@@ -848,15 +963,15 @@ const Presentation = () => {
                 </Button>
               </Card>
             </Col>
-          </Row>
-          <Row className="mt-lg-6">
+          </Row> */}
+          <Row className="mt-lg-3">
             <Col xs={12} className="text-center">
               <h2 className="h5 text-gray fw-normal mb-4">
                 Available in the following technologies:
               </h2>
               <div>
                 <Card.Link
-                  href="https://themesberg.com/product/admin-dashboard/volt-bootstrap-5-dashboard"
+                  href="https://securitylab.github.com/tools/codeql/"
                   target="_blank"
                   className="me-3"
                 >
@@ -875,16 +990,15 @@ const Presentation = () => {
                     }
                   >
                     <Image
-                      src={
-                        "https://github.gallerycdn.vsassets.io/extensions/github/vscode-codeql/1.4.8/1620233288995/Microsoft.VisualStudio.Services.Icons.Default"
-                      }
+                      src={CodeQLLogo}
                       className="image image-sm"
+                      alt="CodeQL Logo"
                     />
                   </OverlayTrigger>
                 </Card.Link>
 
                 <Card.Link
-                  href="https://themesberg.com/product/dashboard/volt-react"
+                  href="https://reactjs.org/"
                   target="_blank"
                   className="me-3"
                 >
@@ -898,7 +1012,33 @@ const Presentation = () => {
                       </Tooltip>
                     }
                   >
-                    <Image src={ReactLogo} className="image image-sm" />
+                    <Image
+                      src={ReactLogo}
+                      className="image image-sm"
+                      alt="ReactJS Logo"
+                    />
+                  </OverlayTrigger>
+                </Card.Link>
+                <Card.Link
+                  href="https://www.github.com"
+                  target="_blank"
+                  className="me-3"
+                >
+                  <OverlayTrigger
+                    placement="top"
+                    trigger={["hover", "focus"]}
+                    overlay={
+                      <Tooltip>
+                        GitHub - where developers from all over the world share
+                        copde , work together and create miracles
+                      </Tooltip>
+                    }
+                  >
+                    <Image
+                      src={GithubLogo}
+                      className="image image-sm"
+                      alt="GitHub Logo"
+                    />
                   </OverlayTrigger>
                 </Card.Link>
               </div>
@@ -906,6 +1046,10 @@ const Presentation = () => {
           </Row>
         </Container>
       </section>
+
+      {/* 
+the below part */}
+
       <footer className="footer py-6 bg-dark text-white">
         <Container>
           <Row>
@@ -915,7 +1059,7 @@ const Presentation = () => {
                 to="#home"
                 className="me-lg-3 mb-3 d-flex align-items-center"
               >
-                <Image src={G8Logo} />
+                <Image src={G8Logo} className="image image-sm" alt="G8 Logo" />
                 <span className="ms-2 brand-text">G8 Code Scanner</span>
               </Navbar.Brand>
               <p>
@@ -923,8 +1067,9 @@ const Presentation = () => {
                 built with ReactJS.
               </p>
             </Col>
-            <Col xs={6} md={2} className="mb-5 mb-lg-0">
-              <span className="h5">Themesberg</span>
+
+            {/* <Col xs={6} md={2} className="mb-5 mb-lg-0">
+              <span className="h5">Group 68</span>
               <ul className="links-vertical mt-2">
                 <li>
                   <Card.Link target="_blank" href="https://themesberg.com/blog">
@@ -956,8 +1101,8 @@ const Presentation = () => {
                   </Card.Link>
                 </li>
               </ul>
-            </Col>
-            <Col xs={6} md={2} className="mb-5 mb-lg-0">
+            </Col> */}
+            <Col xs={6} md={4} className="mb-5 mb-lg-0">
               <span className="h5">Other</span>
               <ul className="links-vertical mt-2">
                 <li>
@@ -979,28 +1124,24 @@ const Presentation = () => {
                   </Card.Link>
                 </li>
                 <li>
-                  <Card.Link
-                    target="_blank"
-                    href="https://themesberg.com/licensing"
-                  >
+                  <Card.Link target="_blank" href="#">
                     License
                   </Card.Link>
                 </li>
               </ul>
             </Col>
             <Col xs={12} md={4} className="mb-5 mb-lg-0">
-              <span className="h5 mb-3 d-block">Subscribe</span>
+              <span className="h5 mb-3 d-block">Feedback</span>
               <form action="#">
                 <div className="form-row mb-2">
                   <div className="col-12">
-                    <input
-                      type="email"
+                    <textarea
+                      rows="2"
+                      cols="42"
+                      placeholder="We value your feedback so that we can improve your experience"
                       className="form-control mb-2"
-                      placeholder="example@company.com"
-                      name="email"
-                      aria-label="Subscribe form"
                       required
-                    />
+                    ></textarea>
                   </div>
                   <div className="col-12">
                     <button
@@ -1008,7 +1149,7 @@ const Presentation = () => {
                       className="btn btn-secondary text-dark shadow-soft btn-block"
                       data-loading-text="Sending"
                     >
-                      <span>Subscribe</span>
+                      <span>Submit</span>
                     </button>
                   </div>
                 </div>
@@ -1024,24 +1165,21 @@ const Presentation = () => {
           <hr className="bg-gray my-5" />
           <Row>
             <Col className="mb-md-2">
-              <Card.Link
-                href="https://themesberg.com"
-                target="_blank"
-                className="d-flex justify-content-center"
-              >
+              <Card.Link href="#" className="d-flex justify-content-center">
                 <Image
-                  src={ThemesbergLogo}
-                  height={35}
-                  className="d-block mx-auto mb-3"
-                  alt="Themesberg Logo"
-                />
+                  src={G8Logo}
+                  height={30}
+                  className="d-block me-3 mb-3"
+                  alt="G8 Logo"
+                />{" "}
+                <b>G8 Code Scanner</b>
               </Card.Link>
               <div
                 className="d-flex text-center justify-content-center align-items-center"
                 role="contentinfo"
               >
                 <p className="font-weight-normal font-small mb-0">
-                  Copyright © Themesberg 2019-
+                  Copyright © G8 2021-
                   <span className="current-year">2021</span>. All rights
                   reserved.
                 </p>

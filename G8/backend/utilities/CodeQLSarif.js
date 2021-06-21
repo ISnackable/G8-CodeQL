@@ -7,7 +7,7 @@ var fs = require("fs");
 //   "./sarifTestFiles/RMerl_asuswrt-merlin__2021-05-20_17_18_36__export.sarif",
 //   "utf8"
 // );
-var file = fs.readFileSync("./sarifTestFiles/tplink1.sarif", 'utf8');
+var file = fs.readFileSync("./sarifTestFiles/tplink1_snippets.sarif", 'utf8');
 // console.log(file);
 var testSarifJson = jsonMap.parse(file).data;
 // console.log(testSarifJson.runs);

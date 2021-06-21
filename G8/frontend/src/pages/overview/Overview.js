@@ -1,388 +1,233 @@
-import React, { useRef, useState } from "react";
+import React from "react";
+import useLocalStorageState from "use-local-storage-state";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// Import React FilePond
-import { FilePond } from "react-filepond";
-// Import FilePond styles
-import "filepond/dist/filepond.min.css";
-import axios from "axios";
-import {
-  faCashRegister,
-  faChartLine,
-  faCloudUploadAlt,
-  faPlus,
-  faRocket,
-  faTasks,
-  faUserShield,
-  faFolder,
-} from "@fortawesome/free-solid-svg-icons";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import {
-  Col,
-  Row,
-  Button,
-  Dropdown,
-  ButtonGroup,
-  Modal,
-  Form,
-} from "@themesberg/react-bootstrap";
 
-import {
-  CounterWidget,
-  CircleChartWidget,
-  // BarChartWidget,
-  // TeamMembersWidget,
-  // ProgressTrackWidget,
-  // RankingWidget,
-  SalesValueWidget,
-  // SalesValueWidgetPhone,
-  // AcquisitionWidget,
-} from "../../components/Widgets";
-import {
-  PageVisitsTable,
-  PageTrafficTable,
-  RankingTable,
-  TransactionsTable,
-  CommandsTable,
-} from "../../components/Tables";
-import { trafficShares } from "../../data/charts";
-// import Code from "../../components/Code";
+import { Routes } from "../../routes";
+import { Link } from "react-router-dom";
+
+import { Col, Row, Button, Card, Table } from "@themesberg/react-bootstrap";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 const Overview = () => {
-  const filePondRef = useRef(null);
-  const [files, setFiles] = useState([]);
-  const [modalState, setModalState] = useState("close");
-  const [validated, setValidated] = useState(false);
+  const [logs, setLogs] = useLocalStorageState("log", []); // setlog function is a function to replace it
+  // function to parse the information from the sarif file into readable human format
 
-  const handleSubmit = (event) => {
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
+  function Addingalertstothetable() {
+    if (logs.length === 0) return;
+
+    var results = logs[0].runs[0].results;
+    var driverRules = logs[0].runs[0].tool.driver.rules;
+
+    // group the related alets together
+    var grouped = {};
+    for (let i = 0, len = results.length, r; i < len; i++) {
+      r = results[i];
+      // if (grouped[i] === undefined) grouped[i] = {};
+      if (grouped[r.ruleIndex] === undefined) grouped[r.ruleIndex] = {};
+      if (
+        grouped[r.ruleIndex][
+          driverRules[results[i].ruleIndex].properties["problem.severity"]
+        ] === undefined
+      )
+        grouped[r.ruleIndex][
+          driverRules[results[i].ruleIndex].properties["problem.severity"]
+        ] = [];
+      grouped[r.ruleIndex][
+        driverRules[results[i].ruleIndex].properties["problem.severity"]
+      ].push(driverRules[results[i].ruleIndex].properties["problem.severity"]);
     }
 
-    setValidated(true);
-  };
+    // you can modifiy to return a
+    var tableJsx = [];
+    for (const ruleIndex in grouped) {
+      var severity = Object.keys(grouped[ruleIndex])[0];
+      var numberof = Object.values(grouped[ruleIndex])[0].length;
+      var alertdetected = driverRules[ruleIndex].properties["name"];
 
-  const handleChangeGit = (event) => {
-    const gitRegex = new RegExp(
-      "^((http(s)?)|(git@[w.]+))(:(//)?)([w.@:/-~]+)(.git)(/)?$"
+      var serverityColour = "";
+
+      switch (severity) {
+        case "error":
+          serverityColour += "text-danger";
+          break;
+        case "warning":
+          serverityColour += "text-warning";
+          break;
+        default:
+          serverityColour += "text-secondary";
+          break;
+      }
+
+      // all the arrays in the web browser console
+      // console.log(Object.values(grouped[ruleIndex]));
+      tableJsx.push(
+        <tr>
+          <td className="border-0 fw-bold">{alertdetected}</td>
+          <td className="border-0 fw-bold">
+            <span className={serverityColour}>{severity}</span>
+          </td>
+          <td className="border-0 fw-bold">{numberof}</td>
+        </tr>
+      );
+    }
+
+    return tableJsx;
+  }
+
+  function Printthejsonparsething() {
+    // setLogs([])
+
+    // some config information
+
+    // refer to CodeQLSarif.js and tplink1_snippets.sarif to see the extraction of information
+
+    // console.log(logs);
+    if (logs.length === 0) return;
+
+    var results = logs[0].runs[0].results;
+    var driverRules = logs[0].runs[0].tool.driver.rules;
+
+    // console.log(results);
+    // console.log(driverRules);
+    var noOfError = 0;
+    var noOfWarnings = 0;
+    var noOfRecommendation = 0;
+
+    // for loop runs through all the reults and display the severity level within the properties .
+
+    for (let i = 0; i < results.length; i++) {
+      var severity =
+        driverRules[results[i].ruleIndex].properties["problem.severity"];
+
+      // incrementing the number of errors , warnings and recommendation which will be inputted
+      // into the boxes at the top of the webpage
+
+      if (severity === "error") {
+        noOfError++;
+      } else if (severity === "warning") {
+        noOfWarnings++;
+      } else if (severity === "recommendation") {
+        noOfRecommendation++;
+      }
+    }
+
+    // the html that returned when there is a poroject that is analysed
+    return (
+      <>
+        <Row className="justify-content-between align-items-center mb-4">
+          <Col xs={4}>
+            <Card style={{ backgroundColor: "#FF6565" }}>
+              <Card.Body>
+                <Card.Text className="h1">{noOfError}</Card.Text>
+                <Card.Text className="h4">Errors</Card.Text>
+
+                <Card.Link href="/#/codeql-alerts">Check it out </Card.Link>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          <Col xs={4}>
+            <Card style={{ backgroundColor: "yellow" }}>
+              <Card.Body>
+                <Card.Text className="h1">{noOfWarnings}</Card.Text>
+                <Card.Text className="h4">Warnings</Card.Text>
+
+                <Card.Link href="/#/codeql-alerts">Check it out </Card.Link>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          <Col xs={4}>
+            <Card style={{ backgroundColor: "lightgreen" }}>
+              <Card.Body>
+                <Card.Text className="h1">{noOfRecommendation}</Card.Text>
+                <Card.Text className="h4">Recommendations</Card.Text>
+                <Card.Link href="/#/codeql-alerts">Check it out </Card.Link>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+        {/* Neo4J graph */}
+        <Row>
+          <Col xl={12} className="mb-4">
+            <Card>
+              <Card.Title className="h1 ms-3 mt-3">Neo4J Graph</Card.Title>
+              <Card.Body>
+                <Card.Text>EMPTY</Card.Text>
+                <Card.Text>EMPTY</Card.Text>
+                <Card.Text>EMPTY</Card.Text>
+                <Card.Text>EMPTY</Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          {/* display the alerts */}
+          <Col xl={12} className="mb-2 ">
+            <Card>
+              <Table
+                responsive
+                bordered
+                hover
+                className="table-centered table-nowrap rounded mb-0"
+              >
+                <thead className="thead-light">
+                  <tr>
+                    <th className="border-0">Alerts Detected</th>
+                    <th className="border-0">Severity</th>
+                    <th className="border-0">#</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <Addingalertstothetable />
+                </tbody>
+              </Table>
+            </Card>
+          </Col>
+        </Row>
+      </>
     );
+  }
 
-    if (gitRegex.test(event.target.value)) {
-      setValidated(true);
-    } else {
-      setValidated(false);
-    }
-  };
-
-  const handleShowModalOne = () => {
-    setModalState("modal-one");
-  };
-
-  const handleShowModalTwo = () => {
-    setModalState("modal-two");
-  };
-
-  const handleClose = () => {
-    setFiles([]);
-    setModalState("close");
-  };
-
-  // maybe just stick with normal 1 by 1 upload instead of all at once.
-  // size of request is very large
-  const handleUpload = () => {
-    const pond = filePondRef.current;
-    pond.processFiles();
-  };
+  function Printnoresultthing() {
+    return (
+      <Card className="text-center">
+        <Card.Body>
+          <Card.Title>No Projects were found!</Card.Title>
+          <Card.Text>
+            Click the button below to upload a new project :)
+          </Card.Text>
+          <Button
+            variant="secondary"
+            as={Link}
+            to={Routes.Dashboard.path}
+            className="text-dark me-3"
+          >
+            Upload New Project{" "}
+            <FontAwesomeIcon
+              icon={faExternalLinkAlt}
+              className="d-none d-sm-inline ms-1"
+            />
+          </Button>
+        </Card.Body>
+      </Card>
+    );
+  }
 
   return (
-    <>
-      <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
-        <Dropdown className="btn-toolbar">
-          <Dropdown.Toggle
-            as={Button}
-            variant="primary"
-            size="sm"
-            className="me-2"
-          >
-            <FontAwesomeIcon icon={faPlus} className="me-2" />
-            New Task
-          </Dropdown.Toggle>
-          <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
-            <Dropdown.Item className="fw-bold">
-              <FontAwesomeIcon icon={faTasks} className="me-2" /> New Task
-            </Dropdown.Item>
-            <Dropdown.Item className="fw-bold">
-              <FontAwesomeIcon icon={faCloudUploadAlt} className="me-2" />{" "}
-              Upload Files
-            </Dropdown.Item>
-            <Dropdown.Item className="fw-bold">
-              <FontAwesomeIcon icon={faUserShield} className="me-2" /> Preview
-              Security
-            </Dropdown.Item>
-
-            <Dropdown.Divider />
-
-            <Dropdown.Item className="fw-bold">
-              <FontAwesomeIcon icon={faRocket} className="text-danger me-2" />{" "}
-              Upgrade to Pro
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-
-        <ButtonGroup>
-          <Button variant="outline-primary" size="sm">
-            Share
-          </Button>
-          <Button variant="outline-primary" size="sm">
-            Export
-          </Button>
-        </ButtonGroup>
+    <div>
+      <div className="mt-4">
+        {logs.length !== 0 && <Printthejsonparsething />}
       </div>
-
-      <Row className="justify-content-md-center">
-        <Col xs={6} sm={6} className="mb-4">
-          <Button
-            variant="primary"
-            className="my-3 h-100 btn-block"
-            onClick={handleShowModalOne}
-          >
-            <FontAwesomeIcon icon={faFolder} className="me-2" />
-            Upload
-          </Button>
-
-          <Modal
-            dialogClassName="my-modal"
-            size="lg"
-            centered
-            show={modalState === "modal-one"}
-            onHide={handleClose}
-          >
-            <Modal.Header>
-              <Modal.Title className="h6">File Upload</Modal.Title>
-              <Button
-                variant="close"
-                aria-label="Close"
-                onClick={handleClose}
-              />
-            </Modal.Header>
-            <Modal.Body>
-              <FilePond
-                ref={filePondRef}
-                files={files}
-                allowProcess={false}
-                allowRevert={false}
-                instantUpload={false}
-                allowMultiple={true}
-                maxFiles={100}
-                maxParallelUploads={100} // buggy?
-                onwarning={(error, file, status) => {
-                  if (error) {
-                    if (file.length > 100) {
-                      alert("Max file 100"); // Change to bootstrap alert later
-                    } else {
-                      alert("something went wrong!");
-                    }
-                  }
-                }}
-                onupdatefiles={(fileItems) => {
-                  // Set currently active file objects to this.state
-                  setFiles(fileItems.map((fileItem) => fileItem.file));
-                }}
-                // allowFileTypeValidation={true}
-                // acceptedFileTypes={[
-                //   "text/javascript",
-                //   "application/zip",
-                //   "application/x-7z-compressed",
-                // ]}
-                dropValidation={true}
-                ignoredFiles={[".ds_store", "thumbs.db", "desktop.ini"]}
-                server={{
-                  process: (
-                    fieldName,
-                    file,
-                    metadata,
-                    load,
-                    error,
-                    progress,
-                    abort
-                  ) => {
-                    const pond = filePondRef.current;
-                    // somehow files state is empty
-                    const fileitems = pond.getFiles();
-
-                    // related to aborting the request
-                    const CancelToken = axios.CancelToken;
-                    const source = CancelToken.source();
-
-                    // Only upload once (always true when clicked submit)
-                    // quite buggy
-                    if (fileitems[0].file === file) {
-                      // set data
-                      const formData = new FormData();
-                      fileitems.forEach((file) => {
-                        formData.append(
-                          "files",
-                          file.file,
-                          file.file._relativePath || file.file.name
-                        );
-                      });
-
-                      axios({
-                        method: "post",
-                        url: "http://localhost:8080/teamname/api/projects/folder",
-                        data: formData,
-                        cancelToken: source.token,
-                        onUploadProgress: (e) => {
-                          // updating progress indicator
-                          progress(e.lengthComputable, e.loaded, e.total);
-                        },
-                      })
-                        .then((response) => {
-                          // passing the file id to FilePond
-                          load(response.data.message);
-                        })
-                        .catch((thrown) => {
-                          if (axios.isCancel(thrown)) {
-                            console.log("Request canceled", thrown.message);
-                          } else {
-                            setFiles([fileitems[0].file]);
-                            error("oh no");
-                          }
-                        });
-                    } else {
-                      // just simulating upload complete
-                      progress(true, 10000, 10000);
-                      load("");
-                    }
-
-                    // Setup abort interface
-                    return {
-                      abort: () => {
-                        source.cancel("Operation canceled by the user.");
-                      },
-                    };
-                  },
-                }}
-              />
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                variant="primary"
-                className="ms-auto btn-block"
-                onClick={handleUpload}
-                disabled={files.length === 0}
-              >
-                Upload
-              </Button>
-            </Modal.Footer>
-          </Modal>
-        </Col>
-        <Col xs={6} sm={6} className="mb-4">
-          <Button
-            variant="primary"
-            className="my-3 h-100 btn-block"
-            onClick={handleShowModalTwo}
-          >
-            <FontAwesomeIcon icon={faGithub} className="me-2" />
-            Git Repo
-          </Button>
-
-          <Modal
-            centered
-            show={modalState === "modal-two"}
-            onHide={handleClose}
-          >
-            <Modal.Header>
-              <Modal.Title className="h6">Git Upload</Modal.Title>
-              <Button
-                variant="close"
-                aria-label="Close"
-                onClick={handleClose}
-              />
-            </Modal.Header>
-            <Modal.Body>
-              <Form
-                noValidate
-                validated={validated}
-                onSubmit={handleSubmit}
-                onChange={handleChangeGit}
-              >
-                <Row className="mb-3">
-                  <Form.Group as={Col} md="12" controlId="validationCustom01">
-                    <Form.Label>Git Repo</Form.Label>
-                    <Form.Control
-                      required
-                      type="text"
-                      placeholder="https://github.com/username/helloworld.git"
-                    />
-                    <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                  </Form.Group>
-                </Row>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  disabled={!validated}
-                  className="btn-block"
-                >
-                  Submit
-                </Button>
-              </Form>
-            </Modal.Body>
-          </Modal>
-        </Col>
-      </Row>
 
       <Row className="justify-content-md-center">
         {/* <Code code="$ yarn install" language="bash" /> */}
         <Col xs={12} sm={6} xl={4} className="mb-4">
-          <CounterWidget
-            category="Customers"
-            title="Errors"
-            period="Feb 1 - Apr 1"
-            percentage={18.2}
-            icon={faChartLine}
-            iconColor="shape-secondary"
-          />
-        </Col>
-
-        <Col xs={12} sm={6} xl={4} className="mb-4">
-          <CounterWidget
-            category="Revenue"
-            title="Warnings"
-            period="Feb 1 - Apr 1"
-            percentage={28.4}
-            icon={faCashRegister}
-            iconColor="shape-tertiary"
-          />
-        </Col>
-
-        <Col xs={12} sm={6} xl={4} className="mb-4">
-          <CircleChartWidget title="Recommendations" data={trafficShares} />
-        </Col>
-        <Col xs={12} sm={12} xl={8} className="mb-4">
-          <SalesValueWidget title="Neo4J Graph" />
-        </Col>
-        <Col xs={12} sm={12} xl={4} className="mb-4">
-          <PageVisitsTable />
+          <div className="d-flex align-items-center justify-content-center">
+            {logs.length === 0 && <Printnoresultthing />}
+          </div>
         </Col>
       </Row>
-
-      <Row>
-        <Col xs={12} className="mb-4">
-          <PageTrafficTable />
-        </Col>
-        <Col xs={12} className="mb-4">
-          <RankingTable />
-        </Col>
-        <Col xs={12} className="mb-4">
-          <TransactionsTable />
-        </Col>
-        <Col xs={12} className="mb-4">
-          <CommandsTable />
-        </Col>
-      </Row>
-    </>
+    </div>
   );
 };
 

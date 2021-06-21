@@ -1,22 +1,11 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import useLocalStorageState from "use-local-storage-state";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Routes } from "../../routes";
 import { Link } from "react-router-dom";
-import axios from "axios";
 
-import {
-  Col,
-  Row,
-  Button,
-  Card,
-  Dropdown,
-  ButtonGroup,
-  Modal,
-  Table,
-  Form,
-} from "@themesberg/react-bootstrap";
+import { Col, Row, Button, Card, Table } from "@themesberg/react-bootstrap";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 const Overview = () => {
@@ -52,21 +41,33 @@ const Overview = () => {
     var tableJsx = [];
     for (const ruleIndex in grouped) {
       var severity = Object.keys(grouped[ruleIndex])[0];
-      var numberof = Object.values(grouped[ruleIndex]);
+      var numberof = Object.values(grouped[ruleIndex])[0].length;
       var alertdetected = driverRules[ruleIndex].properties["name"];
 
-      
+      var serverityColour = "";
+
+      switch (severity) {
+        case "error":
+          serverityColour += "text-danger";
+          break;
+        case "warning":
+          serverityColour += "text-warning";
+          break;
+        default:
+          serverityColour += "text-secondary";
+          break;
+      }
 
       // all the arrays in the web browser console
-      console.log(Object.values(grouped[ruleIndex]));
+      // console.log(Object.values(grouped[ruleIndex]));
       tableJsx.push(
-        <>
-          <tr>
-            <td>{alertdetected}</td>
-            <td>{severity}</td>
-            <td>{numberof}</td>
-          </tr>
-        </>
+        <tr>
+          <td className="border-0 fw-bold">{alertdetected}</td>
+          <td className="border-0 fw-bold">
+            <span className={serverityColour}>{severity}</span>
+          </td>
+          <td className="border-0 fw-bold">{numberof}</td>
+        </tr>
       );
     }
 
@@ -80,13 +81,13 @@ const Overview = () => {
 
     // refer to CodeQLSarif.js and tplink1_snippets.sarif to see the extraction of information
 
-    console.log(logs);
+    // console.log(logs);
     if (logs.length === 0) return;
 
     var results = logs[0].runs[0].results;
     var driverRules = logs[0].runs[0].tool.driver.rules;
 
-    console.log(results);
+    // console.log(results);
     // console.log(driverRules);
     var noOfError = 0;
     var noOfWarnings = 0;
@@ -97,8 +98,6 @@ const Overview = () => {
     for (let i = 0; i < results.length; i++) {
       var severity =
         driverRules[results[i].ruleIndex].properties["problem.severity"];
-
-      var alertdetected = driverRules[results[i].ruleIndex].properties["name"];
 
       // incrementing the number of errors , warnings and recommendation which will be inputted
       // into the boxes at the top of the webpage
@@ -112,100 +111,72 @@ const Overview = () => {
       }
     }
 
-    // function Addingalertstothetable() {
-    //   for(var x=0; x < ; x++){
-    //     console.log(x)
-    //     return(
-    //       <tr>
-    //                 <td>{alertdetected}</td>
-    //                 <td>{typedetected}</td>
-    //                 <td>{x}</td>
-    //       </tr>
-    //     )
-    //   }  var counter =
-
-    // }
-
-    // prints out the results from above
-    console.log(noOfError);
-    console.log(noOfWarnings);
-    console.log(noOfRecommendation);
-    console.log(alertdetected);
-    console.log(severity);
-
     // the html that returned when there is a poroject that is analysed
     return (
       <>
-        <Row className="justify-content-between align-items-center mb-5 mb-lg-7">
-          <Col lg={4}>
-            <Card style={{ width: "18rem", backgroundColor: "#FF6565" }}>
+        <Row className="justify-content-between align-items-center mb-4">
+          <Col xs={4}>
+            <Card style={{ backgroundColor: "#FF6565" }}>
               <Card.Body>
                 <Card.Text className="h1">{noOfError}</Card.Text>
-                <Card.Text className="h4">Errors found</Card.Text>
+                <Card.Text className="h4">Errors</Card.Text>
 
-                <Card.Link href="http://localhost:3000/#/codeql-alerts">
-                  Check it out{" "}
-                </Card.Link>
+                <Card.Link href="/#/codeql-alerts">Check it out </Card.Link>
               </Card.Body>
             </Card>
           </Col>
 
-          <Col lg={4}>
-            <Card style={{ width: "18rem", backgroundColor: "yellow" }}>
+          <Col xs={4}>
+            <Card style={{ backgroundColor: "yellow" }}>
               <Card.Body>
                 <Card.Text className="h1">{noOfWarnings}</Card.Text>
-                <Card.Text className="h4">Warnings Found</Card.Text>
+                <Card.Text className="h4">Warnings</Card.Text>
 
-                <Card.Link href="http://localhost:3000/#/codeql-alerts">
-                  Check it out{" "}
-                </Card.Link>
+                <Card.Link href="/#/codeql-alerts">Check it out </Card.Link>
               </Card.Body>
             </Card>
           </Col>
 
-          <Col lg={4}>
-            <Card style={{ width: "18rem", backgroundColor: "lightgreen" }}>
+          <Col xs={4}>
+            <Card style={{ backgroundColor: "lightgreen" }}>
               <Card.Body>
                 <Card.Text className="h1">{noOfRecommendation}</Card.Text>
                 <Card.Text className="h4">Recommendations</Card.Text>
-                <Card.Link href="http://localhost:3000/#/codeql-alerts">
-                  Check it out{" "}
-                </Card.Link>
+                <Card.Link href="/#/codeql-alerts">Check it out </Card.Link>
               </Card.Body>
             </Card>
           </Col>
         </Row>
-        {/* 
-        Neo4J graph */}
+        {/* Neo4J graph */}
         <Row>
-          <Col xs={12} sm={12} xl={8} className="mb-4">
+          <Col xl={12} className="mb-4">
             <Card>
-              <Card.Title className="h1">Neo4J Graph</Card.Title>
-              EMPTY
-              <break></break>
-              EMPTY
-              <break></break>
-              EMPTY
-              <break></break>
-              EMPTY
-              <break></break>
-              EMPTY
-              <break></break>
+              <Card.Title className="h1 ms-3 mt-3">Neo4J Graph</Card.Title>
+              <Card.Body>
+                <Card.Text>EMPTY</Card.Text>
+                <Card.Text>EMPTY</Card.Text>
+                <Card.Text>EMPTY</Card.Text>
+                <Card.Text>EMPTY</Card.Text>
+              </Card.Body>
             </Card>
           </Col>
 
           {/* display the alerts */}
-          <Col xl={4} className="mb-2 ">
+          <Col xl={12} className="mb-2 ">
             <Card>
-              <Table variant="dark" striped bordered hover>
-                <thead>
+              <Table
+                responsive
+                bordered
+                hover
+                className="table-centered table-nowrap rounded mb-0"
+              >
+                <thead className="thead-light">
                   <tr>
-                    <th>Alerts Detected</th>
-                    <th>Severity</th>
-                    <th style={{ width: "10px" }}>#</th>
+                    <th className="border-0">Alerts Detected</th>
+                    <th className="border-0">Severity</th>
+                    <th className="border-0">#</th>
                   </tr>
                 </thead>
-
                 <tbody>
                   <Addingalertstothetable />
                 </tbody>
@@ -244,23 +215,8 @@ const Overview = () => {
 
   return (
     <div>
-      <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
-        <ButtonGroup>
-          <Button variant="outline-primary" size="sm">
-            Share
-          </Button>
-          <Button variant="outline-primary" size="sm">
-            Export
-          </Button>
-        </ButtonGroup>
-      </div>
-
-      <div>
-        <Row className="justify-content-md-center">
-          <Col>
-            <div>{logs.length !== 0 && <Printthejsonparsething />}</div>
-          </Col>
-        </Row>
+      <div className="mt-4">
+        {logs.length !== 0 && <Printthejsonparsething />}
       </div>
 
       <Row className="justify-content-md-center">

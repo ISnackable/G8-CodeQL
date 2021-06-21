@@ -50,10 +50,7 @@
 
 .highlight-line {
   background-color: rgba(226, 19, 19, 0.363);
-  padding-left: 4em;
-  &:before {
-    content: ""; // Able to add content with CSS2 capable browser
-  }
+  cursor: pointer;
 }
 
 .violation-groups {

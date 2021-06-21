@@ -6,8 +6,8 @@ import { FilePond } from "react-filepond";
 import "filepond/dist/filepond.min.css";
 import axios from "axios";
 import {
-  faCashRegister,
-  faChartLine,
+  // faCashRegister,
+  // faChartLine,
   faCloudUploadAlt,
   faPlus,
   faRocket,
@@ -26,21 +26,19 @@ import {
   Form,
 } from "@themesberg/react-bootstrap";
 
-import {
-  CounterWidget,
-  CircleChartWidget,
-  // BarChartWidget,
-  // TeamMembersWidget,
-  // ProgressTrackWidget,
-  // RankingWidget,
-  SalesValueWidget,
-  // SalesValueWidgetPhone,
-  // AcquisitionWidget,
-} from "../../components/Widgets";
-import {
-  ExistingProjectTable
-} from "../../components/Tables";
-import { trafficShares } from "../../data/charts";
+// import {
+//   CounterWidget,
+//   CircleChartWidget,
+//   // BarChartWidget,
+//   // TeamMembersWidget,
+//   // ProgressTrackWidget,
+//   // RankingWidget,
+//   SalesValueWidget,
+//   // SalesValueWidgetPhone,
+//   // AcquisitionWidget,
+// } from "../../components/Widgets";
+import { ExistingProjectTable } from "../../components/Tables";
+// import { trafficShares } from "../../data/charts";
 // import Code from "../../components/Code";
 
 const Dashboard = () => {
@@ -55,23 +53,24 @@ const Dashboard = () => {
     if (form.checkValidity() === false) {
       event.stopPropagation();
     }
-    handleUploadRepo(event.target[0].value)
+    handleUploadRepo(event.target[0].value);
     setValidated(true);
   };
-  const handleUploadRepo= (repoLink)=>{
-    var data={'repoLink':repoLink}
-    axios.post(`http://localhost:8080/teamname/api/projects/repo`,data)
-    .then((response)=>{
-      alert("Success")
-    })
-    .catch((error)=>{
-      alert(error)
-    })
-  }
+  const handleUploadRepo = (repoLink) => {
+    var data = { repoLink: repoLink };
+    axios
+      .post(`http://localhost:8080/teamname/api/projects/repo`, data)
+      .then((response) => {
+        alert("Success");
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  };
 
   const handleChangeGit = (event) => {
     const gitRegex = new RegExp(
-      "^[a-zA-Z]+[://@]+github.com+(/|:)?[a-zA-Z-!@#$%^&*()+]+(/)?[a-zA-Z]+\.git$"
+      "^[a-zA-Z]+[://@]+github.com+(/|:)?[a-zA-Z-!@#$%^&*()+]+(/)?[a-zA-Z]+.git$"
     );
 
     if (gitRegex.test(event.target.value)) {
@@ -80,8 +79,6 @@ const Dashboard = () => {
       setValidated(false);
     }
   };
-
-
 
   const handleShowModalOne = () => {
     setModalState("modal-one");
@@ -337,7 +334,6 @@ const Dashboard = () => {
                     </Button>
                   </Form.Group>
                 </Row>
-
               </Form>
             </Modal.Body>
           </Modal>
@@ -349,8 +345,6 @@ const Dashboard = () => {
           <ExistingProjectTable />
         </Col>
       </Row>
-
-
     </>
   );
 };

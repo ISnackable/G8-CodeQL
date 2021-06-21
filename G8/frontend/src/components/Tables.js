@@ -434,12 +434,8 @@ export const ExistingProjectTable = (props) => {
   const backend_url = `http://localhost:8080/teamname/api`;
   const [logs, setLogs] = useLocalStorageState("log", []);
 
-  // useEffect with empty array to run once after component is mounted
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const fetchData = (e) => {
+    console.log("Updating...")
     if (e) e.preventDefault();
     axios
       .get(backend_url + `/projects`)
@@ -449,7 +445,15 @@ export const ExistingProjectTable = (props) => {
       .catch((error) => {
         console.log(error);
       });
-  };
+  };  
+  // useEffect with empty array to run once after component is mounted
+  useEffect(() => {
+    fetchData()
+    var autoupdate=setInterval(() => fetchData(), 3000);
+    return()=>{
+      clearInterval(autoupdate)
+    }
+  }, []);
   const startAnalyse = (e) => {
     e.preventDefault();
     console.log(e.target.value); //This console logs the id

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleDown,
@@ -428,76 +428,94 @@ export const CommandsTable = () => {
   );
 };
 
-export const ExistingProjectTable=(props) => {
-  
+export const ExistingProjectTable = (props) => {
   //Creates state variables
-  let [responseData,setResponseData] = React.useState([])
-  const backend_url=`http://localhost:8080/teamname/api`
+  let [responseData, setResponseData] = React.useState([]);
+  const backend_url = `http://localhost:8080/teamname/api`;
   const [logs, setLogs] = useLocalStorageState("log", []);
-  const fetchData=(e) =>{
-    e.preventDefault()
-    axios.get(backend_url+`/projects`)
-    .then((response)=>{
-      setResponseData(response.data)
-    })
-    .catch((error)=>{
-      console.log(error)
-    })
-  }
-  const startAnalyse=(e) =>{
-    e.preventDefault()
-    console.log(e.target.value);//This console logs the id
-    axios.post(backend_url+`/analyses/`+e.target.value)
-    .then((response)=>{
-      alert("Success. Please wait for project to be analyzed.")
-    })
-    .catch((error)=>{
-      alert("Error: "+error)
-    })
-  }
 
-  const loadProject=(e) =>{
-    e.preventDefault()
-    console.log(e.target.value);//This console logs the id
-    axios.get(backend_url+`/analyses/`+e.target.value)
-    .then((response)=>{
-      setLogs([response.data])
+  // useEffect with empty array to run once after component is mounted
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-    })
-    .catch((error)=>{
-      alert("Error: "+error)
-    })
-  }
+  const fetchData = (e) => {
+    if (e) e.preventDefault();
+    axios
+      .get(backend_url + `/projects`)
+      .then((response) => {
+        setResponseData(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const startAnalyse = (e) => {
+    e.preventDefault();
+    console.log(e.target.value); //This console logs the id
+    axios
+      .post(backend_url + `/analyses/` + e.target.value)
+      .then((response) => {
+        alert("Success. Please wait for project to be analyzed.");
+      })
+      .catch((error) => {
+        alert("Error: " + error);
+      });
+  };
+
+  const loadProject = (e) => {
+    e.preventDefault();
+    console.log(e.target.value); //This console logs the id
+    axios
+      .get(backend_url + `/analyses/` + e.target.value)
+      .then((response) => {
+        setLogs([response.data]);
+      })
+      .catch((error) => {
+        alert("Error: " + error);
+      });
+  };
 
   const TableRow = (props) => {
-    const buildsarifbutton= (id,type,sarif_filename)=>{
-      var color=''
-      var msg=''
-      if(type==2){
-        color='success'
-        msg='Load Project'+sarif_filename
-        var functiontocall=loadProject
-      }else if(type==0){
-        color='danger'
-        msg='Analyse Project'+sarif_filename
-        var functiontocall=startAnalyse
-      }else if(type==1){
-        color='secondary'
-        msg='Processing'+sarif_filename
-        var functiontocall=fetchData
-      }else{
-        color='muted'
-        msg='Broken'
-      };
-      return <Button variant={color} size="sm" value={id} onClick={e=>functiontocall(e,"value")}>{msg}</Button>
-    }
     var { id, title, project_name, hash, sarif_filename } = props;
-    if(sarif_filename==null){
-      sarif_filename=buildsarifbutton(id,0,sarif_filename)
-    }else if(sarif_filename=='processing'){
-      sarif_filename=buildsarifbutton(id,1,sarif_filename)
-    }else{
-      sarif_filename=buildsarifbutton(id,2,sarif_filename)
+    const buildsarifbutton = (id, type, sarif_filename) => {
+      var color = "";
+      var msg = "";
+      var functiontocall;
+      if (type === 2) {
+        color = "success";
+        msg = "Load Project " + sarif_filename;
+        functiontocall = loadProject;
+      } else if (type === 0) {
+        color = "danger";
+        msg = "Analyse Project";
+        functiontocall = startAnalyse;
+      } else if (type === 1) {
+        color = "secondary";
+        msg = "Processing" + sarif_filename;
+        functiontocall = fetchData;
+      } else {
+        color = "muted";
+        msg = "Broken";
+      }
+      return (
+        <Button
+          variant={color}
+          size="sm"
+          value={id}
+          onClick={(e) => functiontocall(e, "value")}
+        >
+          {msg}
+        </Button>
+      );
+    };
+
+    if (sarif_filename == null) {
+      sarif_filename = buildsarifbutton(id, 0, sarif_filename);
+    } else if (sarif_filename === "processing") {
+      sarif_filename = buildsarifbutton(id, 1, sarif_filename);
+    } else {
+      sarif_filename = buildsarifbutton(id, 2, sarif_filename);
     }
 
     return (
@@ -525,7 +543,7 @@ export const ExistingProjectTable=(props) => {
           </Col>
         </Row>
       </Card.Header>
-      <Table responsive className="align-items-center table-flush">
+      <Table hover responsive className="align-items-center table-flush">
         <thead className="thead-light">
           <tr>
             <th scope="col">ID</th>
@@ -537,7 +555,7 @@ export const ExistingProjectTable=(props) => {
         </thead>
         <tbody>
           {responseData.map((pv) => (
-            <TableRow {...pv} />
+            <TableRow key={pv.id} {...pv} />
           ))}
         </tbody>
       </Table>

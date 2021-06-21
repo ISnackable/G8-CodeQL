@@ -154,7 +154,15 @@ exports.checkDuplicateProject = (req, res, next) => {
 // Create Database
 exports.createCodeQLDatabase = (req, res, next) => {
   const id = req.params.id;
+  projectDB.insertProcessing(id,(err,result)=>{
+    if(err){
+      console.log(err);
+      res.status(500).send("Something went wrong! Server side.")
+      return;
+    }
+  })
 
+  
   const args = [
     "database", // first argv
     "create", // second argv
@@ -167,6 +175,13 @@ exports.createCodeQLDatabase = (req, res, next) => {
   // Let the database finish creating or db-javascript will be missing.
   var child = execFile("codeql", args, (error, stdout, stderr) => {
     if (error) {
+      projectDB.insertSarifFilenameError(id,(err,result)=>{
+        if(err){
+          console.log(err);
+          res.status(500).send("Something went wrong! Server side.")
+          return
+        }
+      })
       console.error(error);
       console.error(`stderr: ${stderr}`);
       if (stderr.includes("Invalid source root")) {

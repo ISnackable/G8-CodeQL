@@ -460,7 +460,7 @@ export const ExistingProjectTable = (props) => {
     axios
       .post(backend_url + `/analyses/` + e.target.value)
       .then((response) => {
-        alert("Success. Please wait for project to be analyzed.");
+        alert("Success. Project has been analyzed!");
       })
       .catch((error) => {
         alert("Error: " + error);
@@ -488,7 +488,7 @@ export const ExistingProjectTable = (props) => {
       var functiontocall;
       if (type === 2) {
         color = "success";
-        msg = "Load Project " + sarif_filename;
+        msg = "Load Project ";
         functiontocall = loadProject;
       } else if (type === 0) {
         color = "danger";
@@ -496,7 +496,11 @@ export const ExistingProjectTable = (props) => {
         functiontocall = startAnalyse;
       } else if (type === 1) {
         color = "secondary";
-        msg = "Processing" + sarif_filename;
+        msg = "Processing";
+        functiontocall = fetchData;
+      } else if (type === 3) {
+        color = "danger";
+        msg = "Error";
         functiontocall = fetchData;
       } else {
         color = "muted";
@@ -518,6 +522,8 @@ export const ExistingProjectTable = (props) => {
       sarif_filename = buildsarifbutton(id, 0, sarif_filename);
     } else if (sarif_filename === "processing") {
       sarif_filename = buildsarifbutton(id, 1, sarif_filename);
+    } else if (sarif_filename === "error") {
+      sarif_filename = buildsarifbutton(id, 3, sarif_filename);
     } else {
       sarif_filename = buildsarifbutton(id, 2, sarif_filename);
     }

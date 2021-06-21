@@ -8,6 +8,10 @@ class DragAndDrop extends Component {
     };
 
     this.dragCounter = 0;
+    this.handleDrag = this.handleDrag.bind(this);
+    this.handleDragIn = this.handleDragIn.bind(this);
+    this.handleDragOut = this.handleDragOut.bind(this);
+    this.handleDrop = this.handleDrop.bind(this);
   }
 
   handleDrag(event) {
@@ -52,18 +56,18 @@ class DragAndDrop extends Component {
 
   componentDidMount() {
     let el = document.body;
-    el.addEventListener("dragenter", (event) => this.handleDragIn(event));
-    el.addEventListener("dragleave", (event) => this.handleDragOut(event));
-    el.addEventListener("dragover", (event) => this.handleDrag(event));
-    el.addEventListener("drop", (event) => this.handleDrop(event));
+    el.addEventListener("dragenter", this.handleDragIn);
+    el.addEventListener("dragleave", this.handleDragOut);
+    el.addEventListener("dragover", this.handleDrag);
+    el.addEventListener("drop", this.handleDrop);
   }
 
   componentWillUnmount() {
     let el = document.body;
-    el.removeEventListener("dragenter", (event) => this.handleDragIn(event));
-    el.removeEventListener("dragleave", (event) => this.handleDragOut(event));
-    el.removeEventListener("dragover", (event) => this.handleDrag(event));
-    el.removeEventListener("drop", (event) => this.handleDrop(event));
+    el.removeEventListener("dragenter", this.handleDragIn);
+    el.removeEventListener("dragleave", this.handleDragOut);
+    el.removeEventListener("dragover", this.handleDrag);
+    el.removeEventListener("drop", this.handleDrop);
   }
 
   render() {

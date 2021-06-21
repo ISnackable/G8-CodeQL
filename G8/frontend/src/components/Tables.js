@@ -477,7 +477,7 @@ export const ExistingProjectTable = (props) => {
   };
 
   const TableRow = (props) => {
-    var { id, title, project_name, hash, sarif_filename } = props;
+    var { id, project_name, hash, sarif_filename, created_at} = props;
     const buildsarifbutton = (id, type, sarif_filename) => {
       var color = "";
       var msg = "";
@@ -521,9 +521,9 @@ export const ExistingProjectTable = (props) => {
     return (
       <tr>
         <th scope="row">{id}</th>
-        <td>{title}</td>
         <td>{project_name}</td>
         <td>{hash}</td>
+        <td>{created_at}</td>
         <td>{sarif_filename}</td>
       </tr>
     );
@@ -547,9 +547,9 @@ export const ExistingProjectTable = (props) => {
         <thead className="thead-light">
           <tr>
             <th scope="col">ID</th>
-            <th scope="col">Title</th>
-            <th scope="col">Project</th>
+            <th scope="col">Project Title</th>
             <th scope="col">Checksum</th>
+            <th scope="col">Date</th>
             <th scope="col">Status</th>
           </tr>
         </thead>

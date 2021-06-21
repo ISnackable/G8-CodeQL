@@ -9,12 +9,13 @@ import {
   faChartPie,
   faCog,
   faFileAlt,
-  faHandHoldingUsd,
   faSignOutAlt,
   faTable,
   faTimes,
   faSearch,
+  faBug,
 } from "@fortawesome/free-solid-svg-icons";
+import { faCodepen } from "@fortawesome/free-brands-svg-icons";
 import {
   Nav,
   Badge,
@@ -126,7 +127,11 @@ const Sidebar = (props = {}) => {
         variant="dark"
         className="navbar-theme-primary px-4 d-md-none"
       >
-        <Navbar.Brand className="me-lg-5" as={Link} to={Routes.Overview.path}>
+        <Navbar.Brand
+          className="me-lg-5"
+          as={Link}
+          to={Routes.Presentation.path}
+        >
           <Image src={G8Logo} className="navbar-brand-light" />
         </Navbar.Brand>
         <Navbar.Toggle
@@ -185,11 +190,11 @@ const Sidebar = (props = {}) => {
               <NavItem
                 title="Overview"
                 link={Routes.Overview.path}
-                icon={faChartPie}
+                icon={faCodepen}
               />
               <NavItem
                 title="CodeQL Alerts"
-                icon={faHandHoldingUsd}
+                icon={faBug}
                 link={Routes.CodeQLAlerts.path}
               />
               {/* 

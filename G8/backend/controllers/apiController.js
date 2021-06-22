@@ -330,8 +330,7 @@ exports.repoUpload = (req, res) => {
                     .send({ message: "Repository already exist on server." });
                 } else {
                   console.log(result);
-                  var matchRepoName =
-                    /^(?:git@|https:\/\/)github.com[:/](.*).git$/;
+                  var matchRepoName =/^(?:git@|https:\/\/)(?:github|gitlab).com[:/](.*).git$/;
                   var data = {
                     projectName: repoLink.match(matchRepoName)[1],
                     hash: hash,

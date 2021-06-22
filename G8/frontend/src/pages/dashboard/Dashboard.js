@@ -70,7 +70,7 @@ const Dashboard = () => {
 
   const handleChangeGit = (event) => {
     const gitRegex = new RegExp(
-      "^[a-zA-Z]+[://@]+github.com+(/|:)?[a-zA-Z-!@#$%^&*()+]+(/)?[a-zA-Z]+.git$"
+      "^[a-zA-Z]+[://@]+(github|gitlab).com+(\/|:)?[a-zA-Z-!@#$%^&*()+]+(\/)?[a-zA-Z-!@#$%^&*()]+\.git$"
     );
 
     if (gitRegex.test(event.target.value)) {

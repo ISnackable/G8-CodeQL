@@ -136,6 +136,42 @@ var projectDB = {
       }
     });
   },
+
+  insertProcessing: function (id, callback) {
+    console.log("projectDB.insertProcessing()");
+
+    let sql = "UPDATE projects SET sarif_filename = ? WHERE id = ?";
+    db.query(sql, ["processing", id], function (err, result) {
+      if (err) {
+        console.error(err);
+        return callback(err, null);
+      } else if (result.affectedRows == 1) {
+        console.log("Sarif file name \"processing\" added to database");
+        return callback(null, result);
+      } else {
+        console.log("Database update failed.");
+        return callback(null, result.affectedRows);
+      }
+    });
+  },
+
+  insertSarifFilenameError: function (id, callback) {
+    console.log("projectDB.insertProcessing()");
+
+    let sql = "UPDATE projects SET sarif_filename = ? WHERE id = ?";
+    db.query(sql, ['error', id], function (err, result) {
+      if (err) {
+        console.error(err);
+        return callback(err, null);
+      } else if (result.affectedRows == 1) {
+        console.log("Sarif file name \"null\" added to database");
+        return callback(null, result);
+      } else {
+        console.log("Database update failed.");
+        return callback(null, result.affectedRows);
+      }
+    });
+  },
 };
 
 module.exports = projectDB;

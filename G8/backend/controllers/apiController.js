@@ -179,13 +179,8 @@ exports.query = (req, res, next) => {
 // };
 
 exports.folderUpload = (req, res, next) => {
-  try {
-    //Deletes or try to delete temporary folder before using
-    fs.rmdirSync("./uploads/temporaryMulterUpload", { recursive: true });
-    console.log(`./uploads/temporaryMulterUpload is deleted!`);
-  } catch (err) {
-    console.error(`Error while deleting ${dir}.`);
-  }
+  if (fs.existsSync("./uploads/temporaryMulterUpload"))
+    return res.status(409).send({ message: "A project is being uploaded" });
 
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
@@ -275,15 +270,10 @@ exports.folderUpload = (req, res, next) => {
     Two folders have the same content but different names
   */
 exports.repoUpload = (req, res) => {
-  try {
-    //Deletes or try to delete temporary folder before using
-    fs.rmdirSync("./uploads/temporaryGitClone", { recursive: true });
-    console.log(`./uploads/temporaryGitClone is deleted!`);
-  } catch (err) {
-    console.error(`Error while deleting ${dir}.`);
-  }
-  let repoLinkRegExp =
-    /^((http(s)?)|(git@[\w.]+))(:(\/\/)?)([\w.@:/\-~]+)(\.git)(\/)?$/;
+  if (fs.existsSync("./uploads/temporaryGitClone"))
+    return res.status(409).send({ message: "A project is being uploaded" });
+
+  let repoLinkRegExp = /^(http(s)?)(:(\/\/)?)([\w.@:/\-~]+)(\.git)(\/)?$/;
   var repoLink = req.body.repoLink;
   if (!repoLinkRegExp.test(repoLink)) {
     //Checking using regex.
@@ -293,7 +283,7 @@ exports.repoUpload = (req, res) => {
   try {
     execFile(
       "git",
-      ["clone", req.body.repoLink, "./uploads/" + "temporaryGitClone"],
+      ["clone", repoLink, "./uploads/" + "temporaryGitClone"],
       (error, stdout, stderr) => {
         if (error) {
           console.error("stderr", stderr);
@@ -322,12 +312,32 @@ exports.repoUpload = (req, res) => {
                   console.log(
                     "Database already exist, sending response back to frontend."
                   );
+                  try {
+                    //Deletes temporary folder
+                    fs.rmdirSync(`./uploads/temporaryGitClone`, {
+                      recursive: true,
+                    });
+                    console.log(`./uploads/temporaryGitClone is deleted!`);
+                    console.log(
+                      "Database already exist, sending response back to frontend."
+                    );
+                  } catch (err) {
+                    console.error(
+                      `Error while deleting ./uploads/temporaryGitClone.`
+                    );
+                  }
                   res
                     .status(409)
                     .send({ message: "Repository already exist on server." });
                 } else {
                   console.log(result);
-                  var matchRepoName =/^(?:git@|https:\/\/)(?:github|gitlab).com[:/](.*).git$/;
+
+                  // git@github.com:user/repo.git
+                  // ssh://login@server.com:12345/absolute/path/to/repository
+                  // https://<your_username>@bitbucket.org/<workspace_ID>/<repo_name>.git
+                  // https://emmap1@bitbucket.org/tutorials/tutorials.git.bitbucket.org.git
+                  // https://github.com:ISnackable/DISMFYP2021GRP8.git
+                  var matchRepoName = /^(?:git@|https:\/\/).*[:/](.*).git$/;
                   var data = {
                     projectName: repoLink.match(matchRepoName)[1],
                     hash: hash,
@@ -368,15 +378,6 @@ exports.repoUpload = (req, res) => {
             });
           }
         );
-        // hashElement("./temporaryGitClone", "./uploads/", options).then(
-        //   (hash) => {
-        //     console.log(hash);
-        //     //--Insert code to check duplicate
-        //     console.log(hash.hash);
-
-        //   }
-        // );
-        // ----Insert code for renaming repository folder----
       }
     );
   } catch (error) {

@@ -6,10 +6,17 @@ console.log("------------------------------------");
 // load modules
 // ------------------------------------------------------
 const express = require("express");
+const rateLimit = require("express-rate-limit");
 const router = express.Router();
 const apiController = require("../controllers/apiController");
 const middlewares = require("../middlewares");
 
+const createProjectLimiter = rateLimit({
+  windowMs: 1 * 10 * 1000, // 10 seconds
+  max: 2, // limit each IP to 2 requests per windowMs
+  message:
+    "Too many project created from this IP, please try again after an hour",
+});
 // ------------------------------------------------------
 // end points
 // ------------------------------------------------------
@@ -38,12 +45,13 @@ router.get("/projects/:id", apiController.getProjectById);
 // upload project with multer
 router.post(
   "/projects/folder",
+  createProjectLimiter,
   apiController.folderUpload,
   middlewares.checkDuplicateProject
 );
 
 // upload project with git
-router.post("/projects/repo", apiController.repoUpload);
+router.post("/projects/repo", createProjectLimiter, apiController.repoUpload);
 
 // router.get("/verifySarifFile", apiController.verifySarifFile);
 

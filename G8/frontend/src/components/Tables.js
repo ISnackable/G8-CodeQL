@@ -432,10 +432,11 @@ export const ExistingProjectTable = (props) => {
   //Creates state variables
   let [responseData, setResponseData] = React.useState([]);
   const backend_url = `http://localhost:8080/teamname/api`;
+  // eslint-disable-next-line no-unused-vars
   const [logs, setLogs] = useLocalStorageState("log", []);
 
   const fetchData = (e) => {
-    console.log("Updating...")
+    // console.log("Updating...");
     if (e) e.preventDefault();
     axios
       .get(backend_url + `/projects`)
@@ -445,18 +446,19 @@ export const ExistingProjectTable = (props) => {
       .catch((error) => {
         console.log(error);
       });
-  };  
+  };
   // useEffect with empty array to run once after component is mounted
   useEffect(() => {
-    fetchData()
-    var autoupdate=setInterval(() => fetchData(), 3000);
-    return()=>{
-      clearInterval(autoupdate)
-    }
+    fetchData();
+    var autoupdate = setInterval(() => fetchData(), 3000);
+    return () => {
+      clearInterval(autoupdate);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const startAnalyse = (e) => {
     e.preventDefault();
-    console.log(e.target.value); //This console logs the id
+    // console.log(e.target.value); //This console logs the id
     axios
       .post(backend_url + `/analyses/` + e.target.value)
       .then((response) => {
@@ -469,7 +471,7 @@ export const ExistingProjectTable = (props) => {
 
   const loadProject = (e) => {
     e.preventDefault();
-    console.log(e.target.value); //This console logs the id
+    // console.log(e.target.value); //This console logs the id
     axios
       .get(backend_url + `/analyses/` + e.target.value)
       .then((response) => {
@@ -481,7 +483,7 @@ export const ExistingProjectTable = (props) => {
   };
 
   const TableRow = (props) => {
-    var { id, project_name, hash, sarif_filename, created_at} = props;
+    var { id, project_name, hash, sarif_filename, created_at } = props;
     const buildsarifbutton = (id, type, sarif_filename) => {
       var color = "";
       var msg = "";

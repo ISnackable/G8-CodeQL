@@ -54,24 +54,27 @@ const Dashboard = () => {
       event.stopPropagation();
     }
     handleUploadRepo(event.target[0].value);
-    setValidated(true);
+    setValidated(false);
   };
   const handleUploadRepo = (repoLink) => {
     var data = { repoLink: repoLink };
     axios
       .post(`http://localhost:8080/teamname/api/projects/repo`, data)
       .then((response) => {
+        setValidated(true);
         alert("Success");
       })
       .catch((error) => {
+        setValidated(true);
         alert(error);
       });
   };
 
   const handleChangeGit = (event) => {
-    const gitRegex = new RegExp(
-      "^[a-zA-Z]+[://@]+(github|gitlab).com+(\/|:)?[a-zA-Z-!@#$%^&*()+]+(\/)?[a-zA-Z-!@#$%^&*()]+\.git$"
-    );
+    // const gitRegex = new RegExp(
+    //   "^[a-zA-Z]+[://@]+(github|gitlab).com+(\/|:)?[a-zA-Z-!@#$%^&*()+]+(\/)?[a-zA-Z-!@#$%^&*()]+\.git$"
+    // );
+    const gitRegex = /^(http(s)?)(:(\/\/)?)([\w.@:/~-]+)(\.git)(\/)?$/;
 
     if (gitRegex.test(event.target.value)) {
       setValidated(true);
@@ -314,7 +317,7 @@ const Dashboard = () => {
                 onChange={handleChangeGit}
               >
                 <Row className="mb-3">
-                  <Form.Group as={Col} md="12" controlId="validationCustom01">
+                  <Form.Group as={Col} md="12">
                     <Form.Label>Git Repo</Form.Label>
                     <Form.Control
                       required

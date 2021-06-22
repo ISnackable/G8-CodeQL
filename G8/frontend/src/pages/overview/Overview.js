@@ -9,11 +9,17 @@ import { Col, Row, Button, Card, Table } from "@themesberg/react-bootstrap";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 const Overview = () => {
+  // eslint-disable-next-line no-unused-vars
   const [logs, setLogs] = useLocalStorageState("log", []); // setlog function is a function to replace it
   // function to parse the information from the sarif file into readable human format
 
   function Addingalertstothetable() {
     if (logs.length === 0) return;
+    if (
+      logs[0].runs[0]?.results === undefined ||
+      logs[0].runs[0]?.tool.driver.name !== "CodeQL"
+    )
+      return;
 
     var results = logs[0].runs[0].results;
     var driverRules = logs[0].runs[0].tool.driver.rules;
@@ -216,14 +222,19 @@ const Overview = () => {
   return (
     <div>
       <div className="mt-4">
-        {logs.length !== 0 && <Printthejsonparsething />}
+        {logs.length && logs[0]?.runs[0]?.tool.driver.name === "CodeQL" && (
+          <Printthejsonparsething />
+        )}
       </div>
 
       <Row className="justify-content-md-center">
         {/* <Code code="$ yarn install" language="bash" /> */}
         <Col xs={12} sm={6} xl={4} className="mb-4">
           <div className="d-flex align-items-center justify-content-center">
-            {logs.length === 0 && <Printnoresultthing />}
+            {!logs.length &&
+              logs[0]?.runs[0]?.tool.driver.name !== "CodeQL" && (
+                <Printnoresultthing />
+              )}
           </div>
         </Col>
       </Row>

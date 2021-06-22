@@ -23,6 +23,7 @@ import SnippetModal from "../components/SnippetModal";
 import useLocalStorageState from "use-local-storage-state";
 
 const CodeQLAlerts = () => {
+  // eslint-disable-next-line no-unused-vars
   const [logs, setLogs] = useLocalStorageState("log", []);
   const [items, setItems] = useState([]);
   const [snippets, setSnippets] = useState([]);
@@ -237,6 +238,7 @@ const CodeQLAlerts = () => {
       return text.match(rxLink)
         ? text.split(/(\[[^\]]*\]\([^)]+\))/g).map((item, i) => {
             if (i % 2 === 0) return item;
+            // eslint-disable-next-line no-unused-vars
             const [_, text, id] = item.match(rxLink); // Safe since it was split by the same RegExp.
             return (
               <code key={i} href={id}>

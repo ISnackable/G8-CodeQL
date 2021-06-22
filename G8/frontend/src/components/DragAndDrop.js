@@ -8,12 +8,21 @@ class DragAndDrop extends Component {
     };
 
     this.dragCounter = 0;
+    this.handleDragStart = this.handleDragStart.bind(this);
     this.handleDrag = this.handleDrag.bind(this);
     this.handleDragIn = this.handleDragIn.bind(this);
     this.handleDragOut = this.handleDragOut.bind(this);
     this.handleDrop = this.handleDrop.bind(this);
   }
 
+  handleDragStart(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+      event.dataTransfer.clearData();
+    }
+  }
   handleDrag(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -49,13 +58,13 @@ class DragAndDrop extends Component {
 
     if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
       this.props.handleDrop(event.dataTransfer.files);
-      event.dataTransfer.clearData();
       this.dragCounter = 0;
     }
   }
 
   componentDidMount() {
     let el = document.body;
+    el.addEventListener("dragstart", this.handleDragStart);
     el.addEventListener("dragenter", this.handleDragIn);
     el.addEventListener("dragleave", this.handleDragOut);
     el.addEventListener("dragover", this.handleDrag);
@@ -64,6 +73,7 @@ class DragAndDrop extends Component {
 
   componentWillUnmount() {
     let el = document.body;
+    el.removeEventListener("dragstart", this.handleDragStart);
     el.removeEventListener("dragenter", this.handleDragIn);
     el.removeEventListener("dragleave", this.handleDragOut);
     el.removeEventListener("dragover", this.handleDrag);

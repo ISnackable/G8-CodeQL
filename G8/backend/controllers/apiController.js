@@ -104,7 +104,7 @@ exports.query = (req, res, next) => {
         "--sarif-add-snippets", // include code snippets for each location mentioned in the results
         `./databases/database${id}`, // our database to scan
         "../../codeql/javascript/ql/src/codeql-suites/javascript-security-extended.qls",
-        "--search-path=../../codeql/misc/suite-helpers" // maybe change? seem like different QL pack use different suite-helpers
+        "--search-path=../../codeql/misc/suite-helpers", // maybe change? seem like different QL pack use different suite-helpers
       ];
 
       // Run CodeQL query command, sarif output file is stored in ./SarifFiles
@@ -302,11 +302,6 @@ exports.repoUpload = (req, res) => {
         //For debugging purposes on the backend
         console.log("stdout", stdout);
         console.error(`stderr: ${stderr}`);
-        const options = {
-          algo: "md5",
-          encoding: "hex",
-          folders: { exclude: ["node_modules"] },
-        };
         execFile(
           "git",
           ["-C", "./uploads/temporaryGitClone", "rev-parse", "HEAD"],

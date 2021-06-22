@@ -83,7 +83,7 @@ exports.checkDuplicateProject = (req, res, next) => {
   let projectName = req.projectName;
 
   const options = {
-    algo: "md5",
+    algo: "sha1",
     encoding: "hex",
     folders: { ignoreRootName: true, exclude: ["node_modules"] },
   };
@@ -160,7 +160,7 @@ exports.createCodeQLDatabase = (req, res, next) => {
     "database", // first argv
     "create", // second argv
     `./databases/database${id}`, // database name to be created
-    `--source-root=./`, // source code folder
+    `--source-root=./uploads/${id}`, // source code folder
     "--language=javascript", // programming language
   ];
 
@@ -228,10 +228,6 @@ exports.createNeo4J = (req, res) => {
       var FileName = new Array();
       var ResultArr = new Array();
 
-      var noOfError = 0,
-        noOfWarnings = 0,
-        noOfRecommendation = 0;
-      console.time("forofloop");
       var queries = new Array();
       var _loop_1 = function (result) {
         var index = driverRules.findIndex(function (x) {
@@ -285,7 +281,9 @@ exports.createNeo4J = (req, res) => {
       var CreateQuery = "";
       var NoDupeQuery = Array.from(new Set(qNameArr));
       for (a = 1; a <= NoDupeQuery.length; a++) {
-        CreateQuery += `CREATE (Q${a}:Query {Query:"${NoDupeQuery[a - 1]}", ProjectID:"${id}"})\n`;
+        CreateQuery += `CREATE (Q${a}:Query {Query:"${
+          NoDupeQuery[a - 1]
+        }", ProjectID:"${id}"})\n`;
       }
 
       var CFCounter = 1;
@@ -295,7 +293,9 @@ exports.createNeo4J = (req, res) => {
       // For loop to loop through each different file available
       // Create File
       for (i = 0; i < NoDupeFile.length; i++) {
-        CreateQuery += `\nCREATE (F${i + 1}:File {File:"${NoDupeFile[i]}", ProjectID:"${id}"})\n`;
+        CreateQuery += `\nCREATE (F${i + 1}:File {File:"${
+          NoDupeFile[i]
+        }", ProjectID:"${id}"})\n`;
 
         // Checks if current file name is related to the query by comparing rule id
         // Loops through all alerts
@@ -326,8 +326,12 @@ exports.createNeo4J = (req, res) => {
               // RuleID is paired with QueryName to create a child
               // CREATE (t)-[:CHILD]->(parent)
               if (RuleIDArr[b][1] == NoDupeQuery[c]) {
-                CreateQuery += `CREATE (A${b + 1})-[:Child {ProjectID:"${id}"}]->(F${i + 1})\n`;
-                CreateQuery += `CREATE (A${b + 1})-[:Child {ProjectID:"${id}"}]->(Q${c + 1})\n`;
+                CreateQuery += `CREATE (A${
+                  b + 1
+                })-[:Child {ProjectID:"${id}"}]->(F${i + 1})\n`;
+                CreateQuery += `CREATE (A${
+                  b + 1
+                })-[:Child {ProjectID:"${id}"}]->(Q${c + 1})\n`;
               }
             } // End of Create Child
 

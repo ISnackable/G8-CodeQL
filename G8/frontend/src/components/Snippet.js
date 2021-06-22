@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
-// import { Button } from "@themesberg/react-bootstrap";
 import Highlight, { Prism } from "prism-react-renderer";
 import themeStyle from "../assets/syntax-themes/ghcolors.json";
 import DOMPurify from "dompurify";
@@ -29,6 +28,11 @@ const LineContent = styled.span``;
 const Snippet = (props) => {
   const { ploc, language = "javascript" } = props;
   const elementRef = useRef(null);
+
+  const [showResults, setShowResults] = React.useState(false);
+  const showSnippets = () => {
+    setShowResults(true);
+  };
 
   if (!ploc) return null;
   const { region, contextRegion } = ploc;
@@ -87,6 +91,51 @@ const Snippet = (props) => {
     return <div ref={elementRef}>{children}</div>;
   };
 
+  if (code.length > 10000) {
+    return (
+      <>
+        {!showResults ? (
+          <div className="highlight-line h6 p-2" onClick={showSnippets}>
+            <small>
+              Note: Snippet are hidden for performance reason, code length:{" "}
+              {code.length}. <b>Click to reveal code</b>.
+            </small>
+          </div>
+        ) : null}
+        {showResults ? (
+          <Highlight
+            Prism={Prism}
+            code={`${pre}${hi}${post}`}
+            language={language}
+            theme={themeStyle}
+          >
+            {({ className, style, tokens, getLineProps, getTokenProps }) => (
+              <Pre className={className} style={style}>
+                {tokens.map((line, i) => {
+                  if (contextRegion.startLine) i += contextRegion.startLine;
+                  return (
+                    <>
+                      <Line key={i} {...getLineProps({ line, key: i })}>
+                        <LineNo>{i}</LineNo>
+                        <LineContent>
+                          {line.map((token, key) => (
+                            <span
+                              key={key}
+                              {...getTokenProps({ token, key })}
+                            />
+                          ))}
+                        </LineContent>
+                      </Line>
+                    </>
+                  );
+                })}
+              </Pre>
+            )}
+          </Highlight>
+        ) : null}
+      </>
+    );
+  }
   return (
     <SuperHighlighter>
       <Highlight

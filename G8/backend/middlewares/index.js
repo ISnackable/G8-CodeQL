@@ -260,67 +260,12 @@ exports.createNeo4J = (req, res) => {
 
         // Query Name
         qNameArr.push(driverRules[index].properties.name);
-
         ResultArr.push(result);
-
-        console.log(
-          "<<==============================++++   QUERY INFO   +++======================================>>"
-        );
-        console.log("> queryName: " + driverRules[index].properties.name);
-        console.log("> queryTags: " + driverRules[index].properties.tags);
-        console.log(
-          "> queryDescription: " + driverRules[index].fullDescription.text
-        );
-        console.log(
-          "> querySeverity: " +
-            driverRules[index].properties["problem.severity"]
-        );
-        console.log(
-          "\n-----------------------------------  RESULT INFO ----------------------------------------------------"
-        );
-        console.log("> ruleId: " + result.ruleId);
-        console.log("> message.text: " + result.message.text);
-        console.log(
-          "> locations[0].physicalLocation.artifactLocation.uri: " +
-            result.locations[0].physicalLocation.artifactLocation.uri
-        );
-        console.log(
-          "> locations[0].physicalLocation.region: " +
-            JSON.stringify(result.locations[0].physicalLocation.region)
-        );
-        console.log(
-          "> locations[0].physicalLocation.contextRegion?.snippet?.text: \n" +
-            ((_b =
-              (_a = result.locations[0].physicalLocation.contextRegion) ===
-                null || _a === void 0
-                ? void 0
-                : _a.snippet) === null || _b === void 0
-              ? void 0
-              : _b.text)
-        );
-        console.log(
-          "> result.codeFlows?.[0].threadFlows[0].locations: " +
-            ((_d =
-              (_c = result.codeFlows) === null || _c === void 0
-                ? void 0
-                : _c[0].threadFlows[0].locations) !== null && _d !== void 0
-              ? _d
-              : "NOTHING")
-        );
-        console.log(
-          "<<==============================================================================================>>\n"
-        );
       };
       for (var _i = 0, results_1 = results; _i < results_1.length; _i++) {
         var result = results_1[_i];
         _loop_1(result);
       }
-      console.timeEnd("forofloop");
-      console.log("number of alerts: " + results.length);
-      console.log("number of errors: " + noOfError);
-      console.log("number of warning: " + noOfWarnings);
-      console.log("number of recommendation: " + noOfRecommendation);
-      console.log("number of queries " + queries.length);
 
       // Replaces " " and "-" with "_" in each array element
       for (i = 0; i < qNameArr.length; i++) {
@@ -340,7 +285,7 @@ exports.createNeo4J = (req, res) => {
       var CreateQuery = "";
       var NoDupeQuery = Array.from(new Set(qNameArr));
       for (a = 1; a <= NoDupeQuery.length; a++) {
-        CreateQuery += `CREATE (Q${a}:Query {Query:"${NoDupeQuery[a - 1]}"})\n`;
+        CreateQuery += `CREATE (Q${a}:Query {Query:"${NoDupeQuery[a - 1]}", ProjectID:"${id}"})\n`;
       }
 
       var CFCounter = 1;
@@ -350,7 +295,7 @@ exports.createNeo4J = (req, res) => {
       // For loop to loop through each different file available
       // Create File
       for (i = 0; i < NoDupeFile.length; i++) {
-        CreateQuery += `\nCREATE (F${i + 1}:File {File:"${NoDupeFile[i]}"})\n`;
+        CreateQuery += `\nCREATE (F${i + 1}:File {File:"${NoDupeFile[i]}", ProjectID:"${id}"})\n`;
 
         // Checks if current file name is related to the query by comparing rule id
         // Loops through all alerts
@@ -373,7 +318,7 @@ exports.createNeo4J = (req, res) => {
               ResultArr[b].locations[0].physicalLocation.artifactLocation.uri
             }', StartEndLine:'${JSON.stringify(
               ResultArr[b].locations[0].physicalLocation.region
-            )}'})\n`;
+            )}', ProjectID:"${id}"})\n`;
 
             // Loops through all queries
             // Create Child
@@ -381,8 +326,8 @@ exports.createNeo4J = (req, res) => {
               // RuleID is paired with QueryName to create a child
               // CREATE (t)-[:CHILD]->(parent)
               if (RuleIDArr[b][1] == NoDupeQuery[c]) {
-                CreateQuery += `CREATE (A${b + 1})-[:Child]->(F${i + 1})\n`;
-                CreateQuery += `CREATE (A${b + 1})-[:Child]->(Q${c + 1})\n`;
+                CreateQuery += `CREATE (A${b + 1})-[:Child {ProjectID:"${id}"}]->(F${i + 1})\n`;
+                CreateQuery += `CREATE (A${b + 1})-[:Child {ProjectID:"${id}"}]->(Q${c + 1})\n`;
               }
             } // End of Create Child
 
@@ -417,18 +362,18 @@ exports.createNeo4J = (req, res) => {
 
                 // Replaces " with ' to avoid conflicts/errors
                 CFMsg = CFMsg.replace(/[\"]/g, "'");
-                CreateQuery += `CREATE (CF${CFCounter}:CodeFlows {Message:"${CFMsg}", StartEndLine:'${CFStartEnd}'})\n`;
+                CreateQuery += `CREATE (CF${CFCounter}:CodeFlows {Message:"${CFMsg}", StartEndLine:'${CFStartEnd}', ProjectID:"${id}"})\n`;
                 // Create Code Flow Childs
                 if (z == 0) {
                   // Checks if in a new loop (Creating code flows for another Alert)
                   // Creates Child for current Alert it is looping on
-                  CreateQuery += `CREATE (CF${CFCounter})-[:Child]->(A${
+                  CreateQuery += `CREATE (CF${CFCounter})-[:Child {ProjectID:"${id}"}]->(A${
                     b + 1
                   })\n`;
                 } else {
                   CreateQuery += `CREATE (CF${
                     CFCounter - 1
-                  })-[:Child]->(CF${CFCounter})\n`;
+                  })-[:Child {ProjectID:"${id}"}]->(CF${CFCounter})\n`;
                 }
                 CFCounter++;
               }
@@ -449,6 +394,7 @@ exports.createNeo4J = (req, res) => {
         CreateQuery +
         `WITH 1 as dummy
         Match (n)-[r]->(m)
+        WHERE n.ProjectID = "${id}" AND r.ProjectID = "${id}" AND m.ProjectID = "${id}"
         Return n,r,m`;
 
       const session = driver.session({ database: "neo4j" });

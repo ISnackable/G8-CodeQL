@@ -82,7 +82,7 @@ exports.getProjectById = (req, res) => {
 };
 
 // Query current database number in the counter
-exports.query = (req, res) => {
+exports.query = (req, res, next) => {
   const id = req.params.id;
   const CodeQLpath = `./databases/database${id}/db-javascript`;
   // Checking if db-javascript folder exists in the database
@@ -103,7 +103,8 @@ exports.query = (req, res) => {
         `--output=./SarifFiles/${id}.sarif`, // output file as id.sarif in ./SarifFiles/
         "--sarif-add-snippets", // include code snippets for each location mentioned in the results
         `./databases/database${id}`, // our database to scan
-        "../../codeql/javascript/ql/src/Security/CWE-078/CommandInjection.ql", // maybe change? seem like different QL pack use different suite-helpers
+        "../../codeql/javascript/ql/src/codeql-suites/javascript-security-extended.qls",
+        "--search-path=../../codeql/misc/suite-helpers", // maybe change? seem like different QL pack use different suite-helpers
       ];
 
       // Run CodeQL query command, sarif output file is stored in ./SarifFiles
@@ -132,6 +133,7 @@ exports.query = (req, res) => {
                     console.log(options);
                     console.log("Sent:", SarifFilePath);
                     res.end();
+                    next();
                   }
                 });
               } else {
@@ -300,11 +302,6 @@ exports.repoUpload = (req, res) => {
         //For debugging purposes on the backend
         console.log("stdout", stdout);
         console.error(`stderr: ${stderr}`);
-        const options = {
-          algo: "md5",
-          encoding: "hex",
-          folders: { exclude: ["node_modules"] },
-        };
         execFile(
           "git",
           ["-C", "./uploads/temporaryGitClone", "rev-parse", "HEAD"],

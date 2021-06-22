@@ -1,5 +1,7 @@
-import React from "react";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState, useEffect } from "react";
+import { Routes } from "../routes";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Accordion,
   Col,
@@ -10,38 +12,24 @@ import {
   Button,
   Breadcrumb,
 } from "@themesberg/react-bootstrap";
-// import InfiniteScroll from "react-infinite-scroll-component";
+import {
+  faInfoCircle,
+  faExternalLinkAlt,
+  faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import InfiniteScroll from "react-infinite-scroll-component";
 import Snippet from "../components/Snippet";
 import SnippetModal from "../components/SnippetModal";
 import useLocalStorageState from "use-local-storage-state";
 
 const CodeQLAlerts = () => {
   const [logs, setLogs] = useLocalStorageState("log", []);
-  // const [hasMore, setHasMore] = useState(true);
+  const [items, setItems] = useState([]);
+  const [snippets, setSnippets] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
 
-  function renderMessageTextWithEmbeddedLinks(text, result) {
-    if (text) {
-      const rxLink = /\[([^\]]*)\]\(([^)]+)\)/; // Matches [text](id). Similar to below, but with an extra grouping around the id part.
-      return text.match(rxLink)
-        ? text.split(/(\[[^\]]*\]\([^)]+\))/g).map((item, i) => {
-            if (i % 2 === 0) return item;
-            const [_, text, id] = item.match(rxLink); // Safe since it was split by the same RegExp.
-            return isNaN(+id) ? (
-              <code key={i} tabIndex={-1}>
-                {text}
-              </code>
-            ) : (
-              <code key={i} tabIndex={-1}>
-                {text}
-              </code>
-            );
-          })
-        : text;
-    }
-  }
-
-  const SnippetsCards = () => {
-    var snippets = [];
+  useEffect(() => {
+    var tempSnippets = [];
     // const fetchData = () => {
     //   if (snippets.length > 120) {
     //     setHasMore(false);
@@ -54,7 +42,7 @@ const CodeQLAlerts = () => {
     // };
 
     // Fix bad code, will die
-    if (!logs) return []; // Undef interpreted as loading.
+    if (!logs) return; // Undef interpreted as loading.
     // filter out outdated sarif
     const runs = [].concat(
       ...logs.filter((log) => log.version === "2.1.0").map((log) => log.runs)
@@ -64,7 +52,7 @@ const CodeQLAlerts = () => {
       runs[0]?.results === undefined ||
       runs[0]?.tool.driver.name !== "CodeQL"
     )
-      return [];
+      return;
 
     var grouped = {};
     for (let i = 0, len = runs[0].results.length, r; i < len; i++) {
@@ -115,7 +103,7 @@ const CodeQLAlerts = () => {
             badgeSeverity = "warning";
         }
 
-        snippets.push(
+        tempSnippets.push(
           <Card
             className="position-relative mb-4 shadow"
             key={"c" + alerts[0].ruleId + "-" + file + i}
@@ -198,9 +186,26 @@ const CodeQLAlerts = () => {
                         ploc={ploc}
                         language="javascript"
                       ></Snippet>
-                      {(codeFlow?.length && (
+
+                      {(!codeFlow?.length ? (
+                        <div>
+                          <span>
+                            <FontAwesomeIcon
+                              icon={faInfoCircle}
+                              className="d-sm-inline ms-1"
+                            />{" "}
+                            {renderMessageTextWithEmbeddedLinks(
+                              alert.message.text
+                            )}
+                          </span>
+                        </div>
+                      ) : (
                         <div className="violation-groups">
-                          <span className="mx-3">
+                          <span className="me-3">
+                            <FontAwesomeIcon
+                              icon={faExclamationCircle}
+                              className="d-sm-inline ms-1"
+                            />{" "}
                             {renderMessageTextWithEmbeddedLinks(
                               alert.message.text
                             )}
@@ -211,8 +216,7 @@ const CodeQLAlerts = () => {
                             modalTitle={query}
                           />
                         </div>
-                      )) ||
-                        ""}
+                      )) || ""}
                       {index < alerts.length - 1 && <hr key={"hr" + index} />}
                     </>
                   );
@@ -223,42 +227,107 @@ const CodeQLAlerts = () => {
         );
       }
     }
+    setItems(tempSnippets.slice(0, 5));
+    setSnippets(tempSnippets);
+  }, [logs]);
 
-    return snippets;
+  function renderMessageTextWithEmbeddedLinks(text, result) {
+    if (text) {
+      const rxLink = /\[([^\]]*)\]\(([^)]+)\)/; // Matches [text](id). Similar to below, but with an extra grouping around the id part.
+      return text.match(rxLink)
+        ? text.split(/(\[[^\]]*\]\([^)]+\))/g).map((item, i) => {
+            if (i % 2 === 0) return item;
+            const [_, text, id] = item.match(rxLink); // Safe since it was split by the same RegExp.
+            return (
+              <code key={i} href={id}>
+                {text}
+              </code>
+            );
+          })
+        : text;
+    }
+  }
+
+  const fetchMoreData = () => {
+    if (items.length >= snippets.length) {
+      setHasMore(false);
+      return;
+    }
+    // a fake async api call like which sends
+    // 20 more records in .5 secs
+    setTimeout(() => {
+      // setItems(items.concat(snippets.from({ length: 20 })));
+      setItems(items.concat(snippets.slice(items.length, items.length + 5)));
+    }, 500);
+  };
+
+  function NoLogResults() {
+    return (
+      <Card className="text-center">
+        <Card.Body>
+          <Card.Title>No Projects were found!</Card.Title>
+          <Card.Text>
+            Click the button below to upload a new project :)
+          </Card.Text>
+          <Button
+            variant="secondary"
+            as={Link}
+            to={Routes.Dashboard.path}
+            className="text-dark me-3"
+          >
+            Upload New Project{" "}
+            <FontAwesomeIcon
+              icon={faExternalLinkAlt}
+              className="d-none d-sm-inline ms-1"
+            />
+          </Button>
+        </Card.Body>
+      </Card>
+    );
+  }
+
+  const AlertCard = () => {
+    return (
+      <Card>
+        <Card.Body>
+          <article>
+            <h1 className="h2" id="quick-start">
+              Alerts{" "}
+            </h1>
+            <p className="fs-5 fw-light">
+              These are the alerts generated with CodeQL
+            </p>
+
+            <p>only the files that also has a vulnerability are listed here.</p>
+            <InfiniteScroll
+              dataLength={90} //This is important field to render the next data
+              next={fetchMoreData}
+              hasMore={hasMore}
+              loader={<h4>Loading...</h4>}
+              endMessage={
+                <p className="m-4" style={{ textAlign: "center" }}>
+                  <b>You reached the end!</b>
+                </p>
+              }
+            >
+              {items.map((i) => i)}
+            </InfiniteScroll>
+          </article>
+        </Card.Body>
+      </Card>
+    );
   };
 
   return (
     <Container className="px-0">
       <Row>
         <Col xs={12} className="p-3">
-          <Card>
-            <Card.Body>
-              <article>
-                <h1 className="h2" id="quick-start">
-                  Alerts{" "}
-                </h1>
-                <p className="fs-5 fw-light">
-                  These are the alerts generated with CodeQL
-                </p>
-
-                <p>
-                  only the files that also has a vulnerability are listed here.
-                </p>
-                {/* <InfiniteScroll
-                  dataLength={snippets.length} //This is important field to render the next data
-                  next={fetchData}
-                  hasMore={hasMore}
-                  loader={<h4>Loading...</h4>}
-                  endMessage={
-                    <p className="m-4" style={{ textAlign: "center" }}>
-                      <b>You reached the end!</b>
-                    </p>
-                  }
-                ></InfiniteScroll> */}
-                <SnippetsCards />
-              </article>
-            </Card.Body>
-          </Card>
+          {(!logs.length && logs[0]?.runs[0]?.results === undefined) ||
+          logs[0]?.runs[0]?.tool.driver.name !== "CodeQL" ? (
+            <NoLogResults />
+          ) : (
+            <AlertCard />
+          )}
         </Col>
       </Row>
     </Container>

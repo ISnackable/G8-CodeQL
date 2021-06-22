@@ -64,7 +64,7 @@ router.post(
 );
 
 // TODO: split database analyze into a middleware
-router.get("/analyses/:id", apiController.query);
+router.get("/analyses/:id", apiController.query, middlewares.createNeo4J);
 
 /**
  * 4. Operations, The /operations endpoint is used to track the progress of long-running tasks, for example, code review requests.

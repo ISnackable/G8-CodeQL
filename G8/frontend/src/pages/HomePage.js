@@ -15,8 +15,8 @@ import Signup from "./examples/Signup";
 import ForgotPassword from "./examples/ForgotPassword";
 import ResetPassword from "./examples/ResetPassword";
 import Lock from "./examples/Lock";
-import NotFoundPage from "./examples/NotFound";
-import ServerError from "./examples/ServerError";
+import NotFoundPage from "./NotFound";
+import ServerError from "./ServerError";
 
 // documentation pages
 import DocsAbout from "./documentation/DocsAbout";
@@ -29,7 +29,7 @@ import DocsChangelog from "./documentation/DocsChangelog";
 
 // components
 import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
+// import Navbar from "../components/Navbar";
 // import Footer from "../components/Footer";
 import Preloader from "../components/Preloader";
 
@@ -104,7 +104,7 @@ const RouteWithSidebar = ({ component: Component, ...rest }) => {
           <Sidebar />
 
           <main className="content">
-            <Navbar />
+            {/* <Navbar /> */}
             <Component {...props} />
             {/* <Footer
               toggleSettings={toggleSettings}

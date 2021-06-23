@@ -39,7 +39,7 @@ const DocsGlossary = () => (
                     </td>
                   </tr>
                   <tr>
-                    <td className="border-0">query</td>
+                    <td className="border-0">Query</td>
                     <td className="border-0 fw-bold">
                       A set of instructions used to retrieve information from a
                       database.
@@ -63,8 +63,9 @@ const DocsGlossary = () => (
                     <td className="border-0">Vulnerabilities</td>
                     <td className="border-0 fw-bold">
                       A flaw or weakness which occurs in an information system,
-                      program, security procedures or implementations <div className='pagebreak'></div> that can 
-                      be exploited or triggered by a threat source.
+                      program, security procedures or implementations{" "}
+                      <div className="pagebreak"></div> that can be exploited or
+                      triggered by a threat source.
                     </td>
                   </tr>
                   <tr>
@@ -72,14 +73,16 @@ const DocsGlossary = () => (
                     <td className="border-0 fw-bold">
                       A list of records , each containing an identification
                       number , description, and public reference for publicly
-                      known <div className='pagebreak'></div> cybersecurity vulnerabilities.
+                      known <div className="pagebreak"></div> cybersecurity
+                      vulnerabilities.
                     </td>
                   </tr>
                   <tr>
                     <td className="border-0">Bugs</td>
                     <td className="border-0 fw-bold">
                       Commonly known as “errors”, bugs are an unexpected defect,
-                      fault, flaw or imperfection in a computer program or <div className='pagebreak'></div>
+                      fault, flaw or imperfection in a computer program or{" "}
+                      <div className="pagebreak"></div>
                       system.
                     </td>
                   </tr>
@@ -87,7 +90,8 @@ const DocsGlossary = () => (
                     <td className="border-0">Patches</td>
                     <td className="border-0 fw-bold">
                       A repair job for a piece of programming . An immediate
-                      solution to previously known flaws in a program . Commonly <div className='pagebreak'></div>
+                      solution to previously known flaws in a program . Commonly{" "}
+                      <div className="pagebreak"></div>
                       known as a “fix”.
                     </td>
                   </tr>
@@ -100,7 +104,6 @@ const DocsGlossary = () => (
                   </tr>
                 </tbody>
               </Table>
-
             </article>
           </Card.Body>
         </Card>

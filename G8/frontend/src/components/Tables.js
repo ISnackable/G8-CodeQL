@@ -476,6 +476,7 @@ export const ExistingProjectTable = (props) => {
       .get(backend_url + `/analyses/` + e.target.value)
       .then((response) => {
         setLogs([response.data]);
+        alert("Project has been successfully loaded");
       })
       .catch((error) => {
         alert("Error: " + error);

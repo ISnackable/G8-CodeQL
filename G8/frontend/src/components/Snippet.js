@@ -101,8 +101,7 @@ const Snippet = (props) => {
               {code.length}. <b>Click to reveal code</b>.
             </small>
           </div>
-        ) : null}
-        {showResults ? (
+        ) : (
           <Highlight
             Prism={Prism}
             code={`${pre}${hi}${post}`}
@@ -132,7 +131,7 @@ const Snippet = (props) => {
               </Pre>
             )}
           </Highlight>
-        ) : null}
+        )}
       </>
     );
   }

@@ -10,8 +10,8 @@ import {
 } from "@themesberg/react-bootstrap";
 import { Link } from "react-router-dom";
 
-import { Routes } from "../../routes";
-import ErrorImage from "../../assets/img/illustrations/500.svg";
+import { Routes } from "./../routes";
+import ErrorImage from "./../assets/img/illustrations/500.svg";
 
 const ServerError = () => {
   return (
@@ -36,7 +36,7 @@ const ServerError = () => {
                 as={Link}
                 variant="primary"
                 className="animate-hover"
-                to={Routes.DashboardOverview.path}
+                to={Routes.Presentation.path}
               >
                 <FontAwesomeIcon
                   icon={faChevronLeft}

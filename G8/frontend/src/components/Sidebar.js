@@ -5,12 +5,12 @@ import { CSSTransition } from "react-transition-group";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBook,
-  faBoxOpen,
+  // faBoxOpen,
   faChartPie,
-  faCog,
-  faFileAlt,
-  faSignOutAlt,
-  faTable,
+  // faCog,
+  // faFileAlt,
+  // faSignOutAlt,
+  // faTable,
   faTimes,
   faSearch,
   faBug,
@@ -30,7 +30,7 @@ import { Link } from "react-router-dom";
 import { Routes } from "../routes";
 // import ReactHero from "../assets/img/technologies/react-hero-logo.svg";
 import G8Logo from "../assets/img/g8-logo.png";
-import ProfilePicture from "../assets/img/team/profile-picture-3.jpg";
+// import ProfilePicture from "../assets/img/team/profile-picture-3.jpg";
 
 const Sidebar = (props = {}) => {
   const location = useLocation();
@@ -149,7 +149,7 @@ const Sidebar = (props = {}) => {
           <div className="sidebar-inner px-4 pt-3">
             <div className="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
               <div className="d-flex align-items-center">
-                <div className="user-avatar lg-avatar me-4">
+                {/* <div className="user-avatar lg-avatar me-4">
                   <Image
                     src={ProfilePicture}
                     className="card-img-top rounded-circle border-white"
@@ -167,7 +167,7 @@ const Sidebar = (props = {}) => {
                     <FontAwesomeIcon icon={faSignOutAlt} className="me-2" />{" "}
                     Sign Out
                   </Button>
-                </div>
+                </div> */}
               </div>
               <Nav.Link
                 className="collapse-close d-md-none"
@@ -201,7 +201,7 @@ const Sidebar = (props = {}) => {
               <NavItem
                 external
                 title="Plugins"
-                link="https://demo.themesberg.com/volt-pro-react/#/plugins/charts"
+                link="/#/plugins/charts"
                 target="_blank"
                 badgeText="Pro"
                 icon={faChartPie}
@@ -215,11 +215,14 @@ const Sidebar = (props = {}) => {
                 link={Routes.SarifViewer.path}
               />
 
+              <Dropdown.Divider className="my-3 border-indigo" />
+
+              {/* 
               <NavItem
                 title="Settings"
                 icon={faCog}
                 link={Routes.Settings.path}
-              />
+              /> */}
 
               <CollapsableNavItem
                 eventKey="documentation/"
@@ -241,7 +244,7 @@ const Sidebar = (props = {}) => {
                 <NavItem title="Changelog" link={Routes.DocsChangelog.path} />
               </CollapsableNavItem>
 
-              <CollapsableNavItem
+              {/* <CollapsableNavItem
                 eventKey="tables/"
                 title="Tables"
                 icon={faTable}
@@ -251,7 +254,6 @@ const Sidebar = (props = {}) => {
                   link={Routes.BootstrapTables.path}
                 />
               </CollapsableNavItem>
-
               <CollapsableNavItem
                 eventKey="examples/"
                 title="Page Examples"
@@ -303,7 +305,7 @@ const Sidebar = (props = {}) => {
                 <NavItem title="Tabs" link={Routes.Tabs.path} />
                 <NavItem title="Toasts" link={Routes.Toasts.path} />
                 <NavItem title="Tooltips" link={Routes.Tooltips.path} />
-              </CollapsableNavItem>
+              </CollapsableNavItem> */}
               {/* <NavItem
                 external
                 title="Themesberg"

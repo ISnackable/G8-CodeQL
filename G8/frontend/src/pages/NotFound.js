@@ -12,8 +12,8 @@ import {
 
 import { Link } from "react-router-dom";
 
-import { Routes } from "../../routes";
-import NotFoundImage from "../../assets/img/illustrations/404.svg";
+import { Routes } from "./../routes";
+import NotFoundImage from "./../assets/img/illustrations/404.svg";
 
 const NotFound = () => {
   return (
@@ -40,7 +40,7 @@ const NotFound = () => {
                   as={Link}
                   variant="primary"
                   className="animate-hover"
-                  to={Routes.Overview.path}
+                  to={Routes.Presentation.path}
                 >
                   <FontAwesomeIcon
                     icon={faChevronLeft}

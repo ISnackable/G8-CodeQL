@@ -21,6 +21,10 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Snippet from "../components/Snippet";
 import SnippetModal from "../components/SnippetModal";
 import useLocalStorageState from "use-local-storage-state";
+import * as htmlToImage from "html-to-image";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import MyDocument from "../components/CodeQLAlertPDF";
+// import { generatePdfDocument } from "../components/GeneratePDFDocument";
 
 const CodeQLAlerts = () => {
   // eslint-disable-next-line no-unused-vars
@@ -28,6 +32,49 @@ const CodeQLAlerts = () => {
   const [items, setItems] = useState([]);
   const [snippets, setSnippets] = useState([]);
   const [hasMore, setHasMore] = useState(true);
+
+  // const exportPDF = () => {
+  //   // htmlToImage
+  //   //   .toPng(document.getElementById("myPage"))
+  //   //   .then(function (dataUrl) {
+  //   //     const pdf = new jsPDF();
+  //   //     const imgProps = pdf.getImageProperties(dataUrl);
+  //   //     const pdfWidth = pdf.internal.pageSize.getWidth();
+  //   //     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+  //   //     pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+  //   //     pdf.save("download.pdf");
+  //   //   });
+
+  //   // Get List of paged elements.
+  //   let elems = document.querySelectorAll(".elemClass");
+  //   let pdf = new jsPDF("portrait", "mm", "a4");
+
+  //   // Fix Graphics Output by scaling PDF and html2canvas output to 2
+  //   pdf.scaleFactor = 2;
+
+  //   // Create a new promise with the loop body
+  //   let addPages = new Promise((resolve, reject) => {
+  //     elems.forEach((elem, idx) => {
+  //       // Scaling fix set scale to 2
+  //       htmlToImage.toPng(elem).then(function (dataUrl) {
+  //         const imgProps = pdf.getImageProperties(dataUrl);
+  //         const pdfWidth = pdf.internal.pageSize.getWidth();
+  //         const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+  //         console.log(elem);
+  //         if (idx < elems.length - 1) {
+  //           pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+  //           pdf.addPage();
+  //         } else {
+  //           pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+  //           console.log("Reached last page, completing");
+  //           pdf.save();
+  //         }
+  //       });
+
+  //       setTimeout(resolve, 100, "Timeout adding page #" + idx);
+  //     });
+  //   });
+  // };
 
   useEffect(() => {
     var tempSnippets = [];
@@ -106,7 +153,7 @@ const CodeQLAlerts = () => {
 
         tempSnippets.push(
           <Card
-            className="position-relative mb-4 shadow"
+            className="position-relative mb-4 shadow elemClass"
             key={"c" + alerts[0].ruleId + "-" + file + i}
           >
             <Card.Body key={"cb" + alerts[0].ruleId + "-" + file + i}>
@@ -328,7 +375,34 @@ const CodeQLAlerts = () => {
           logs[0]?.runs[0]?.tool.driver.name !== "CodeQL" ? (
             <NoLogResults />
           ) : (
-            <AlertCard />
+            <>
+              {/* <Button variant="outline-primary" size="sm" onClick={exportPDF}>
+                Export
+              </Button> */}
+              <PDFDownloadLink
+                document={<MyDocument />}
+                fileName="somename.pdf"
+              >
+                {({ blob, url, loading, error }) =>
+                  loading ? (
+                    "Loading document..."
+                  ) : (
+                    <Button variant="outline-primary" size="sm">
+                      Export
+                    </Button>
+                  )
+                }
+              </PDFDownloadLink>
+              {/* <Button
+                variant="outline-primary"
+                size="sm"
+                onClick={generatePdfDocument}
+              >
+                Download Now
+              </Button>
+              */}
+              <AlertCard />
+            </>
           )}
         </Col>
       </Row>

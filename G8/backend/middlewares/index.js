@@ -11,6 +11,8 @@ const { execFile } = require("child_process");
 const { hashElement } = require("folder-hash");
 const projectDB = require("../models/projects.js");
 const neo4j = require("neo4j-driver");
+// const { getProjectById } = require("../controllers/apiController.js");
+
 
 // ------------------------------------------------------
 // Multer config
@@ -434,4 +436,18 @@ exports.createNeo4J = (req, res) => {
         });
     }
   });
+};
+
+
+exports.idValidation = (req, res, next) => {
+  const id = req.params.id;
+
+   if (isNaN(id) == false) {
+      next();
+   }
+   else {
+      return res.status(400).send(
+         { message : "Please enter a numeric id" }
+      );
+  }
 };

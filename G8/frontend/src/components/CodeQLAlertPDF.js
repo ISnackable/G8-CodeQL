@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import G8Logo from "../assets/img/g8-logo.png";
 import CodeQLLogo from "../assets/img/codeql-logo.png";
 import Roboto from "../assets/fonts/Roboto-Regular.ttf";
+import html2canvas from "html2canvas";
+import DOMPurify from "dompurify";
 import {
   Document,
   Page,
@@ -10,24 +12,19 @@ import {
   StyleSheet,
   Image,
   Font,
-  Note,
+  Link,
 } from "@react-pdf/renderer";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Accordion,
-  Col,
-  Row,
-  Card,
-  Button,
-  Breadcrumb,
-} from "@themesberg/react-bootstrap";
-import {
-  faInfoCircle,
-  faExclamationCircle,
-} from "@fortawesome/free-solid-svg-icons";
+  Table,
+  TableHeader,
+  TableCell,
+  TableBody,
+  DataTableCell,
+} from "@david.kucsai/react-pdf-table";
 import Snippet from "../components/Snippet";
-import SnippetModal from "../components/SnippetModal";
 import { createLocalStorageStateHook } from "use-local-storage-state";
+import ReactDOMServer from "react-dom/server";
+
 // Create styles
 // const styles = StyleSheet.create({
 //   page: {
@@ -40,6 +37,13 @@ import { createLocalStorageStateHook } from "use-local-storage-state";
 //     flexGrow: 1,
 //   },
 // });
+
+const importAll = (r) => r.keys().map(r);
+const queryHelpMarkdownFiles = importAll(
+  require.context("../pages/queryhelp", true, /\.md$/)
+)
+  .sort()
+  .reverse();
 
 // Create Document Component
 const MyDocument = () => {
@@ -54,225 +58,6 @@ const MyDocument = () => {
 
   today = dd + "/" + mm + "/" + yyyy;
 
-  useEffect(() => {
-    var tempSnippets = [];
-    // const fetchData = () => {
-    //   if (snippets.length > 120) {
-    //     setHasMore(false);
-    //     return;
-    //   }
-
-    //   // a fake async api call like which sends
-    //   // 20 more records in .5 secs
-    //   setTimeout(() => {}, 500);
-    // };
-
-    // Fix bad code, will die
-    if (!logs) return; // Undef interpreted as loading.
-    // filter out outdated sarif
-    const runs = [].concat(
-      ...logs.filter((log) => log.version === "2.1.0").map((log) => log.runs)
-    );
-
-    if (
-      runs[0]?.results === undefined ||
-      runs[0]?.tool.driver.name !== "CodeQL"
-    )
-      return;
-
-    var grouped = {};
-    for (let i = 0, len = runs[0].results.length, r; i < len; i++) {
-      r = runs[0].results[i];
-      // if (grouped[i] === undefined) grouped[i] = {};
-      if (grouped[r.ruleId] === undefined) grouped[r.ruleId] = {};
-      if (
-        grouped[r.ruleId][
-          r.locations[0].physicalLocation.artifactLocation.uri
-        ] === undefined
-      )
-        grouped[r.ruleId][
-          r.locations[0].physicalLocation.artifactLocation.uri
-        ] = [];
-      grouped[r.ruleId][
-        r.locations[0].physicalLocation.artifactLocation.uri
-      ].push(r);
-    }
-
-    var i = 0;
-    for (const rule in grouped) {
-      // console.log(`${rule}:`, grouped[rule]);
-      let files = grouped[rule];
-      // console.log(`${rule} has ${Object.keys(files).length} files`);
-      for (const file in files) {
-        i++;
-        let alerts = files[file];
-        let query =
-          runs[0].tool.driver.rules[alerts[0].ruleIndex].properties.name;
-        let description =
-          runs[0].tool.driver.rules[alerts[0].ruleIndex].fullDescription.text;
-        let severity =
-          runs[0].tool.driver.rules[alerts[0].ruleIndex].properties[
-            "problem.severity"
-          ];
-        let tags =
-          runs[0].tool.driver.rules[alerts[0].ruleIndex].properties.tags;
-
-        let badgeSeverity = "warning";
-        switch (severity) {
-          case "error":
-            badgeSeverity = "danger";
-            break;
-          case "note":
-            badgeSeverity = "info";
-            break;
-          default:
-            badgeSeverity = "warning";
-        }
-
-        tempSnippets.push(
-          <Card
-            className="position-relative mb-4 shadow elemClass"
-            key={"c" + alerts[0].ruleId + "-" + file + i}
-          >
-            <Card.Body key={"cb" + alerts[0].ruleId + "-" + file + i}>
-              <Accordion>
-                <Accordion.Item eventKey="panel-1">
-                  <Accordion.Button
-                    variant="link"
-                    className="w-100 d-flex justify-content-between"
-                  >
-                    <Row>
-                      <Col xs={12}>
-                        <span className="h6 mb-0 fw-bold">
-                          {i + ". " + query}
-                        </span>
-                      </Col>
-                      <Col xs={12}>
-                        <Breadcrumb
-                          listProps={{
-                            className:
-                              "breadcrumb-primary breadcrumb-transparent",
-                          }}
-                        >
-                          <small className="me-2">Source Root:</small>{" "}
-                          {file.split("/").map((path, index) => (
-                            <Breadcrumb.Item
-                              className="text-dark"
-                              key={index}
-                              active
-                            >
-                              {path}
-                            </Breadcrumb.Item>
-                          ))}
-                        </Breadcrumb>
-                      </Col>
-                    </Row>
-                  </Accordion.Button>
-                  <Accordion.Body>
-                    <Card.Body className="py-2 px-0">
-                      <Card.Text className="mb-0">{description}</Card.Text>
-                    </Card.Body>
-                  </Accordion.Body>
-                </Accordion.Item>
-              </Accordion>
-              <Button
-                variant={"outline-" + badgeSeverity}
-                className="m-2"
-                size="sm"
-              >
-                {severity}
-              </Button>
-              {tags?.map((tag, index) => {
-                return (
-                  <Button
-                    variant="light"
-                    size="sm"
-                    className="m-2"
-                    key={"btn" + alerts[0].ruleId + "-" + file + "-" + index}
-                  >
-                    {tag}
-                  </Button>
-                );
-              })}
-              {alerts.map((alert, index) => {
-                const ploc = alert.locations[0].physicalLocation;
-                const codeFlow = alert.codeFlows;
-                if (ploc.contextRegion?.snippet === undefined) {
-                  return (
-                    <div>
-                      {renderMessageTextWithEmbeddedLinks(alert.message.text)}
-                      {index < alerts.length - 1 && <hr key={"hr" + index} />}
-                    </div>
-                  );
-                } else {
-                  return (
-                    <>
-                      <Snippet
-                        key={"s" + index}
-                        ploc={ploc}
-                        language="javascript"
-                      ></Snippet>
-
-                      {(!codeFlow?.length ? (
-                        <div>
-                          <span>
-                            <FontAwesomeIcon
-                              icon={faInfoCircle}
-                              className="d-sm-inline ms-1"
-                            />{" "}
-                            {renderMessageTextWithEmbeddedLinks(
-                              alert.message.text
-                            )}
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="violation-groups">
-                          <span className="me-3">
-                            <FontAwesomeIcon
-                              icon={faExclamationCircle}
-                              className="d-sm-inline ms-1"
-                            />{" "}
-                            {renderMessageTextWithEmbeddedLinks(
-                              alert.message.text
-                            )}
-                          </span>
-
-                          <SnippetModal
-                            codeFlow={codeFlow}
-                            modalTitle={query}
-                          />
-                        </div>
-                      )) || ""}
-                      {index < alerts.length - 1 && <hr key={"hr" + index} />}
-                    </>
-                  );
-                }
-              })}
-            </Card.Body>
-          </Card>
-        );
-      }
-    }
-  }, [logs]);
-
-  function renderMessageTextWithEmbeddedLinks(text, result) {
-    if (text) {
-      const rxLink = /\[([^\]]*)\]\(([^)]+)\)/; // Matches [text](id). Similar to below, but with an extra grouping around the id part.
-      return text.match(rxLink)
-        ? text.split(/(\[[^\]]*\]\([^)]+\))/g).map((item, i) => {
-            if (i % 2 === 0) return item;
-            // eslint-disable-next-line no-unused-vars
-            const [_, text, id] = item.match(rxLink); // Safe since it was split by the same RegExp.
-            return (
-              <code key={i} href={id}>
-                {text}
-              </code>
-            );
-          })
-        : text;
-    }
-  }
-
   // Register font
   Font.register({
     family: "Roboto",
@@ -280,6 +65,11 @@ const MyDocument = () => {
   });
 
   const styles = StyleSheet.create({
+    section: {
+      margin: 10,
+      padding: 10,
+      flexGrow: 1,
+    },
     body: {
       paddingTop: 35,
       paddingBottom: 65,
@@ -327,6 +117,329 @@ const MyDocument = () => {
     },
   });
 
+  const getMarkdownQueryHelp = async () => {
+    const queryHelp = await Promise.all(
+      queryHelpMarkdownFiles.map((file) =>
+        fetch(file).then((res) => res.text())
+      )
+    ).catch((err) => console.error(err));
+
+    console.log(queryHelp);
+  };
+
+  // As All Functions in js are asynchronus, to use await i am using async here
+  const generateSnippetImage = async (html) => {
+    let clean = DOMPurify.sanitize(html);
+    var wrapper = document.getElementById("temp-snippet");
+    wrapper.innerHTML = clean.replace(
+      new RegExp(`ƩƩƩƩƩƩ(.*)ƩƩƩƩƩƩ`, "g"),
+      `<code class="highlight-code">$1</code>`
+    );
+    var div = wrapper.firstChild;
+    window.scrollTo(0, 0);
+
+    // excute this function then exit loop
+    let base64Image = await html2canvas(div, {
+      scale: 1,
+      scrollY: -window.scrollY,
+    }).then(function (canvas) {
+      wrapper.innerHTML = "";
+      const imgData = canvas.toDataURL("image/png");
+      return imgData;
+    });
+
+    return base64Image;
+  };
+
+  function renderMessageTextWithEmbeddedLinks(text, result) {
+    if (text) {
+      const rxLink = /\[([^\]]*)\]\(([^)]+)\)/; // Matches [text](id). Similar to below, but with an extra grouping around the id part.
+      return text.match(rxLink)
+        ? text.split(/(\[[^\]]*\]\([^)]+\))/g).map((item, i) => {
+            if (i % 2 === 0) return item;
+            // eslint-disable-next-line no-unused-vars
+            const [_, text, id] = item.match(rxLink); // Safe since it was split by the same RegExp.
+            return (
+              <Link key={i} src={id} style={{ color: "#4B82BA" }}>
+                {text}
+              </Link>
+            );
+          })
+        : text;
+    }
+  }
+
+  const GetFindingDetails = () => {
+    if (logs.length === 0) return <Text>Nothing</Text>;
+
+    var results = logs[0].runs[0].results;
+    var driverRules = logs[0].runs[0].tool.driver.rules;
+
+    var tempSnippets = [];
+    var grouped = {};
+    for (let i = 0, len = results.length, r; i < len; i++) {
+      r = results[i];
+      // if (grouped[i] === undefined) grouped[i] = {};
+      if (grouped[r.ruleId] === undefined) grouped[r.ruleId] = {};
+      if (
+        grouped[r.ruleId][
+          r.locations[0].physicalLocation.artifactLocation.uri
+        ] === undefined
+      )
+        grouped[r.ruleId][
+          r.locations[0].physicalLocation.artifactLocation.uri
+        ] = [];
+      grouped[r.ruleId][
+        r.locations[0].physicalLocation.artifactLocation.uri
+      ].push(r);
+    }
+
+    var i = 0;
+    for (const rule in grouped) {
+      // console.log(`${rule}:`, grouped[rule]);
+      let files = grouped[rule];
+      // console.log(`${rule} has ${Object.keys(files).length} files`);
+      for (const file in files) {
+        i++;
+        let alerts = files[file];
+        let query = driverRules[alerts[0].ruleIndex].properties.name;
+        let ruleId = driverRules[alerts[0].ruleIndex].id;
+        let description = driverRules[alerts[0].ruleIndex].fullDescription.text;
+        let severity =
+          driverRules[alerts[0].ruleIndex].properties["problem.severity"];
+        let tags = driverRules[alerts[0].ruleIndex].properties.tags;
+
+        tempSnippets.push(
+          <>
+            <Text style={{ ...styles.subtitle, fontSize: 15 }} break>
+              4.{i} {query}
+            </Text>
+            <Text
+              style={[
+                styles.text,
+                {
+                  marginVertical: 0,
+                },
+              ]}
+            >
+              Source File: {file}
+            </Text>
+            <Text>
+              {alerts.map((alert, index) => {
+                const ploc = alert.locations[0].physicalLocation;
+                let html = ReactDOMServer.renderToStaticMarkup(
+                  <Snippet
+                    key={"s" + index}
+                    ploc={ploc}
+                    language="javascript"
+                  ></Snippet>
+                );
+
+                let base64Image = generateSnippetImage(html);
+
+                return (
+                  <View>
+                    <Image
+                      style={[styles.image, { height: 500, width: 500 }]}
+                      src={base64Image}
+                    />
+                    {"\n"}
+                    <Text style={[styles.text, {}]}>
+                      {renderMessageTextWithEmbeddedLinks(alert.message.text)}
+                    </Text>
+                    {"\n"}
+                  </View>
+                );
+              })}
+            </Text>
+          </>
+        );
+      }
+    }
+
+    return <>{tempSnippets}</>;
+  };
+
+  function GetSummary() {
+    if (logs.length === 0) return <Text>Nothing</Text>;
+
+    var results = logs[0].runs[0].results;
+    var driverRules = logs[0].runs[0].tool.driver.rules;
+
+    // console.log(results);
+    // console.log(driverRules);
+    var noOfError = 0;
+    var noOfWarnings = 0;
+    var noOfRecommendation = 0;
+
+    // for loop runs through all the reults and display the severity level within the properties .
+
+    for (let i = 0; i < results.length; i++) {
+      var severity =
+        driverRules[results[i].ruleIndex].properties["problem.severity"];
+
+      // incrementing the number of errors , warnings and recommendation which will be inputted
+      // into the boxes at the top of the webpage
+
+      if (severity === "error") {
+        noOfError++;
+      } else if (severity === "warning") {
+        noOfWarnings++;
+      } else if (severity === "recommendation") {
+        noOfRecommendation++;
+      }
+    }
+
+    // group the related alets together
+    var grouped = {};
+    for (let i = 0, len = results.length, r; i < len; i++) {
+      r = results[i];
+      // if (grouped[i] === undefined) grouped[i] = {};
+      if (grouped[r.ruleIndex] === undefined) grouped[r.ruleIndex] = {};
+      if (
+        grouped[r.ruleIndex][
+          driverRules[results[i].ruleIndex].properties["problem.severity"]
+        ] === undefined
+      )
+        grouped[r.ruleIndex][
+          driverRules[results[i].ruleIndex].properties["problem.severity"]
+        ] = [];
+      grouped[r.ruleIndex][
+        driverRules[results[i].ruleIndex].properties["problem.severity"]
+      ].push(driverRules[results[i].ruleIndex].properties["problem.severity"]);
+    }
+
+    // you can modifiy to return a
+    var table = [];
+    for (const ruleIndex in grouped) {
+      var severity = Object.keys(grouped[ruleIndex])[0];
+      var numberof = Object.values(grouped[ruleIndex])[0].length;
+      var alertdetected = driverRules[ruleIndex].properties["name"];
+
+      table.push({
+        severity: severity,
+        numberof,
+        numberof,
+        alertdetected,
+        alertdetected,
+      });
+    }
+
+    return (
+      <>
+        <View
+          style={{
+            flexDirection: "row",
+            backgroundColor: "#E4E4E4",
+            marginBottom: 10,
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <Text
+              style={[styles.text, { color: "#FF6469", fontWeight: "bold" }]}
+            >
+              {noOfError} Errors
+            </Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text
+              style={[styles.text, { color: "#faa307", fontWeight: "bold" }]}
+            >
+              {noOfWarnings} Warnings
+            </Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text
+              style={[styles.text, { color: "#21897E", fontWeight: "bold" }]}
+            >
+              {noOfRecommendation} Recommendation
+            </Text>
+          </View>
+        </View>
+        <Table data={table}>
+          <TableHeader>
+            <TableCell style={[styles.text, { margin: 5 }]}>
+              Alert Detected
+            </TableCell>
+            <TableCell style={[styles.text, { margin: 5 }]}>Severity</TableCell>
+            <TableCell style={[styles.text, { margin: 5 }]}>#</TableCell>
+          </TableHeader>
+          <TableBody>
+            <DataTableCell
+              getContent={(r) => r.alertdetected}
+              style={[styles.text, { margin: 5 }]}
+            />
+            <DataTableCell
+              getContent={(r) => r.severity}
+              style={[styles.text, { margin: 5 }]}
+            />
+            <DataTableCell
+              getContent={(r) => r.numberof}
+              style={[styles.text, { margin: 5 }]}
+            />
+          </TableBody>
+        </Table>
+        <Text style={styles.text}>Description: {"description"}</Text>
+        <Text style={styles.text}>Query ID: {"ruleId"}</Text>
+        <Text style={styles.text}>Language: JavaScript</Text>
+        <Text style={styles.text}>Severity: {"severity"}</Text>
+        <Text style={styles.text}>Tags: {"tags.join(', ')"}</Text>
+
+        <Text style={styles.text}>
+          AngularJS is secure by default through automated sanitization and
+          filtering of untrusted values that could cause vulnerabilities such as
+          XSS. Strict Contextual Escaping (SCE) is an execution mode in
+          AngularJS that provides this security mechanism.
+        </Text>
+        <Text style={styles.text}>
+          Disabling SCE in an AngularJS application is strongly discouraged. It
+          is even more discouraged to disable SCE in a library, since it is an
+          application-wide setting.
+        </Text>
+        <Text style={styles.text}>Do not disable SCE.</Text>
+        <Text style={styles.text}>
+          The following example shows an AngularJS application that disables SCE
+          in order to dynamically construct an HTML fragment, which is later
+          inserted into the DOM through $scope.html.
+        </Text>
+        <Text style={styles.text}>
+          This is problematic, since it disables SCE for the entire AngularJS
+          application.
+        </Text>
+        <Text style={styles.text}>
+          Instead, just mark the dynamically constructed HTML fragment as safe
+          using $sce.trustAsHtml, before assigning it to $scope.html:
+        </Text>
+        <Text style={styles.text}>
+          Please note that this example is for illustrative purposes only; use
+          the AngularJS templating system to dynamically construct HTML when
+          possible.
+        </Text>
+      </>
+    );
+  }
+
+  if (!logs.length) {
+    return (
+      <Document>
+        <Page style={styles.body}>
+          <Text style={styles.header} fixed>
+            ~ G8 Code Scanner ~
+          </Text>
+          <Text style={styles.title}>Load in a project first</Text>
+          <Text style={styles.author}>Generated by: G8</Text>
+          <Text
+            style={styles.pageNumber}
+            render={({ pageNumber, totalPages }) =>
+              `${pageNumber} / ${totalPages}`
+            }
+            fixed
+          />
+        </Page>
+      </Document>
+    );
+  }
+
   return (
     <Document>
       <Page style={styles.body}>
@@ -335,10 +448,7 @@ const MyDocument = () => {
         </Text>
         <Text style={styles.title}>Insert Project Name</Text>
         <Text style={styles.author}>Generated by: G8</Text>
-        <Image
-          style={styles.image}
-          src="https://miro.medium.com/max/854/0*gDBWBQ_szNyCKQJw.png"
-        />
+        <Image style={styles.image} src={CodeQLLogo} />
         <Text style={styles.subtitle} break>
           1. The Code Review Process {testingString}
         </Text>
@@ -378,37 +488,6 @@ const MyDocument = () => {
           2. Review Summary
         </Text>
         <Text style={styles.text}>
-          AngularJS is secure by default through automated sanitization and
-          filtering of untrusted values that could cause vulnerabilities such as
-          XSS. Strict Contextual Escaping (SCE) is an execution mode in
-          AngularJS that provides this security mechanism.
-        </Text>
-        <Text style={styles.text}>
-          Disabling SCE in an AngularJS application is strongly discouraged. It
-          is even more discouraged to disable SCE in a library, since it is an
-          application-wide setting.
-        </Text>
-        <Text style={styles.text}>Do not disable SCE.</Text>
-        <Text style={styles.text}>
-          The following example shows an AngularJS application that disables SCE
-          in order to dynamically construct an HTML fragment, which is later
-          inserted into the DOM through $scope.html.
-        </Text>
-        <Text style={styles.text}>
-          This is problematic, since it disables SCE for the entire AngularJS
-          application.
-        </Text>
-        <Text style={styles.text}>
-          Instead, just mark the dynamically constructed HTML fragment as safe
-          using $sce.trustAsHtml, before assigning it to $scope.html:
-        </Text>
-        <Note style={styles.text}>
-          Please note that this example is for illustrative purposes only; use
-          the AngularJS templating system to dynamically construct HTML when
-          possible.
-        </Note>
-
-        <Text style={styles.text}>
           The secure code review of the ### was completed on {today} by a review
           team consisting of ### and ###. The review was performed on code
           obtained from ### via email attachment on {today}, and bundled under
@@ -433,15 +512,94 @@ const MyDocument = () => {
         <Image style={styles.image} src={G8Logo} />
         <Text style={styles.text}>
           This section provides a summary of the findings resulting from this
-          review. For this application, three high level issues were found
-          related to the areas of authentication and data validation. One of the
-          high level issues resulting from unvalidated attacker input being sent
-          to the JSON parse function could result in arbitrary commands being
-          executed. Mitigating actions should be considered. Some other medium
-          and low issues have also been found. Details are given below. The
-          figures below graphically outline the review team's findings by both
-          category and risk level.
+          review.
         </Text>
+        <Text style={styles.text}>
+          For this application, three high level issues were found related to
+          the areas of authentication and data validation. One of the high level
+          issues resulting from unvalidated attacker input being sent to the
+          JSON parse function could result in arbitrary commands being executed.
+          Mitigating actions should be considered. Some other medium and low
+          issues have also been found. Details are given below.
+        </Text>
+        <Text style={styles.text}>
+          The figures below graphically outline the review team's findings by
+          both category and risk level.
+        </Text>
+        <GetSummary />
+        <Text style={styles.subtitle} break>
+          4. Finding Details
+        </Text>
+        <Text style={styles.text}>
+          This section provides details about the specific weaknesses that were
+          found during the review. These details are designed to provide the
+          developers with proof that the stated weaknesses exist as well as to
+          provide examples that the developers can use to find and fix similar
+          areas of the code. As mentioned before, the Secure Code Review does
+          not claim to find every issue; as such the development team should use
+          the information in these findings as an opportunity to improve the
+          entire code base. Just fixing the specific examples identified below
+          will most likely not remove the higher level risks from the
+          application.
+        </Text>
+        <Text style={styles.text}>
+          Each finding is given a qualitative risk rating assigned by the
+          reviewers at the time of the review. The general guidelines used when
+          assigning risk levels are as follows:
+        </Text>
+        <Text
+          style={[
+            styles.text,
+            {
+              marginVertical: 0,
+              marginLeft: 25,
+              marginBottom: 5,
+            },
+          ]}
+        >
+          • Error — Serious impact to the application security, generally
+          unmitigated, large-scale issues, such as an attack that is currently
+          exploitable from the Internet.
+        </Text>
+        <Text
+          style={[
+            styles.text,
+            {
+              marginVertical: 0,
+              marginLeft: 25,
+              marginBottom: 5,
+            },
+          ]}
+        >
+          • Warning — Notable impact to the application security, or somewhat
+          mitigated high risks (e.g., being available only to the user's
+          Intranet).
+        </Text>
+        <Text
+          style={[
+            styles.text,
+            {
+              marginVertical: 0,
+              marginLeft: 25,
+              marginBottom: 15,
+            },
+          ]}
+        >
+          • Recommendation — Potential impact to the application security, or
+          heavily mitigated high risk (e.g., being in dead code or after an
+          abort call). • Informational – Does not directly make the code less
+          secure, but bad coding practice
+        </Text>
+        <Text style={styles.text}>
+          The risk ratings should be considered risks to the application itself.
+          In other words, the risk that the application behavior could be
+          subverted in an unintended way could lead to a possible compromise.
+          This information should then be used by the appropriate teams
+          (developers/management/Information Security) in conjunction with the
+          additional 'big picture' information that they have, to make the
+          appropriate risk mitigation decisions
+        </Text>
+        <GetFindingDetails />
         <Text
           style={styles.pageNumber}
           render={({ pageNumber, totalPages }) =>

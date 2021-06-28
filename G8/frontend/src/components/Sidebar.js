@@ -14,6 +14,7 @@ import {
   faTimes,
   faSearch,
   faBug,
+  faFilePdf,
 } from "@fortawesome/free-solid-svg-icons";
 import { faCodepen } from "@fortawesome/free-brands-svg-icons";
 import {
@@ -31,6 +32,33 @@ import { Routes } from "../routes";
 // import ReactHero from "../assets/img/technologies/react-hero-logo.svg";
 import G8Logo from "../assets/img/g8-logo.png";
 // import ProfilePicture from "../assets/img/team/profile-picture-3.jpg";
+const importAll = (r) => r.keys();
+const queryhelpMarkdownFiles = importAll(
+  require.context("../pages/queryhelp", true, /\.md$/)
+)
+  .sort()
+  .reverse();
+
+let treePath = {};
+// queryhelpMarkdownFiles.forEach((path) => {
+//   let levels = path.replace("./", "").split("/");
+//   let file = levels.pop();
+
+//   let prevLevel = treePath;
+//   let prevProp = levels.shift();
+
+//   levels.forEach((prop) => {
+//     prevLevel[prevProp] = prevLevel[prevProp] || {};
+//     prevLevel = prevLevel[prevProp];
+//     prevProp = prop;
+//   });
+
+//   try {
+//     prevLevel[prevProp] = (prevLevel[prevProp] || []).concat([file]);
+//   } catch (error) {
+//     prevLevel[prevProp] = ([prevLevel[prevProp]] || []).concat([file]);
+//   }
+// });
 
 const Sidebar = (props = {}) => {
   const location = useLocation();
@@ -53,7 +81,7 @@ const Sidebar = (props = {}) => {
           >
             <span>
               <span className="sidebar-icon">
-                <FontAwesomeIcon icon={icon} />{" "}
+                {icon?.length && <FontAwesomeIcon icon={icon} />}
               </span>
               <span className="sidebar-text">{title}</span>
             </span>
@@ -210,6 +238,12 @@ const Sidebar = (props = {}) => {
               <Dropdown.Divider className="my-3 border-indigo" />
 
               <NavItem
+                title="PDF Viewer"
+                icon={faFilePdf}
+                link={Routes.PDFViewer.path}
+              />
+
+              <NavItem
                 title="Sarif Viewer"
                 icon={faSearch}
                 link={Routes.SarifViewer.path}
@@ -243,6 +277,12 @@ const Sidebar = (props = {}) => {
                 <NavItem title="Build Tools" link={Routes.DocsBuild.path} />
                 <NavItem title="Changelog" link={Routes.DocsChangelog.path} />
               </CollapsableNavItem>
+
+              <CollapsableNavItem
+                eventKey="queryhelp/"
+                title="Query Help"
+                icon={faBook}
+              ></CollapsableNavItem>
 
               {/* <CollapsableNavItem
                 eventKey="tables/"

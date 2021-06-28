@@ -15,6 +15,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@david.kucsai/react-pdf-table": "^0.3.0",
     "@fortawesome/fontawesome-free": "^5.15.3",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-brands-svg-icons": "^5.15.3",
@@ -33,7 +34,7 @@
     "chartist-plugin-tooltips-updated": "^0.1.4",
     "dompurify": "^2.2.9",
     "filepond": "^4.28.2",
-    "html-to-image": "^1.6.2",
+    "html2canvas": "^1.0.0-rc.7",
     "moment-timezone": "^0.5.33",
     "node-sass": "^6.0.0",
     "prism-react-renderer": "^1.2.1",

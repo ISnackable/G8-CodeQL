@@ -9,6 +9,7 @@ import Dashboard from "./dashboard/Dashboard";
 import CodeQLAlerts from "./CodeQLAlerts";
 import Settings from "./Settings";
 import SarifViewer from "./SarifViewer";
+import PDFViewer from "./PDFViewer";
 import BootstrapTables from "./tables/BootstrapTables";
 import Signin from "./examples/Signin";
 import Signup from "./examples/Signup";
@@ -159,6 +160,11 @@ const HomePage = () => (
       exact
       path={Routes.CodeQLAlerts.path}
       component={CodeQLAlerts}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.PDFViewer.path}
+      component={PDFViewer}
     />
     <RouteWithSidebar
       exact

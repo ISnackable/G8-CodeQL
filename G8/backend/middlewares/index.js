@@ -251,17 +251,19 @@ exports.createNeo4J = (req, res) => {
         if (!queries.includes(result.ruleId)) {
           queries.push(result.ruleId);
         }
-        if (driverRules[index].properties["problem.severity"] === "error") {
-          noOfError++;
-        } else if (
-          driverRules[index].properties["problem.severity"] === "warning"
-        ) {
-          noOfWarnings++;
-        } else if (
-          driverRules[index].properties["problem.severity"] === "recommendation"
-        ) {
-          noOfRecommendation++;
-        }
+        //______________________________REMOVED TO FIX ISSUE______________________________
+        // if (driverRules[index].properties["problem.severity"] === "error") {
+        //   noOfError++;
+        // } else if (
+        //   driverRules[index].properties["problem.severity"] === "warning"
+        // ) {
+        //   noOfWarnings++;
+        // } else if (
+        //   driverRules[index].properties["problem.severity"] === "recommendation"
+        // ) {
+        //   noOfRecommendation++;
+        // }
+         //____________________________________________________________
         FileName.push(
           result.locations[0].physicalLocation.artifactLocation.uri
         );
@@ -435,3 +437,79 @@ exports.createNeo4J = (req, res) => {
     }
   });
 };
+
+
+
+
+exports.showAllInProjectNeo4J=(req,res)=>{
+  const driver = neo4j.driver(
+    "bolt://localhost:7687",
+    neo4j.auth.basic("neo4j", "s3cr3t"),
+    {
+      /* encrypted: 'ENCRYPTION_OFF' */
+    }
+  );
+  const id=req.params.id;
+  const query=`WITH 1 as dummy
+  Match (n)-[r]->(m)
+  WHERE n.ProjectID = "${id}" AND r.ProjectID = "${id}" AND m.ProjectID = "${id}"
+  Return n,r,m`;
+  var nodes=[]
+  var edges=[]
+  const session = driver.session({ database: "neo4j" });
+  session.run(query)
+  .then((result) => {
+    var build_node=(identity,labels,group,title)=>{
+      return {id:identity,label:labels,title:title,group:group}
+    }
+    var build_edge=(start,end)=>{
+      return {from:start,to:end}
+    }
+    var get_label=(node)=>{
+      if(node.labels[0]=="CodeFlows"){
+        return node.properties.Message
+      }else if(node.labels[0]=="Alert"){
+        return node.properties.Message_Text
+      }else if(node.labels[0]=="Query"){
+        return node.properties.Query
+      }else if(node.labels[0]=="File"){
+        return node.properties.File
+      }else{
+        return undefined
+      }
+    }
+    var check_duplicate_id=(node)=>{
+      nodes.forEach((single_node)=>{
+        if(single_node.id==node.identity.low){
+          return true
+        }else{
+          return false
+        }
+      })
+    }
+    var check_duplicate=[]
+    result.records.forEach((record) => {
+      if(!check_duplicate[record.get("n").identity.low]){
+        check_duplicate[record.get("n").identity.low]=true;
+        nodes.push(build_node(record.get("n").identity.low,get_label(record.get("n")),record.get("n").labels[0],JSON.stringify(record.get("n").properties)));
+      }
+      if(!check_duplicate[record.get("m").identity.low]){
+        check_duplicate[record.get("m").identity.low]=true;
+        nodes.push(build_node(record.get("m").identity.low,get_label(record.get("m")),record.get("m").labels[0],JSON.stringify(record.get("m").properties)));
+      }
+      edges.push(build_edge(record.get("r").start.low,record.get("r").end.low));
+    });
+      session.close();
+      driver.close();
+      var output={
+        'nodes':nodes,
+        'edges':edges
+      };
+      console.log(output);
+      res.status(200).send(JSON.stringify(output));
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send({message:"Server error"})
+    });
+}

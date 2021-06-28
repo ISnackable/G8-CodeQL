@@ -1,74 +1,11 @@
-// import React, { useEffect, useRef } from "react";
-// import vis from "vis-network";
-
-// // function setWindowDimensions(){
-// //   const[windowDimensions,setWindowDimensions]= useState(getWindowDimension)
-// //   useEffect(()=>{
-// //     function handleResize(){
-// //       setWindowDimensions(getWindowDimensions());
-// //     }
-// //     window.addEventListener('resize',handleResize);
-// //     return ()=> window.removeEventListener('resize',handleResize);
-// //   },[]);
-// //   return windowDimensions;
-// // }
-
-// var LENGTH_MAIN=350;
-// var LENGTH_SERVER=150;
-// var LENGTH_SUB=50;
-// var WIDTH_SCALE = 2;
-// var GREEN="green";
-// var GRAY= "gray";
-// var BLACK = "#2B1B17";
-
-// function VisNetwork(){
-//   const graph={
-//     nodes:[
-//       {id:1,label:"Node 1", group:"query",title:"Node 1 tooip text"},
-//       {id:2,label:"Node 2", group:"query",title:"Node 2 tooip text"},
-//       {id:3,label:"Node 3", group:"query",title:"Node 3 tooip text"},
-//       {id:4,label:"Node 4", group:"query",title:"Node 4 tooip text"},
-//       {id:5,label:"Node 5", group:"query",title:"Node 5 tooip text"},
-//     ],
-//     edges:[
-//       {from:1, to:2},
-//       {from:2, to:3},
-//       {from:3, to:4},
-//       {from:4, to:5},
-//     ]
-//   }
-//   // graph.edges.forEach((relation)=>{
-//   //   relation.width=WIDTH_SCALE*4
-//   // });
-//   // const {height,width}=useWindowDimensions();
-//   // const height=1000
-//   // const width=500
-//   // var x=width/2;
-//   // var y=height/1000;
-//   // var step=70;
-//   // graph.nodes.push({
-//   //   id:1000,
-//   //   x:x,
-//   //   y:y,
-//   //   label: "Query"
-//   // })
-//   var network = new vis.Network(this.refs.ShowAllNeo4J, graph);
-//   return <div ref="ShowAllNeo4J"></div>
-// }
-
-// export default VisNetwork
-
-
-import React from "react";
-import ReactDOM from "react-dom";
+import axios from "axios";
+import React, { useEffect } from "react";
 import Graph from "react-graph-vis";
- 
-// import "./styles.css";
-// // need to import the vis network css in order to show tooltip
-// import "./network.css";
+import useLocalStorageState from "use-local-storage-state";
  
 function Neo4JShowAll() {
-  const graph = {
+  const [projectInfo, setprojectInfo] = useLocalStorageState("projectInfo", []);
+  let [Neo4JGraph, setNeo4JGraph] = React.useState({
     nodes: [
       { id: 1, label: "Node 1", title: "node 1 tootip text" },
       { id: 2, label: "Node 2", title: "node 2 tootip text" },
@@ -82,8 +19,27 @@ function Neo4JShowAll() {
       { from: 2, to: 4 },
       { from: 2, to: 5 }
     ]
-  };
- 
+  });
+  useEffect(()=>{
+    console.log(projectInfo[0].id)
+    axios.get("http://localhost:8080/teamname/api/neo4jshowallinproject/"+projectInfo[0].id)
+    .then((response)=>{
+      var graph3={
+        nodes:[],
+        edges:[]
+      }
+      response.data.nodes.forEach((single_node)=>{
+        graph3.nodes.push(single_node)
+      })
+      response.data.edges.forEach((single_edge)=>{
+        graph3.edges.push(single_edge)
+      })
+      setNeo4JGraph(response.data);
+    })
+    .catch((error)=>{
+      alert("error loading neo4j graph.")
+    })
+  },[])
   const options = {
     layout: {
       hierarchical: false
@@ -99,14 +55,17 @@ function Neo4JShowAll() {
       var { nodes, edges } = event;
     }
   };
+
+
+  console.log(Neo4JGraph)
   return (
     <Graph
-      graph={graph}
+      graph={Neo4JGraph}
       options={options}
       events={events}
-      getNetwork={network => {
-        //  if you want access to vis.js network api you can set the state in a parent component using this property
-      }}
+      // getNetwork={network => {
+      //   //  if you want access to vis.js network api you can set the state in a parent component using this property
+      // }}
     />
   );
 }

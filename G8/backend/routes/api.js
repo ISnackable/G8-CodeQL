@@ -95,4 +95,7 @@ router.get("/analyses/:id", apiController.query, middlewares.createNeo4J);
  * GET /system/health, (Return an indication of whether the application is working as expected (up) or needs attention (down))
  */
 
+router.get("/neo4jshowallinproject/:id", middlewares.showAllInProjectNeo4J);
+
+
 module.exports = router; // https://expressjs.com/en/4x/api.html#app.mountpath Explains sub-app mount

@@ -433,7 +433,7 @@ export const ExistingProjectTable = (props) => {
   let [responseData, setResponseData] = React.useState([]);
   const backend_url = `http://localhost:8080/teamname/api`;
   // eslint-disable-next-line no-unused-vars
-  const [logs, setLogs] = useLocalStorageState("logs", []);
+  const [logs, setLogs] = useLocalStorageState("log", []);
   const [projectInfo, setprojectInfo] = useLocalStorageState("projectInfo", []);
   const fetchData = (e) => {
     if (e) e.preventDefault();

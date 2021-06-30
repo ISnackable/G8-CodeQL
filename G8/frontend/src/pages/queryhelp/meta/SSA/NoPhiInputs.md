@@ -1,0 +1,1 @@
+# Phi node without inputs

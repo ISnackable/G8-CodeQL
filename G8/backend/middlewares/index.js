@@ -250,19 +250,7 @@ exports.createNeo4J = (req, res) => {
         if (!queries.includes(result.ruleId)) {
           queries.push(result.ruleId);
         }
-        //______________________________REMOVED TO FIX ISSUE______________________________
-        // if (driverRules[index].properties["problem.severity"] === "error") {
-        //   noOfError++;
-        // } else if (
-        //   driverRules[index].properties["problem.severity"] === "warning"
-        // ) {
-        //   noOfWarnings++;
-        // } else if (
-        //   driverRules[index].properties["problem.severity"] === "recommendation"
-        // ) {
-        //   noOfRecommendation++;
-        // }
-        //____________________________________________________________
+
         FileName.push(
           result.locations[0].physicalLocation.artifactLocation.uri
         );
@@ -476,15 +464,18 @@ exports.showAllInProjectNeo4J = (req, res) => {
           return undefined;
         }
       };
-      var check_duplicate_id = (node) => {
-        nodes.forEach((single_node) => {
-          if (single_node.id == node.identity.low) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-      };
+
+      // function not used
+      // var check_duplicate_id = (node) => {
+      //   nodes.forEach((single_node) => {
+      //     if (single_node.id == node.identity.low) {
+      //       return true;
+      //     } else {
+      //       return false;
+      //     }
+      //   });
+      // };
+
       var check_duplicate = [];
       result.records.forEach((record) => {
         if (!check_duplicate[record.get("n").identity.low]) {
@@ -527,6 +518,7 @@ exports.showAllInProjectNeo4J = (req, res) => {
       res.status(500).send({ message: "Server error" });
     });
 };
+
 exports.idValidation = (req, res, next) => {
   const id = req.params.id;
 

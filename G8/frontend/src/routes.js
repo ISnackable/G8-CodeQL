@@ -5,6 +5,7 @@ export const Routes = {
   Overview: { path: "/overview" },
   CodeQLAlerts: { path: "/codeql-alerts" },
   SarifViewer: { path: "/sarifviewer" },
+  CustomQuery: { path: "/custom-query"},
   Settings: { path: "/settings" },
   BootstrapTables: { path: "/tables/bootstrap-tables" },
   Billing: { path: "/examples/billing" },

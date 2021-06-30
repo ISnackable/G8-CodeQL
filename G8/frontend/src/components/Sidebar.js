@@ -14,6 +14,7 @@ import {
   faTimes,
   faSearch,
   faBug,
+  faPen,
 } from "@fortawesome/free-solid-svg-icons";
 import { faCodepen } from "@fortawesome/free-brands-svg-icons";
 import {
@@ -196,6 +197,11 @@ const Sidebar = (props = {}) => {
                 title="CodeQL Alerts"
                 icon={faBug}
                 link={Routes.CodeQLAlerts.path}
+              />
+              <NavItem
+                title="Custom CodeQL Query"
+                icon={faPen}
+                link={Routes.CustomQuery.path}
               />
               {/* 
               <NavItem

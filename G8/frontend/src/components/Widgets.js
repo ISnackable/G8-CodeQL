@@ -38,6 +38,8 @@ import Profile1 from "../assets/img/team/profile-picture-1.jpg";
 import ProfileCover from "../assets/img/profile-cover.jpg";
 
 import teamMembers from "../data/teamMembers";
+//Added
+import Neo4JShowAll from "./Neo4JShowAll.js";
 
 export const ProfileCardWidget = () => {
   return (
@@ -519,6 +521,25 @@ export const AcquisitionWidget = () => {
             </div>
           </div>
         </div>
+      </Card.Body>
+    </Card>
+  );
+};
+
+export const Neo4jGraphWidget = (props) => {
+  // const { title, value, percentage } = props;
+  // const percentageIcon = percentage < 0 ? faAngleDown : faAngleUp;
+  // const percentageColor = percentage < 0 ? "text-danger" : "text-success";
+
+  return (
+    <Card className="bg-secondary-alt shadow-sm">
+      <Card.Header className="d-flex flex-row align-items-center flex-0">
+        <div className="d-block">
+          <h5 className="fw-normal mb-2">Neo4J Graph</h5>
+        </div>
+      </Card.Header>
+      <Card.Body className="p-2">
+        <Neo4JShowAll />
       </Card.Body>
     </Card>
   );

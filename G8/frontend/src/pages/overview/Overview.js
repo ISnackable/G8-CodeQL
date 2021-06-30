@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 
 import { Col, Row, Button, Card, Table } from "@themesberg/react-bootstrap";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-
+import { Neo4jGraphWidget } from "../../components/Widgets";
 const Overview = () => {
   // eslint-disable-next-line no-unused-vars
   const [logs, setLogs] = useLocalStorageState("log", []); // setlog function is a function to replace it
@@ -156,7 +156,8 @@ const Overview = () => {
         {/* Neo4J graph */}
         <Row>
           <Col xl={12} className="mb-4">
-            <Card>
+          <Neo4jGraphWidget/>
+            {/* <Card>
               <Card.Title className="h1 ms-3 mt-3">Neo4J Graph</Card.Title>
               <Card.Body>
                 <Card.Text>EMPTY</Card.Text>
@@ -164,7 +165,7 @@ const Overview = () => {
                 <Card.Text>EMPTY</Card.Text>
                 <Card.Text>EMPTY</Card.Text>
               </Card.Body>
-            </Card>
+            </Card> */}
           </Col>
 
           {/* display the alerts */}

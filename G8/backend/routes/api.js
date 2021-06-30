@@ -40,7 +40,7 @@ const createProjectLimiter = rateLimit({
 router.get("/projects", apiController.getProject);
 
 // get project by numeric identifier
-router.get("/projects/:id", apiController.getProjectById);
+router.get("/projects/:id", middlewares.idValidation,apiController.getProjectById);
 
 // upload project with multer
 router.post(
@@ -67,12 +67,13 @@ router.post("/projects/repo", createProjectLimiter, apiController.repoUpload);
 // Create CodeQL database & Query current CodeQl database number in the counter
 router.post(
   "/analyses/:id",
+  middlewares.idValidation,
   middlewares.createCodeQLDatabase,
   apiController.query
 );
 
 // TODO: split database analyze into a middleware
-router.get("/analyses/:id", apiController.query, middlewares.createNeo4J);
+router.get("/analyses/:id", apiController.query, middlewares.idValidation, middlewares.createNeo4J);
 
 /**
  * 4. Operations, The /operations endpoint is used to track the progress of long-running tasks, for example, code review requests.

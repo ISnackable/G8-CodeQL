@@ -527,9 +527,9 @@ export const AcquisitionWidget = () => {
 };
 
 export const Neo4jGraphWidget = (props) => {
-  const { title, value, percentage } = props;
-  const percentageIcon = percentage < 0 ? faAngleDown : faAngleUp;
-  const percentageColor = percentage < 0 ? "text-danger" : "text-success";
+  // const { title, value, percentage } = props;
+  // const percentageIcon = percentage < 0 ? faAngleDown : faAngleUp;
+  // const percentageColor = percentage < 0 ? "text-danger" : "text-success";
 
   return (
     <Card className="bg-secondary-alt shadow-sm">
@@ -539,7 +539,7 @@ export const Neo4jGraphWidget = (props) => {
         </div>
       </Card.Header>
       <Card.Body className="p-2">
-        <Neo4JShowAll/>
+        <Neo4JShowAll />
       </Card.Body>
     </Card>
   );

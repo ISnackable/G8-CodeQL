@@ -9,8 +9,8 @@ const path = require("path");
 const multer = require("multer");
 const { execFile } = require("child_process");
 const { hashElement } = require("folder-hash");
-const projectDB = require("../models/projects.js");
 const neo4j = require("neo4j-driver");
+const projectDB = require("../models/projects.js");
 
 // ------------------------------------------------------
 // Multer config
@@ -223,7 +223,7 @@ exports.createNeo4J = (req, res) => {
       return;
     } else {
       console.log(`Creating Neo4J on ${SarifExist}`);
-      var _a, _b, _c, _d;
+
       exports.__esModule = true;
       var jsonMap = require("json-source-map");
       var fs = require("fs");
@@ -389,6 +389,7 @@ exports.createNeo4J = (req, res) => {
         } // End of Create Alert For Loop
       } // End of Create File Loop
 
+      // TODO: replace localhost with neo
       const driver = neo4j.driver(
         "bolt://localhost:7687",
         neo4j.auth.basic("neo4j", "s3cr3t"),
@@ -462,15 +463,18 @@ exports.showAllInProjectNeo4J = (req, res) => {
           return undefined;
         }
       };
-      var check_duplicate_id = (node) => {
-        nodes.forEach((single_node) => {
-          if (single_node.id == node.identity.low) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-      };
+
+      // function not used
+      // var check_duplicate_id = (node) => {
+      //   nodes.forEach((single_node) => {
+      //     if (single_node.id == node.identity.low) {
+      //       return true;
+      //     } else {
+      //       return false;
+      //     }
+      //   });
+      // };
+
       var check_duplicate = [];
       result.records.forEach((record) => {
         if (!check_duplicate[record.get("n").identity.low]) {
@@ -512,4 +516,16 @@ exports.showAllInProjectNeo4J = (req, res) => {
       console.error(error);
       res.status(500).send({ message: "Server error" });
     });
+};
+
+exports.idValidation = (req, res, next) => {
+  const id = req.params.id;
+
+  // Note: use of !NaN(0x10) or !NaN(1e1) === true
+  // Thus, use of regex to make sure id is only decimal, and not numbers like 0x10, 1e1.
+  if (/^\d+$/.test(id)) {
+    return next();
+  } else {
+    return res.status(400).send({ message: "Please enter a numeric id" });
+  }
 };

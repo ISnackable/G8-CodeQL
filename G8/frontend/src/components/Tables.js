@@ -434,6 +434,7 @@ export const ExistingProjectTable = (props) => {
   const backend_url = `http://localhost:8080/teamname/api`;
   // eslint-disable-next-line no-unused-vars
   const [logs, setLogs] = useLocalStorageState("log", []);
+  // eslint-disable-next-line no-unused-vars
   const [projectInfo, setprojectInfo] = useLocalStorageState("projectInfo", []);
   const fetchData = (e) => {
     if (e) e.preventDefault();
@@ -475,20 +476,20 @@ export const ExistingProjectTable = (props) => {
       .get(backend_url + `/analyses/` + e.target.value)
       .then((response) => {
         setLogs([response.data]);
-        responseData.forEach((item)=>{
-          if(item.id==e.target.value){
+        responseData.forEach((item) => {
+          if (item.id === e.target.value) {
             setprojectInfo([
               {
-                id:item.id,
-                project_name:item.project_name,
-                hash:item.hash,
-                sarif_filename:item.sarif_filename,
-                created_at:item.created_at
-              }
-            ])
+                id: item.id,
+                project_name: item.project_name,
+                hash: item.hash,
+                sarif_filename: item.sarif_filename,
+                created_at: item.created_at,
+              },
+            ]);
           }
-        })
-        
+        });
+
         alert("Project has been successfully loaded");
       })
       .catch((error) => {

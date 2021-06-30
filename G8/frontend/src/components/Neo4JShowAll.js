@@ -47,12 +47,39 @@ function Neo4JShowAll() {
   }, [projectInfo]);
   const options = {
     layout: {
-      hierarchical: false,
+      hierarchical: {enabled:true},
+    },
+    groups:{
+      CodeFlows:{
+        //Insert CodeFlows customization here
+        color: "#c3baba",
+        shape: "text",
+      },
+      Alert:{
+        //Insert Alert customization here
+        color: "#e35959",
+        shape: "box",
+      },
+      Query:{
+        //Insert Query customization here
+        color: "#8beacf",
+        shape: "ellipse",
+      },
+      File:{
+        //Insert File customization here
+        color: "#f9ec6d",
+        shape: "circle",
+        
+      },
+    },
+    nodes:{
+      scaling:{min:16,max:32,}
     },
     edges: {
       color: "#000000",
+      smooth:false,
     },
-    height: "500px",
+    height: "700px",
   };
 
   const events = {

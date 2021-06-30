@@ -4,7 +4,7 @@ export const Routes = {
   Dashboard: { path: "/dashboard" },
   Overview: { path: "/overview" },
   CodeQLAlerts: { path: "/codeql-alerts" },
-  PDFViewer: { path: "/pdfviewer" },
+  PDFGenerator: { path: "/pdfgenerator" },
   SarifViewer: { path: "/sarifviewer" },
   Settings: { path: "/settings" },
   BootstrapTables: { path: "/tables/bootstrap-tables" },

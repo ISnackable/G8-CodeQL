@@ -9,7 +9,7 @@ import Dashboard from "./dashboard/Dashboard";
 import CodeQLAlerts from "./CodeQLAlerts";
 import Settings from "./Settings";
 import SarifViewer from "./SarifViewer";
-import PDFViewer from "./PDFViewer";
+import PDFGenerator from "./PDFGenerator";
 import BootstrapTables from "./tables/BootstrapTables";
 import Signin from "./examples/Signin";
 import Signup from "./examples/Signup";
@@ -163,8 +163,8 @@ const HomePage = () => (
     />
     <RouteWithSidebar
       exact
-      path={Routes.PDFViewer.path}
-      component={PDFViewer}
+      path={Routes.PDFGenerator.path}
+      component={PDFGenerator}
     />
     <RouteWithSidebar
       exact

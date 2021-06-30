@@ -1,9 +1,8 @@
 import React from "react";
-import G8Logo from "../assets/img/g8-logo.png";
+import G8Logo from "../assets/img/g8-logo-with-text.png";
 import CodeQLLogo from "../assets/img/codeql-logo.png";
 import Roboto from "../assets/fonts/Roboto-Regular.ttf";
-import html2canvas from "html2canvas";
-import DOMPurify from "dompurify";
+// import SyntaxHighlightPrimitive from "./SyntaxHighlightPrimitive";
 import {
   Document,
   Page,
@@ -21,9 +20,10 @@ import {
   TableBody,
   DataTableCell,
 } from "@david.kucsai/react-pdf-table";
-import Snippet from "../components/Snippet";
+// import Snippet from "../components/Snippet";
 import { createLocalStorageStateHook } from "use-local-storage-state";
-import ReactDOMServer from "react-dom/server";
+
+// import ReactDOMServer from "react-dom/server";
 
 // Create styles
 // const styles = StyleSheet.create({
@@ -48,21 +48,23 @@ const queryHelpMarkdownFiles = importAll(
 // Create Document Component
 const MyDocument = () => {
   const useLogs = createLocalStorageStateHook("log", []);
+  const useProjectInfo = createLocalStorageStateHook("projectInfo", []);
+  // eslint-disable-next-line no-unused-vars
   const [logs, setLogs] = useLogs();
+  // eslint-disable-next-line no-unused-vars
+  const [projectInfo, setProjectInfo] = useProjectInfo();
 
-  const testingString = "TESTINGAWDAD";
-  var today = new Date();
-  const dd = String(today.getDate()).padStart(2, "0");
-  const mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
-  const yyyy = today.getFullYear();
-
-  today = dd + "/" + mm + "/" + yyyy;
+  const { project_name, hash, created_at } = projectInfo[0];
 
   // Register font
   Font.register({
     family: "Roboto",
     src: Roboto,
   });
+  // Font.register({
+  //   family: "Source Code Pro",
+  //   src: SourceCodePro,
+  // });
 
   const styles = StyleSheet.create({
     section: {
@@ -128,28 +130,25 @@ const MyDocument = () => {
   };
 
   // As All Functions in js are asynchronus, to use await i am using async here
-  const generateSnippetImage = async (html) => {
-    let clean = DOMPurify.sanitize(html);
-    var wrapper = document.getElementById("temp-snippet");
-    wrapper.innerHTML = clean.replace(
-      new RegExp(`ƩƩƩƩƩƩ(.*)ƩƩƩƩƩƩ`, "g"),
-      `<code class="highlight-code">$1</code>`
-    );
-    var div = wrapper.firstChild;
-    window.scrollTo(0, 0);
+  // const generateSnippetImage = async (html) => {
+  //   let clean = DOMPurify.sanitize(html);
+  //   var wrapper = document.getElementById("temp-snippet");
+  //   wrapper.innerHTML = clean.replace(
+  //     new RegExp(`ƩƩƩƩƩƩ(.*)ƩƩƩƩƩƩ`, "g"),
+  //     `<code class="highlight-code">$1</code>`
+  //   );
+  //   var div = wrapper.firstChild;
+  //   window.scrollTo(0, 0);
 
-    // excute this function then exit loop
-    let base64Image = await html2canvas(div, {
-      scale: 1,
-      scrollY: -window.scrollY,
-    }).then(function (canvas) {
-      wrapper.innerHTML = "";
-      const imgData = canvas.toDataURL("image/png");
-      return imgData;
-    });
+  //   // excute this function then exit loop
+  //   let base64Image = await html2canvas(div).then(function (canvas) {
+  //     wrapper.innerHTML = "";
+  //     const imgData = canvas.toDataURL("image/png");
+  //     return imgData;
+  //   });
 
-    return base64Image;
-  };
+  //   return base64Image;
+  // };
 
   function renderMessageTextWithEmbeddedLinks(text, result) {
     if (text) {
@@ -211,47 +210,206 @@ const MyDocument = () => {
 
         tempSnippets.push(
           <>
-            <Text style={{ ...styles.subtitle, fontSize: 15 }} break>
+            <Text style={[styles.subtitle, { fontSize: 15 }]} break>
               4.{i} {query}
+            </Text>
+            <Text style={[styles.subtitle, { fontSize: 14 }]}>
+              Source File: {file}
+            </Text>
+            <Text style={[styles.text, { marginVertical: 2 }]}>
+              Rule Id: {ruleId}
+            </Text>
+            <Text style={[styles.text, { marginVertical: 2 }]}>
+              Severity: {severity}
+            </Text>
+            <Text style={[styles.text, { marginVertical: 2 }]}>
+              Description: {description}
             </Text>
             <Text
               style={[
                 styles.text,
+                { textAlign: "left", marginVertical: 2, marginBottom: 12 },
+              ]}
+            >
+              Weakness Tags: {tags.join(", ")}
+            </Text>
+            <View
+              style={[
+                styles.text,
                 {
                   marginVertical: 0,
+                  borderStyle: "dotted",
+                  borderColor: "black",
+                  borderWidth: 1,
                 },
               ]}
             >
-              Source File: {file}
-            </Text>
-            <Text>
               {alerts.map((alert, index) => {
                 const ploc = alert.locations[0].physicalLocation;
-                let html = ReactDOMServer.renderToStaticMarkup(
-                  <Snippet
-                    key={"s" + index}
-                    ploc={ploc}
-                    language="javascript"
-                  ></Snippet>
-                );
 
-                let base64Image = generateSnippetImage(html);
+                if (!ploc) return null;
+                const { region, contextRegion } = ploc;
+                const crst = contextRegion?.snippet.text;
+
+                if (!crst)
+                  return (
+                    <View>
+                      <Text style={styles.text}>NO SNIPPET FOUND{"\n"}</Text>
+                      <Text style={styles.text}>
+                        {renderMessageTextWithEmbeddedLinks(alert.message.text)}
+                        {"\n\n"}
+                      </Text>
+                      <View
+                        style={{
+                          borderStyle: "dotted",
+                          borderColor: "black",
+                          borderWidth: 1,
+                        }}
+                      />
+                    </View>
+                  );
+
+                let lines = crst.split("\n");
+                const minLeadingWhitespace = Math.min(
+                  ...lines
+                    .filter((line) => line.trimLeft().length) // Blank lines often have indent 0, so throwing these out.
+                    .map((line) => line.match(/^ */)[0].length)
+                );
+                lines = lines.map((line) => line.slice(minLeadingWhitespace));
+
+                // console.log(lines);
+                let {
+                  startLine,
+                  startColumn = 0,
+                  endLine = startLine,
+                  endColumn = Number.MAX_SAFE_INTEGER,
+                } = region; // Artibrary large value.
+                // console.log(`startLine: ${startLine}`);
+                startLine -= contextRegion.startLine;
+                startColumn = Math.max(
+                  0,
+                  startColumn - 1 - minLeadingWhitespace
+                );
+                endLine -= contextRegion.startLine;
+                endColumn = Math.max(0, endColumn - minLeadingWhitespace);
+
+                // console.log(
+                //   `contextRegion.startLine: ${contextRegion.startLine}`
+                // );
+                // Insert start stop markers.
+                const marker = "\u200B";
+                lines[startLine] =
+                  lines[startLine].slice(0, startColumn) +
+                  marker +
+                  lines[startLine].slice(startColumn);
+                lines[endLine] =
+                  lines[endLine].slice(0, endColumn) +
+                  marker +
+                  lines[endLine].slice(endColumn);
+
+                // console.log(lines[startLine]);
+
+                // console.log(lines);
+
+                const [pre, hi, post] = lines.join("\n").split(marker);
+                const code = `${pre}ƩƩƩƩƩƩ${hi}ƩƩƩƩƩƩ${post}`;
+
+                // console.log(code);
+
+                // let html = ReactDOMServer.renderToStaticMarkup(
+                //   <Snippet
+                //     key={"s" + index}
+                //     ploc={ploc}
+                //     language="javascript"
+                //   ></Snippet>
+                // );
+
+                // let base64Image = generateSnippetImage(html);
+
+                if (code.length > 5000) {
+                  return (
+                    <View>
+                      <Text style={[styles.text, { fontSize: 10 }]}>
+                        Note. Snippet is too large to be generated, only the
+                        affected code is shown.{"\n"}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.text,
+                          {
+                            marginVertical: 0,
+                          },
+                        ]}
+                      >{`${contextRegion.startLine}.\t\t${hi}\n`}</Text>
+                      <Text style={styles.text}>
+                        {renderMessageTextWithEmbeddedLinks(alert.message.text)}
+                        {"\n\n"}
+                      </Text>
+                      <View
+                        style={{
+                          borderStyle: "dotted",
+                          borderColor: "black",
+                          borderWidth: 1,
+                        }}
+                      />
+                    </View>
+                  );
+                }
 
                 return (
                   <View>
-                    <Image
+                    {lines.map((line, idx) => {
+                      if (contextRegion.startLine)
+                        idx += contextRegion.startLine;
+                      if (region.startLine === idx) {
+                        return (
+                          <Text style={[styles.text, { marginVertical: 0 }]}>
+                            {`${idx}\t\t ${line.slice(
+                              0,
+                              startColumn
+                            )}\t\t\u200B~`}
+                            <Link
+                              key={idx}
+                              src="#"
+                              style={{
+                                color: "#4B82BA",
+                                backgroundColor: "#FFF2DA",
+                              }}
+                            >
+                              {line.slice(startColumn, endColumn)}
+                            </Link>
+                            {line.slice(endColumn)}
+                            {"\n"}
+                          </Text>
+                        );
+                      }
+
+                      return (
+                        <Text style={[styles.text, { marginVertical: 0 }]}>
+                          {`${idx}\t\t ${line}\n`}
+                        </Text>
+                      );
+                    })}
+                    {/* <Image
                       style={[styles.image, { height: 500, width: 500 }]}
                       src={base64Image}
-                    />
-                    {"\n"}
-                    <Text style={[styles.text, {}]}>
+                    /> */}
+                    <Text style={[styles.text]}>
+                      Note:{" "}
                       {renderMessageTextWithEmbeddedLinks(alert.message.text)}
+                      {"\n\n"}
                     </Text>
-                    {"\n"}
+                    <View
+                      style={{
+                        borderStyle: "dotted",
+                        borderColor: "black",
+                        borderWidth: 1,
+                      }}
+                    />
                   </View>
                 );
               })}
-            </Text>
+            </View>
           </>
         );
       }
@@ -260,7 +418,7 @@ const MyDocument = () => {
     return <>{tempSnippets}</>;
   };
 
-  function GetSummary() {
+  function GetFindingSummary() {
     if (logs.length === 0) return <Text>Nothing</Text>;
 
     var results = logs[0].runs[0].results;
@@ -317,18 +475,32 @@ const MyDocument = () => {
       var alertdetected = driverRules[ruleIndex].properties["name"];
 
       table.push({
-        severity: severity,
-        numberof,
-        numberof,
-        alertdetected,
-        alertdetected,
+        alert: alertdetected,
+        severityRating: severity,
+        numberofAlertSeverity: numberof,
       });
     }
 
     return (
       <>
+        <Text style={styles.text}>
+          This section provides a summary of the findings resulting from this
+          review.
+        </Text>
+        <Text style={styles.text}>
+          For this application, there are a total of {results.length} issues
+          found. Of all the issues, {noOfError} Error severity issues were
+          found, {noOfWarnings} Warning severity issues were found and{" "}
+          {noOfRecommendation} Recommendation severity issues were found.
+          Details are given below.
+        </Text>
+        <Text style={styles.text}>
+          The table below graphically outline the CodeQL's findings by both
+          category and risk level.
+        </Text>
         <View
           style={{
+            margin: 12,
             flexDirection: "row",
             backgroundColor: "#E4E4E4",
             marginBottom: 10,
@@ -356,29 +528,37 @@ const MyDocument = () => {
             </Text>
           </View>
         </View>
-        <Table data={table}>
-          <TableHeader>
-            <TableCell style={[styles.text, { margin: 5 }]}>
-              Alert Detected
-            </TableCell>
-            <TableCell style={[styles.text, { margin: 5 }]}>Severity</TableCell>
-            <TableCell style={[styles.text, { margin: 5 }]}>#</TableCell>
-          </TableHeader>
-          <TableBody>
-            <DataTableCell
-              getContent={(r) => r.alertdetected}
-              style={[styles.text, { margin: 5 }]}
-            />
-            <DataTableCell
-              getContent={(r) => r.severity}
-              style={[styles.text, { margin: 5 }]}
-            />
-            <DataTableCell
-              getContent={(r) => r.numberof}
-              style={[styles.text, { margin: 5 }]}
-            />
-          </TableBody>
-        </Table>
+        <View
+          style={{
+            margin: 12,
+          }}
+        >
+          <Table data={table}>
+            <TableHeader>
+              <TableCell style={[styles.text, { margin: 5 }]}>
+                Alert Detected
+              </TableCell>
+              <TableCell style={[styles.text, { margin: 5 }]}>
+                Severity
+              </TableCell>
+              <TableCell style={[styles.text, { margin: 5 }]}>#</TableCell>
+            </TableHeader>
+            <TableBody>
+              <DataTableCell
+                getContent={(r) => r.alert}
+                style={[styles.text, { margin: 5 }]}
+              />
+              <DataTableCell
+                getContent={(r) => r.severityRating}
+                style={[styles.text, { margin: 5 }]}
+              />
+              <DataTableCell
+                getContent={(r) => r.numberofAlertSeverity}
+                style={[styles.text, { margin: 5 }]}
+              />
+            </TableBody>
+          </Table>
+        </View>
         <Text style={styles.text}>Description: {"description"}</Text>
         <Text style={styles.text}>Query ID: {"ruleId"}</Text>
         <Text style={styles.text}>Language: JavaScript</Text>
@@ -446,31 +626,131 @@ const MyDocument = () => {
         <Text style={styles.header} fixed>
           ~ G8 Code Scanner ~
         </Text>
-        <Text style={styles.title}>Insert Project Name</Text>
-        <Text style={styles.author}>Generated by: G8</Text>
-        <Image style={styles.image} src={CodeQLLogo} />
+        <Text style={styles.title}>{project_name}</Text>
+        <Text style={styles.author}>Generated with G8 Code Scanner</Text>
+        <Image style={styles.image} src={G8Logo} />
+        <Text style={styles.author}>By: DISM FYP Group 8 2021</Text>
+        <View
+          style={{
+            flexDirection: "row",
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <Text
+              style={[
+                styles.author,
+                {
+                  marginVertical: 5,
+                },
+              ]}
+            >
+              This project is sponsored by DSO & SP
+            </Text>
+            <Text
+              style={[
+                styles.author,
+                {
+                  marginVertical: 0,
+                },
+              ]}
+            >
+              External Supervisor: Peter Teoh
+            </Text>
+            <Text
+              style={[
+                styles.author,
+                {
+                  marginVertical: 0,
+                },
+              ]}
+            >
+              Internal Supervisor: Vernon Tan
+            </Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text
+              style={[
+                styles.author,
+                {
+                  marginVertical: 5,
+                },
+              ]}
+            >
+              Student from Singapore Polytechnic
+            </Text>
+            <Text
+              style={[
+                styles.author,
+                {
+                  marginVertical: 0,
+                },
+              ]}
+            >
+              Teo Wei Xiang
+            </Text>
+            <Text
+              style={[
+                styles.author,
+                {
+                  marginVertical: 0,
+                },
+              ]}
+            >
+              Lim Jun Yan
+            </Text>
+            <Text
+              style={[
+                styles.author,
+                {
+                  marginVertical: 0,
+                },
+              ]}
+            >
+              Clarabel Teo Jinghui
+            </Text>
+            <Text
+              style={[
+                styles.author,
+                {
+                  marginVertical: 0,
+                },
+              ]}
+            >
+              Lee Zheng Hong Jerremy
+            </Text>
+            <Text
+              style={[
+                styles.author,
+                {
+                  marginVertical: 0,
+                },
+              ]}
+            >
+              Lim Jun Long Gavin
+            </Text>
+          </View>
+        </View>
         <Text style={styles.subtitle} break>
-          1. The Code Review Process {testingString}
+          1. The Code Review Process
         </Text>
         <Text style={styles.text}>
           A Secure Code Review is a specialized task with the goal of
           identifying types of weaknesses that exist within a given code base.
-          The task involves both manual and automated review of the underlying
-          source code and identifies specific issues that may be representative
-          of broader classes of weakness inherent in the code. A Secure Code
-          Review does not attempt to identify every issue in the code, but
-          instead attempts to identify types of risk within the code such that
-          mitigation strategies can be devised.
+          The task only involves automated review of the underlying source code
+          and identifies specific issues that may be representative of broader
+          classes of weakness inherent in the code. A Secure Code Review does
+          not attempt to identify every issue in the code, but instead attempts
+          to identify types of risk within the code such that mitigation
+          strategies can be devised.
         </Text>
         <Text style={styles.text}>
-          During the actual review, members of a review team review the
-          application code for security problems and categorize the findings
-          based on the weakness categories (e.g., authentication, authorization,
-          etc.). Each finding is assigned a risk rating of High, Medium, Low, or
-          Informational. These findings and the broader weakness classes that
-          they represent are presented in this final report that the development
-          team can use as the foundation for improving the overall quality of
-          the code base.
+          During the actual review, CodeQL review the application code for
+          security problems and categorize the findings based on the alert
+          severity. Each finding is assigned a severity rating of Error,
+          Warning, or Recommendation. These findings and the broader weakness
+          classes that they represent are presented in this final report that
+          the development team can use as the foundation for improving the
+          overall quality of the code base.
         </Text>
         <Text style={styles.text}>
           It should be noted that while the review process will be as thorough
@@ -487,46 +767,32 @@ const MyDocument = () => {
         <Text style={styles.subtitle} break>
           2. Review Summary
         </Text>
+        <Image style={styles.image} src={CodeQLLogo} />
         <Text style={styles.text}>
-          The secure code review of the ### was completed on {today} by a review
-          team consisting of ### and ###. The review was performed on code
-          obtained from ### via email attachment on {today}, and bundled under
-          the file named example_app_v2.tar.gz. A meeting between the review
-          team, ### and ### was held on {today}, at which time information about
-          the code structure was presented along with high level overviews of
-          how things like authentication, data validation, and logging were
-          implemented in the code. This information was used by the review team
-          to formulate a plan for the impending review. The actual review
-          involved a manual investigation of the Java code. Specific source
-          files were not assigned to individual members; rather, each member of
-          the review team attempted to review the entire application. Each
-          reviewer recorded their specific findings within a spreadsheet and
-          assigned risk levels as they felt appropriate. At the end of the
-          review, the team looked across the individual spreadsheets to compare
-          common findings and to perform group reviews of the uncommon findings.
-          The specific findings are presented in the next section.
+          The secure code review of the {project_name} was completed on
+          {created_at}
+          by utilizing CodeQL; a industry-leading semantic code analysis engine.
+          The review was performed on code obtained via the G8 Website on
+          {created_at}, and the project has a SHA1 hash value of {hash}. A
+          meeting between the review team, ### and ### was held on {created_at},
+          at which time information about the code structure was presented along
+          with high level overviews of how things like authentication, data
+          validation, and logging were implemented in the code. This information
+          was used by the review team to formulate a plan for the impending
+          review. The actual review involved a manual investigation of the Java
+          code. Specific source files were not assigned to individual members;
+          rather, each member of the review team attempted to review the entire
+          application. Each reviewer recorded their specific findings within a
+          spreadsheet and assigned risk levels as they felt appropriate. At the
+          end of the review, the team looked across the individual spreadsheets
+          to compare common findings and to perform group reviews of the
+          uncommon findings. The specific findings are presented in the next
+          section.
         </Text>
         <Text style={styles.subtitle} break>
           3. Finding Summary
         </Text>
-        <Image style={styles.image} src={G8Logo} />
-        <Text style={styles.text}>
-          This section provides a summary of the findings resulting from this
-          review.
-        </Text>
-        <Text style={styles.text}>
-          For this application, three high level issues were found related to
-          the areas of authentication and data validation. One of the high level
-          issues resulting from unvalidated attacker input being sent to the
-          JSON parse function could result in arbitrary commands being executed.
-          Mitigating actions should be considered. Some other medium and low
-          issues have also been found. Details are given below.
-        </Text>
-        <Text style={styles.text}>
-          The figures below graphically outline the review team's findings by
-          both category and risk level.
-        </Text>
-        <GetSummary />
+        <GetFindingSummary />
         <Text style={styles.subtitle} break>
           4. Finding Details
         </Text>
@@ -585,10 +851,8 @@ const MyDocument = () => {
             },
           ]}
         >
-          • Recommendation — Potential impact to the application security, or
-          heavily mitigated high risk (e.g., being in dead code or after an
-          abort call). • Informational – Does not directly make the code less
-          secure, but bad coding practice
+          • Recommendation — Does not directly make the code less secure, but
+          bad coding practice
         </Text>
         <Text style={styles.text}>
           The risk ratings should be considered risks to the application itself.

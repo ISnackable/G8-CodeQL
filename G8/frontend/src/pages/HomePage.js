@@ -18,6 +18,7 @@ import ResetPassword from "./examples/ResetPassword";
 import Lock from "./examples/Lock";
 import NotFoundPage from "./NotFound";
 import ServerError from "./ServerError";
+import QueryHelp from "./queryhelp/QueryHelp";
 
 // documentation pages
 import DocsAbout from "./documentation/DocsAbout";
@@ -239,6 +240,11 @@ const HomePage = () => (
       exact
       path={Routes.DocsChangelog.path}
       component={DocsChangelog}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.QueryHelp.path}
+      component={QueryHelp}
     />
 
     <Redirect to={Routes.NotFound.path} />

@@ -254,30 +254,26 @@ const CodeQLAlerts = () => {
     }, 500);
   };
 
-  function NoLogResults() {
-    return (
-      <Card className="text-center">
-        <Card.Body>
-          <Card.Title>No Projects were found!</Card.Title>
-          <Card.Text>
-            Click the button below to upload a new project :)
-          </Card.Text>
-          <Button
-            variant="secondary"
-            as={Link}
-            to={Routes.Dashboard.path}
-            className="text-dark me-3"
-          >
-            Upload New Project{" "}
-            <FontAwesomeIcon
-              icon={faExternalLinkAlt}
-              className="d-none d-sm-inline ms-1"
-            />
-          </Button>
-        </Card.Body>
-      </Card>
-    );
-  }
+  const NoLogResults = () => (
+    <Card className="text-center">
+      <Card.Body>
+        <Card.Title>No Projects were found!</Card.Title>
+        <Card.Text>Click the button below to upload a new project :)</Card.Text>
+        <Button
+          variant="secondary"
+          as={Link}
+          to={Routes.Dashboard.path}
+          className="text-dark me-3"
+        >
+          Upload New Project{" "}
+          <FontAwesomeIcon
+            icon={faExternalLinkAlt}
+            className="d-none d-sm-inline ms-1"
+          />
+        </Button>
+      </Card.Body>
+    </Card>
+  );
 
   const AlertCard = () => {
     return (

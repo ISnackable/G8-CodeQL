@@ -32,12 +32,12 @@ import { Routes } from "../routes";
 // import ReactHero from "../assets/img/technologies/react-hero-logo.svg";
 import G8Logo from "../assets/img/g8-logo.png";
 // import ProfilePicture from "../assets/img/team/profile-picture-3.jpg";
-// const importAll = (r) => r.keys();
-// const queryhelpMarkdownFiles = importAll(
-//   require.context("../pages/queryhelp", true, /\.md$/)
-// )
-//   .sort()
-//   .reverse();
+const importAll = (r) => r.keys();
+const queryhelpMarkdownFiles = importAll(
+  require.context("../pages/queryhelp", true, /\.md$/)
+)
+  .sort()
+  .reverse();
 
 // let treePath = {};
 // queryhelpMarkdownFiles.forEach((path) => {
@@ -282,7 +282,22 @@ const Sidebar = (props = {}) => {
                 eventKey="queryhelp/"
                 title="Query Help"
                 icon={faBook}
-              ></CollapsableNavItem>
+              >
+                {queryhelpMarkdownFiles.map((file, idx) => {
+                  return (
+                    <NavItem
+                      key={idx}
+                      title={file
+                        .split("/")
+                        .pop()
+                        .replace(".md", "")
+                        .replace(/([A-Z])/g, " $1")
+                        .trim()}
+                      link={`/query-help/${idx + 1}`}
+                    />
+                  );
+                })}
+              </CollapsableNavItem>
 
               {/* <CollapsableNavItem
                 eventKey="tables/"

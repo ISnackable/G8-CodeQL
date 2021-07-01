@@ -17,11 +17,11 @@ import 'ace-builds/src-noconflict/theme-solarized_dark'
 import 'ace-builds/src-noconflict/ext-language_tools'
 import 'ace-builds/src-noconflict/ext-beautify'
 
-
-// Import React FilePond
-import { FilePond } from "react-filepond";
-// Import FilePond styles
-import "filepond/dist/filepond.min.css";
+import useLocalStorageState from "use-local-storage-state";
+// // Import React FilePond
+// import { FilePond } from "react-filepond";
+// // Import FilePond styles
+// import "filepond/dist/filepond.min.css";
 import axios from "axios";
 import {
   // faCashRegister,
@@ -75,6 +75,7 @@ import { ExistingProjectTable } from "../../components/Tables";
 // onclick handler will call the setcode function in line 77 and replace "code" variable with the "setCode" parameter contents
 const backend_url = `http://localhost:8080/teamname/api`;
 const CustomQuery = () => {
+  const [logs, setLogs] = useLocalStorageState("log", []);
   let [responseData, setResponseData] = React.useState([]);
   let [currentProject, setCurrentProject] = React.useState({id:null});
   let [currentProjectMessage, setCurrentProjectMessage] = React.useState(`No Project`);
@@ -120,10 +121,12 @@ const sendCustomQuery=()=>{
   console.log(currentProject.id)
   axios.post(backend_url+`/customquery/`+currentProject.id+`/`,{CustomQuery:code})//????
   .then((response)=>{
-    console.log(response)
+    console.log(response.data)
+    setLogs([response.data]);
     return
   })
   .catch((error)=>{
+    alert("ERROR!")
     return
   })
 }

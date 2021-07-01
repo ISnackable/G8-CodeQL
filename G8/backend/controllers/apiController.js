@@ -389,7 +389,7 @@ exports.repoUpload = (req, res) => {
 
 exports.customQuery = (req, res) => {
   var CusQuery = req.body.CustomQuery;
-  fs.writeFile("../CustomQuery.ql", CusQuery, function (err) {
+  fs.writeFile("../../codeql-custom-queries-javascript/CustomQuery.ql", CusQuery, function (err) {
     if (err) {
       console.error(err);
       return;
@@ -404,8 +404,9 @@ exports.customQuery = (req, res) => {
         "--format=sarifv2.1.0", // set the result output to SARIF v2.1.0 format
         `--output=./SarifFiles/${id}.sarif`, // output file as id.sarif in ./SarifFiles/
         "--sarif-add-snippets", // include code snippets for each location mentioned in the results
-        `../databases/database${id}`, // our database to scan
-        "../CustomQuery.ql",
+        `./databases/database${id}`, // our database to scan
+        "../../codeql-custom-queries-javascript/CustomQuery.ql",
+        "--search-path=../../codeql",
       ];
 
       // Run CodeQL query command, sarif output file is stored in ./SarifFiles

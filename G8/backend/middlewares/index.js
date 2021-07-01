@@ -398,7 +398,9 @@ exports.createNeo4J = (req, res) => {
           /* encrypted: 'ENCRYPTION_OFF' */
         }
       );
-
+      const deleteQuery = `
+        MATCH (n)
+        DETACH DELETE n`;
       const query =
         CreateQuery +
         `WITH 1 as dummy
@@ -408,20 +410,22 @@ exports.createNeo4J = (req, res) => {
 
       const session = driver.session({ database: "neo4j" });
 
-      session
-        .run(query)
-        .then((result) => {
-          result.records.forEach((record) => {
-            console.log(record.get("n"));
-            console.log(record.get("r"));
-            console.log(record.get("m"));
+
+        session
+          .run(deleteQuery)
+          .then(()=>session.run(query))
+          .then((result) => {
+            result.records.forEach((record) => {
+              console.log(record.get("n"));
+              console.log(record.get("r"));
+              console.log(record.get("m"));
+            });
+            session.close();
+            driver.close();
+          })
+          .catch((error) => {
+            console.error(error);
           });
-          session.close();
-          driver.close();
-        })
-        .catch((error) => {
-          console.error(error);
-        });
     }
   });
 };

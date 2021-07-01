@@ -1,1 +1,0 @@
-# Resolvable call ratio

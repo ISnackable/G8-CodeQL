@@ -1,1 +1,0 @@
-# Types with qualified name

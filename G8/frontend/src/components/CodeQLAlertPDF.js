@@ -3,6 +3,7 @@ import G8Logo from "../assets/img/g8-logo-with-text.png";
 import CodeQLLogo from "../assets/img/codeql-logo.png";
 import Roboto from "../assets/fonts/Roboto-Regular.ttf";
 // import SyntaxHighlightPrimitive from "./SyntaxHighlightPrimitive";
+
 import {
   Document,
   Page,
@@ -38,13 +39,12 @@ import { createLocalStorageStateHook } from "use-local-storage-state";
 //   },
 // });
 
-const importAll = (r) => r.keys().map(r);
-const queryHelpMarkdownFiles = importAll(
-  require.context("../pages/queryhelp", true, /\.md$/)
-)
-  .sort()
-  .reverse();
-
+// const importAll = (r) => r.keys().map(r);
+// const queryHelpMarkdownFiles = importAll(
+//   require.context("../pages/queryhelp/Security", true, /\.md$/)
+// )
+//   .sort()
+//   .reverse();
 // Create Document Component
 const MyDocument = () => {
   const useLogs = createLocalStorageStateHook("log", []);
@@ -136,15 +136,33 @@ const MyDocument = () => {
 
   const { project_name, hash, created_at } = projectInfo[0];
 
-  const getMarkdownQueryHelp = async () => {
-    const queryHelp = await Promise.all(
-      queryHelpMarkdownFiles.map((file) =>
-        fetch(file).then((res) => res.text())
-      )
-    ).catch((err) => console.error(err));
+  // const getMarkdownQueryHelp = async () => {
+  //   const queryHelp = await Promise.all(
+  //     queryHelpMarkdownFiles.map((file) =>
+  //       fetch(file).then((res) => res.text())
+  //     )
+  //   ).catch((err) => console.error(err));
 
-    console.log(queryHelp);
-  };
+  //   console.log(queryHelp);
+  // };
+
+  // function parseMarkdown(markdownText) {
+  //   const htmlText = markdownText
+  //     .replace(/^### (.*$)/gim, "<Text>$1</Text>")
+  //     .replace(/^## (.*$)/gim, "<Text>$1</Text>")
+  //     .replace(/^# (.*$)/gim, "<Text>$1</Text>")
+  //     .replace(/^\> (.*$)/gim, "<Text>$1</Text>")
+  //     .replace(/\*\*(.*)\*\*/gim, "<Text>$1</Text>")
+  //     .replace(/\*(.*)\*/gim, "<Text>$1</Text>")
+  //     .replace(
+  //       /!\[(.*?)\]\((.*?)\)/gim,
+  //       "<Image style={styles.image} src='$2'/>"
+  //     )
+  //     .replace(/\[(.*?)\]\((.*?)\)/gim, "<Link src='$2'>$1</Link>");
+  //   // .replace(/\n$/gim, "<br />");
+
+  //   return htmlText.trim();
+  // }
 
   // As All Functions in js are asynchronus, to use await i am using async here
   // const generateSnippetImage = async (html) => {
@@ -266,7 +284,7 @@ const MyDocument = () => {
                 styles.text,
                 {
                   marginVertical: 0,
-                  borderStyle: "dotted",
+                  borderStyle: "solid",
                   borderColor: "black",
                   borderWidth: 1,
                 },
@@ -274,6 +292,7 @@ const MyDocument = () => {
             >
               {alerts.map((alert, index) => {
                 const ploc = alert.locations[0].physicalLocation;
+                const codeFlow = alert.codeFlows;
 
                 if (!ploc) return null;
                 const { region, contextRegion } = ploc;
@@ -289,7 +308,7 @@ const MyDocument = () => {
                       </Text>
                       <View
                         style={{
-                          borderStyle: "dotted",
+                          borderStyle: "solid",
                           borderColor: "black",
                           borderWidth: 1,
                         }}
@@ -342,6 +361,16 @@ const MyDocument = () => {
                 const [pre, hi, post] = lines.join("\n").split(marker);
                 const code = `${pre}ƩƩƩƩƩƩ${hi}ƩƩƩƩƩƩ${post}`;
 
+                let lineNos = "";
+
+                for (
+                  let i = contextRegion.startLine;
+                  i <= contextRegion.endLine;
+                  i++
+                ) {
+                  lineNos += `${i}\n`;
+                }
+
                 // console.log(code);
 
                 // let html = ReactDOMServer.renderToStaticMarkup(
@@ -354,39 +383,61 @@ const MyDocument = () => {
 
                 // let base64Image = generateSnippetImage(html);
 
-                if (code.length > 5000) {
-                  return (
-                    <View>
-                      <Text style={[styles.text, { fontSize: 10 }]}>
-                        Note. Snippet is too large to be generated, only the
-                        affected code is shown.{"\n"}
-                      </Text>
-                      <Text
+                return (
+                  <View style={{ marginTop: 10 }}>
+                    {code.length > 5000 ? (
+                      <>
+                        <Text style={[styles.text, { fontSize: 10 }]}>
+                          Note. Snippet is too large to be generated, only the
+                          affected code is shown.{"\n"}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.text,
+                            {
+                              marginVertical: 0,
+                            },
+                          ]}
+                        >{`${contextRegion.startLine}\t\t>> ${hi}\n`}</Text>
+                      </>
+                    ) : (
+                      <View
                         style={[
                           styles.text,
                           {
-                            marginVertical: 0,
+                            flex: 1,
+                            flexDirection: "row",
+                            textAlign: "left",
                           },
                         ]}
-                      >{`${contextRegion.startLine}\t\t${hi}\n`}</Text>
-                      <Text style={styles.text}>
-                        {renderMessageTextWithEmbeddedLinks(alert.message.text)}
-                        {"\n\n"}
-                      </Text>
-                      <View
-                        style={{
-                          borderStyle: "dotted",
-                          borderColor: "black",
-                          borderWidth: 1,
-                        }}
-                      />
-                    </View>
-                  );
-                }
+                      >
+                        <Text style={{ color: "#9C9D9A" }}>{lineNos}</Text>
+                        <Text
+                          style={[
+                            styles.text,
+                            {
+                              marginVertical: 0,
+                              flexGrow: 1,
+                              textAlign: "left",
+                            },
+                          ]}
+                        >
+                          {pre}
+                          <Link
+                            src="#"
+                            style={{
+                              color: "#4B82BA",
+                              backgroundColor: "#FFF2DA",
+                            }}
+                          >
+                            {hi}
+                          </Link>
+                          {post}
+                        </Text>
+                      </View>
+                    )}
 
-                return (
-                  <View>
-                    {lines.map((line, idx) => {
+                    {/* {lines.map((line, idx) => {
                       if (contextRegion.startLine)
                         idx += contextRegion.startLine;
                       if (region.startLine === idx) {
@@ -417,21 +468,58 @@ const MyDocument = () => {
                           {`${idx}\t\t ${line}\n`}
                         </Text>
                       );
-                    })}
+                    })} */}
                     {/* <Image
                       style={[styles.image, { height: 500, width: 500 }]}
                       src={base64Image}
                     /> */}
-                    <Text style={[styles.text]}>
+                    <Text style={[styles.text, { marginBottom: 0 }]}>
                       Note:{" "}
                       {renderMessageTextWithEmbeddedLinks(alert.message.text)}
-                      {"\n\n"}
                     </Text>
+                    {codeFlow && (
+                      <>
+                        <Text style={[styles.text, { marginBottom: 0 }]}>
+                          CodeFlow:
+                        </Text>
+                        {codeFlow[0].threadFlows[0].locations.map(
+                          (loc, idx) => {
+                            let messageText = loc.location.message.text;
+                            let fileLoc =
+                              loc.location.physicalLocation.artifactLocation
+                                .uri;
+                            let startLine =
+                              loc.location.physicalLocation.region.startLine;
+                            return (
+                              <Text
+                                key={"cf" + idx}
+                                style={[
+                                  styles.text,
+                                  { textAlign: "left", marginVertical: 0 },
+                                ]}
+                              >
+                                <Link
+                                  key={"cfmt" + idx}
+                                  src="#"
+                                  style={{
+                                    color: "#4B82BA",
+                                  }}
+                                >
+                                  {messageText}
+                                </Link>
+                                {`\tin ${fileLoc} at Line ${startLine}`}
+                              </Text>
+                            );
+                          }
+                        )}
+                      </>
+                    )}
                     <View
                       style={{
-                        borderStyle: "dotted",
+                        borderStyle: "solid",
                         borderColor: "black",
                         borderWidth: 1,
+                        marginTop: 15,
                       }}
                     />
                   </View>
@@ -587,42 +675,6 @@ const MyDocument = () => {
             </TableBody>
           </Table>
         </View>
-        <Text style={styles.text}>Description: {"description"}</Text>
-        <Text style={styles.text}>Query ID: {"ruleId"}</Text>
-        <Text style={styles.text}>Language: JavaScript</Text>
-        <Text style={styles.text}>Severity: {"severity"}</Text>
-        <Text style={styles.text}>Tags: {"tags.join(', ')"}</Text>
-
-        <Text style={styles.text}>
-          AngularJS is secure by default through automated sanitization and
-          filtering of untrusted values that could cause vulnerabilities such as
-          XSS. Strict Contextual Escaping (SCE) is an execution mode in
-          AngularJS that provides this security mechanism.
-        </Text>
-        <Text style={styles.text}>
-          Disabling SCE in an AngularJS application is strongly discouraged. It
-          is even more discouraged to disable SCE in a library, since it is an
-          application-wide setting.
-        </Text>
-        <Text style={styles.text}>Do not disable SCE.</Text>
-        <Text style={styles.text}>
-          The following example shows an AngularJS application that disables SCE
-          in order to dynamically construct an HTML fragment, which is later
-          inserted into the DOM through $scope.html.
-        </Text>
-        <Text style={styles.text}>
-          This is problematic, since it disables SCE for the entire AngularJS
-          application.
-        </Text>
-        <Text style={styles.text}>
-          Instead, just mark the dynamically constructed HTML fragment as safe
-          using $sce.trustAsHtml, before assigning it to $scope.html:
-        </Text>
-        <Text style={styles.text}>
-          Please note that this example is for illustrative purposes only; use
-          the AngularJS templating system to dynamically construct HTML when
-          possible.
-        </Text>
       </>
     );
   }

@@ -283,20 +283,18 @@ const Sidebar = (props = {}) => {
                 title="Query Help"
                 icon={faBook}
               >
-                {queryhelpMarkdownFiles.map((file, idx) => {
-                  return (
-                    <NavItem
-                      key={idx}
-                      title={file
-                        .split("/")
-                        .pop()
-                        .replace(".md", "")
-                        .replace(/([A-Z])/g, " $1")
-                        .trim()}
-                      link={`/query-help/${idx + 1}`}
-                    />
-                  );
-                })}
+                {queryhelpMarkdownFiles.map((file, idx) => (
+                  <NavItem
+                    key={idx}
+                    title={file
+                      .split("/")
+                      .pop()
+                      .replace(".md", "")
+                      .replace(/([A-Z])/g, " $1")
+                      .trim()}
+                    link={`/query-help/${idx + 1}`}
+                  />
+                ))}
               </CollapsableNavItem>
 
               {/* <CollapsableNavItem

@@ -1,1 +1,0 @@
-# External dependency source links

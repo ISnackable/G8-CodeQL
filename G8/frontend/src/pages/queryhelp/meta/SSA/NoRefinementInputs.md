@@ -1,1 +1,0 @@
-# Refinement node without inputs

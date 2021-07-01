@@ -116,9 +116,15 @@ const DrawProjectlist=()=>{
 }
 
 const sendCustomQuery=()=>{
-  axios.get(backend_url+`/test/`+currentProject+`/`)//????
+  console.log(code)
+  console.log(currentProject.id)
+  axios.post(backend_url+`/customquery/`+currentProject.id+`/`,{CustomQuery:code})//????
   .then((response)=>{
     console.log(response)
+    return
+  })
+  .catch((error)=>{
+    return
   })
 }
 
@@ -353,7 +359,8 @@ source.getNode(), source.getNode().(Source).describe()
           <Button 
           variant = "Success" 
           size="lg"
-          style={{backgroundColor:"green" , color:'black'}}> 
+          style={{backgroundColor:"green" , color:'black'}}
+          onClick={sendCustomQuery}> 
           Run Query 
           
           </Button>

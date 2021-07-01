@@ -73,16 +73,17 @@ import { ExistingProjectTable } from "../../components/Tables";
 
 
 // onclick handler will call the setcode function in line 77 and replace "code" variable with the "setCode" parameter contents
-
+const backend_url = `http://localhost:8080/teamname/api`;
 const CustomQuery = () => {
   let [responseData, setResponseData] = React.useState([]);
   let [currentProject, setCurrentProject] = React.useState({id:null});
+  let [currentProjectMessage, setCurrentProjectMessage] = React.useState(`No Project`);
   const [code, setCode] = useState(`import javascript
 from BlockStmt b
 where b.getNumStmt() = 0
 select b, "This is an empty block."`)
 const fetchData = (e) => {
-  const backend_url = `http://localhost:8080/teamname/api`;
+
   if (e) e.preventDefault();
   axios
     .get(backend_url + `/projects`)
@@ -103,9 +104,12 @@ useEffect(() => {
 const DrawProjectlist=()=>{
   return responseData.map((pv)=>{
     let {id, project_name, hash, sarif_filename, created_at} = pv
+    if(sarif_filename=='error'||sarif_filename=='processing'||sarif_filename==null){
+      return (<></>)
+    }
     return (
       <>
-    <Dropdown.Item className="fw-bold" onClick={()=>setCurrentProject({id:id})}><span>{project_name}</span><span> #{id}</span></Dropdown.Item>
+    <Dropdown.Item className="fw-bold" onClick={()=>{setCurrentProject({id:id});setCurrentProjectMessage("Project #"+id)}}><span>{project_name}</span><span> #{id}</span></Dropdown.Item>
       </>
     )
   })
@@ -259,7 +263,7 @@ source.getNode(), source.getNode().(Source).describe()
               className="me-2"
               style={{backgroundColor:"red"}}
             >
-              Choose Project 
+              {currentProjectMessage}
               <FontAwesomeIcon icon={faCaretDown}  className="me-2 mx-2" />
             </Dropdown.Toggle>
             <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">

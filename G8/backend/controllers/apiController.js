@@ -14,6 +14,8 @@ const middlewares = require("../middlewares");
 const sevenBin = require("7zip-bin");
 const { extractFull } = require("node-7z");
 const upload = middlewares.multer.array("files", 100);
+const neo4j = require("neo4j-driver");
+
 
 // --------------------------
 // helper functions
@@ -393,7 +395,7 @@ exports.customQuery = (req, res) => {
       return;
     } else {
       console.log("Query successfully saved.");
-  
+
       const id = req.params.id;
       const args = [
         "database", // first argv
@@ -405,7 +407,7 @@ exports.customQuery = (req, res) => {
         `../databases/database${id}`, // our database to scan
         "../CustomQuery.ql",
       ];
-  
+
       // Run CodeQL query command, sarif output file is stored in ./SarifFiles
       // Declaring a child variable to use for troubleshooting
       var child = execFile("codeql", args, (error, stdout, stderr) => {
@@ -457,4 +459,68 @@ exports.customQuery = (req, res) => {
       });
     }
   });
-}
+};
+
+exports.deleteProject = (req, res) => {
+  const id = req.params.id;
+  var databaseFolder = `./databases/database${id}`;
+  var sarifFile = `./SarifFiles/${id}.sarif`;
+
+  // Attemps to remove projectid from the database first
+  projectDB.removeProject(id, function (err, result) {
+    // If no error, continues to remove codeql database, sarif files and neo4j nodes for the id
+    if (!err) {
+      fs.access(databaseFolder, fs.F_OK, (err) => {
+        if (err) {
+          console.error(err);
+          console.log("The database folder does not exist.");
+          return;
+        } else {
+          fs.rmdirSync(databaseFolder, { recursive: true });
+          console.log("CodeQL Database Folder deleted successfully");
+        }
+      });
+      fs.access(sarifFile, fs.F_OK, (err) => {
+        if (err) {
+          console.error(err);
+          console.log("The sarif file does not exist.");
+          return;
+        } else {
+          fs.rmdirSync(sarifFile, { recursive: true });
+          console.log("Sarif File deleted successfully.");
+        }
+      });
+
+      // TODO: replace localhost with neo
+      const driver = neo4j.driver(
+        "bolt://localhost:7687",
+        neo4j.auth.basic("neo4j", "s3cr3t"),
+        {
+          /* encrypted: 'ENCRYPTION_OFF' */
+        }
+      );
+
+      const query = `
+        MATCH (n {ProjectID: '${id}'})
+        DETACH DELETE n`;
+      const session = driver.session({ database: "neo4j" });
+
+      session
+        .run(query)
+        .then((result) => {
+          console.log(result);
+          console.log(`Successfully deleted Neo4J for ProjectID: ${id}`);
+          session.close();
+          driver.close();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      var output = {
+        "Project deleted": result.affectedRows,
+      };
+      res.status(200).send(output);
+    }
+  });
+};

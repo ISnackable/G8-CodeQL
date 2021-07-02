@@ -1,7 +1,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/ISnackable/DISMFYP2021GRP8/">
-    <img src="G8/frontend/src/assets/img/G8-logo.png" alt="Logo" width="80" height="80">
+    <img src="./G8/frontend/src/assets/img/g8-logo.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">DISMFYP2021GRP8</h3>
@@ -36,8 +36,6 @@
 <br />
 
 ![G8 Pages](G8/frontend/src/assets/img/allphoto.png)
-
-<br />
 
 ## Dependencies
 
@@ -127,7 +125,7 @@ $ docker run -p 3306:3306 -d --env MYSQL_ROOT_PASSWORD=secret docker.io/library/
 $ docker run -p 7474:7474 -p 7687:7687 -d -v $HOME/neo4j/data:/data --env NEO4J_AUTH=neo4j/s3cr3t neo4j:latest
 ```
 
-##### Installat Manually
+##### Install Manually
 
 - [MariaDB](https://mariadb.org/download/)
 - [Neo4J Community Edition](https://neo4j.com/download-center/#community)

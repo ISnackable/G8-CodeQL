@@ -34,7 +34,6 @@
     "chartist-plugin-tooltips-updated": "^0.1.4",
     "dompurify": "^2.2.9",
     "filepond": "^4.28.2",
-    "html2canvas": "^1.0.0-rc.7",
     "moment-timezone": "^0.5.33",
     "node-sass": "^6.0.0",
     "prism-react-renderer": "^1.2.1",

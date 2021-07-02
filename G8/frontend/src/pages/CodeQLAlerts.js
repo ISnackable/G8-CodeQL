@@ -31,16 +31,6 @@ const CodeQLAlerts = () => {
 
   useEffect(() => {
     var tempSnippets = [];
-    // const fetchData = () => {
-    //   if (snippets.length > 120) {
-    //     setHasMore(false);
-    //     return;
-    //   }
-
-    //   // a fake async api call like which sends
-    //   // 20 more records in .5 secs
-    //   setTimeout(() => {}, 500);
-    // };
 
     // Fix bad code, will die
     if (!logs) return; // Undef interpreted as loading.
@@ -106,7 +96,7 @@ const CodeQLAlerts = () => {
 
         tempSnippets.push(
           <Card
-            className="position-relative mb-4 shadow"
+            className="position-relative mb-4 shadow elemClass"
             key={"c" + alerts[0].ruleId + "-" + file + i}
           >
             <Card.Body key={"cb" + alerts[0].ruleId + "-" + file + i}>
@@ -263,30 +253,26 @@ const CodeQLAlerts = () => {
     }, 500);
   };
 
-  function NoLogResults() {
-    return (
-      <Card className="text-center">
-        <Card.Body>
-          <Card.Title>No Projects were found!</Card.Title>
-          <Card.Text>
-            Click the button below to upload a new project :)
-          </Card.Text>
-          <Button
-            variant="secondary"
-            as={Link}
-            to={Routes.Dashboard.path}
-            className="text-dark me-3"
-          >
-            Upload New Project{" "}
-            <FontAwesomeIcon
-              icon={faExternalLinkAlt}
-              className="d-none d-sm-inline ms-1"
-            />
-          </Button>
-        </Card.Body>
-      </Card>
-    );
-  }
+  const NoLogResults = () => (
+    <Card className="text-center">
+      <Card.Body>
+        <Card.Title>No Projects were found!</Card.Title>
+        <Card.Text>Click the button below to upload a new project :)</Card.Text>
+        <Button
+          variant="secondary"
+          as={Link}
+          to={Routes.Dashboard.path}
+          className="text-dark me-3"
+        >
+          Upload New Project{" "}
+          <FontAwesomeIcon
+            icon={faExternalLinkAlt}
+            className="d-none d-sm-inline ms-1"
+          />
+        </Button>
+      </Card.Body>
+    </Card>
+  );
 
   const AlertCard = () => {
     return (

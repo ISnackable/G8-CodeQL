@@ -23,6 +23,7 @@ import {
   ProgressBar,
   Pagination,
   ButtonGroup,
+  Spinner,
 } from "@themesberg/react-bootstrap";
 import { Link } from "react-router-dom";
 
@@ -530,6 +531,11 @@ export const ExistingProjectTable = (props) => {
           value={id}
           onClick={(e) => functiontocall(e, "value")}
         >
+          {type === 1 && (
+            <Spinner animation="border" role="status" size="sm" as="span">
+              <span className="sr-only">Processing...</span>
+            </Spinner>
+          )}{" "}
           {msg}
         </Button>
       );

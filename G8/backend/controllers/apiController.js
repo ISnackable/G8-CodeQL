@@ -16,7 +16,6 @@ const { extractFull } = require("node-7z");
 const upload = middlewares.multer.array("files", 100);
 const neo4j = require("neo4j-driver");
 
-
 // --------------------------
 // helper functions
 // --------------------------

@@ -58,7 +58,11 @@ router.post(
 router.post("/projects/repo", createProjectLimiter, apiController.repoUpload);
 
 // delete project
-router.delete("/projects/:id", apiController.deleteProject);
+router.delete(
+  "/projects/:id",
+  middlewares.idValidation,
+  apiController.deleteProject
+);
 
 // router.get("/verifySarifFile", apiController.verifySarifFile);
 

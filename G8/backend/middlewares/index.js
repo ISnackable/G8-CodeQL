@@ -410,22 +410,21 @@ exports.createNeo4J = (req, res) => {
 
       const session = driver.session({ database: "neo4j" });
 
-
-        session
-          .run(deleteQuery)
-          .then(()=>session.run(query))
-          .then((result) => {
-            result.records.forEach((record) => {
-              console.log(record.get("n"));
-              console.log(record.get("r"));
-              console.log(record.get("m"));
-            });
-            session.close();
-            driver.close();
-          })
-          .catch((error) => {
-            console.error(error);
+      session
+        .run(deleteQuery)
+        .then(() => session.run(query))
+        .then((result) => {
+          result.records.forEach((record) => {
+            console.log(record.get("n"));
+            console.log(record.get("r"));
+            console.log(record.get("m"));
           });
+          session.close();
+          driver.close();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
   });
 };

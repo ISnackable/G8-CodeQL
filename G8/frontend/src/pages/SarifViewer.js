@@ -1,6 +1,6 @@
-// import React, { useState } from "react"; // TODO: just for easy developement
-import React from "react";
-import { Button, Dropdown, ButtonGroup } from "@themesberg/react-bootstrap";
+import React, { useState } from "react"; // TODO: just for easy developement
+// import React from "react";
+import { Button, Dropdown, Form } from "@themesberg/react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCloudUploadAlt,
@@ -13,6 +13,7 @@ import DragAndDrop from "../components/DragAndDrop";
 
 const SarifViewer = () => {
   const [logs, setLogs] = useLocalStorageState("log", []); // TODO: just for easy developement
+  const [logsString, setLogsString] = useState("");
   // const [logs, setLogs] = useState([
   //   {
   //     version: "2.1.0",
@@ -281,12 +282,15 @@ const SarifViewer = () => {
 
   const handleDisplayLogs = (files) => {
     const fileReader = new FileReader();
-    fileReader.readAsText(files[0], "UTF-8");
+    let file = files[0] || files;
+
+    fileReader.readAsText(file, "UTF-8");
     fileReader.onload = (e) => {
       try {
         let log = JSON.parse(e.target.result);
-
+        setLogsString(e.target.result);
         setLogs([...logs, log]);
+        console.log(log);
       } catch (error) {
         console.error(error);
       }
@@ -294,7 +298,40 @@ const SarifViewer = () => {
   };
 
   const removeLogs = () => {
+    setLogsString("");
     setLogs([]);
+  };
+
+  const downloadURL = (data, fileName) => {
+    const a = document.createElement("a");
+    a.href = data;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.style.display = "none";
+    a.click();
+    a.remove();
+  };
+
+  const downloadBlob = (data, fileName, mimeType) => {
+    // create a Blob from our buffer
+    const blob = new Blob([data], {
+      type: mimeType,
+    });
+
+    const url = window.URL.createObjectURL(blob);
+
+    downloadURL(url, fileName);
+
+    setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+  };
+
+  const handleExport = () => {
+    if (logs.length && logsString) {
+      // Creating the file
+      downloadBlob(logsString, `${Date()}.sarif`, "application/json");
+    } else {
+      alert("Upload a sarif file first");
+    }
   };
 
   return (
@@ -316,8 +353,27 @@ const SarifViewer = () => {
           <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
             <input id="input-file" className="d-none" type="file" />
             <Dropdown.Item className="fw-bold">
-              <FontAwesomeIcon icon={faCloudUploadAlt} className="me-2" />
-              Upload Log
+              <Form>
+                <Form.Control
+                  hidden
+                  id="fileButton"
+                  type="file"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  onChange={(e) => handleDisplayLogs(e.target.files[0])}
+                />
+                <Form.Label
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById("fileButton").click();
+                  }}
+                >
+                  {" "}
+                  <FontAwesomeIcon icon={faCloudUploadAlt} className="me-2" />
+                  Upload Log
+                </Form.Label>
+              </Form>
             </Dropdown.Item>
             <Dropdown.Item className="fw-bold" onClick={removeLogs}>
               <FontAwesomeIcon icon={faTrash} className="me-2" />
@@ -326,14 +382,9 @@ const SarifViewer = () => {
           </Dropdown.Menu>
         </Dropdown>
 
-        <ButtonGroup>
-          <Button variant="outline-primary" size="sm">
-            Share
-          </Button>
-          <Button variant="outline-primary" size="sm">
-            Export
-          </Button>
-        </ButtonGroup>
+        <Button variant="outline-primary" size="sm" onClick={handleExport}>
+          Export
+        </Button>
       </div>
       <Viewer
         logs={logs}

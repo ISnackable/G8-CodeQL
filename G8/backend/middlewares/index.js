@@ -250,7 +250,6 @@ exports.createNeo4J = (req, res) => {
         if (!queries.includes(result.ruleId)) {
           queries.push(result.ruleId);
         }
-
         FileName.push(
           result.locations[0].physicalLocation.artifactLocation.uri
         );

@@ -21,7 +21,6 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Snippet from "../components/Snippet";
 import SnippetModal from "../components/SnippetModal";
 import useLocalStorageState from "use-local-storage-state";
-// import { generatePdfDocument } from "../components/GeneratePDFDocument";
 
 const CodeQLAlerts = () => {
   // eslint-disable-next-line no-unused-vars

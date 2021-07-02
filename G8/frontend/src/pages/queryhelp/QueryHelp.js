@@ -33,7 +33,7 @@ const SarifHelp = () => {
 
   const getMarkdownFiles = async () => {
     try {
-      await fetch(queryhelpMarkdownFiles[id].default)
+      await fetch(queryhelpMarkdownFiles[id - 1].default)
         .then((res) => res.text())
         .then((data) => setFile(data))
         .catch((err) => console.error(err));

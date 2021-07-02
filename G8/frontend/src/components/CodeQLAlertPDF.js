@@ -46,7 +46,7 @@ import { createLocalStorageStateHook } from "use-local-storage-state";
 //   .sort()
 //   .reverse();
 // Create Document Component
-const MyDocument = () => {
+const MyDocument = (props) => {
   const useLogs = createLocalStorageStateHook("log", []);
   const useProjectInfo = createLocalStorageStateHook("projectInfo", []);
   // eslint-disable-next-line no-unused-vars
@@ -115,7 +115,7 @@ const MyDocument = () => {
 
   if (!logs.length || !projectInfo.length) {
     return (
-      <Document>
+      <Document {...props}>
         <Page style={styles.body}>
           <Text style={styles.header} fixed>
             ~ G8 Code Scanner ~
@@ -680,7 +680,7 @@ const MyDocument = () => {
   }
 
   return (
-    <Document>
+    <Document {...props}>
       <Page style={styles.body}>
         <Text style={styles.header} fixed>
           ~ G8 Code Scanner ~

@@ -39,27 +39,6 @@ const queryhelpMarkdownFiles = importAll(
   .sort()
   .reverse();
 
-// let treePath = {};
-// queryhelpMarkdownFiles.forEach((path) => {
-//   let levels = path.replace("./", "").split("/");
-//   let file = levels.pop();
-
-//   let prevLevel = treePath;
-//   let prevProp = levels.shift();
-
-//   levels.forEach((prop) => {
-//     prevLevel[prevProp] = prevLevel[prevProp] || {};
-//     prevLevel = prevLevel[prevProp];
-//     prevProp = prop;
-//   });
-
-//   try {
-//     prevLevel[prevProp] = (prevLevel[prevProp] || []).concat([file]);
-//   } catch (error) {
-//     prevLevel[prevProp] = ([prevLevel[prevProp]] || []).concat([file]);
-//   }
-// });
-
 const Sidebar = (props = {}) => {
   const location = useLocation();
   const { pathname } = location;
@@ -204,7 +183,7 @@ const Sidebar = (props = {}) => {
                 <FontAwesomeIcon icon={faTimes} />
               </Nav.Link>
             </div>
-            <Nav className="flex-column pt-3 pt-md-0">
+            <Nav className="flex-column pt-3 pt-md-0 text-truncate">
               <NavItem
                 title="G8"
                 link={Routes.Presentation.path}

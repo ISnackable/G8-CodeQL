@@ -688,7 +688,7 @@ const MyDocument = () => {
         <Text style={styles.title}>{`The analysis of ${project_name}`}</Text>
         <Text style={styles.author}>Generated with G8 Code Scanner</Text>
         <Image style={styles.image} src={G8Logo} />
-        <Text style={styles.author}>By: DISM FYP Group 8 2021</Text>
+        <Text style={styles.author}>By: DISM / 3A / FT / 68 | FYP Group 8 2021</Text>
         <View
           style={{
             flexDirection: "row",
@@ -713,7 +713,7 @@ const MyDocument = () => {
                 },
               ]}
             >
-              External Supervisor: Peter Teoh
+              External Supervisor: Peter Teoh ( DSO ) 
             </Text>
             <Text
               style={[
@@ -723,7 +723,7 @@ const MyDocument = () => {
                 },
               ]}
             >
-              Internal Supervisor: Vernon Tan
+              Internal Supervisor: Vernon Tan ( SP ) 
             </Text>
           </View>
           <View style={{ flex: 1 }}>
@@ -735,7 +735,7 @@ const MyDocument = () => {
                 },
               ]}
             >
-              Student from Singapore Polytechnic
+              Students from Singapore Polytechnic
             </Text>
             <Text
               style={[
@@ -828,25 +828,23 @@ const MyDocument = () => {
         </Text>
         <Image style={styles.image} src={CodeQLLogo} />
         <Text style={styles.text}>
-          The secure code review of the {project_name} was completed on
+          The secure code review of the "{project_name}" was completed on
           {created_at}
           by utilizing CodeQL; a industry-leading semantic code analysis engine.
           The review was performed on code obtained via the G8 Website on
-          {created_at}, and the project has a SHA1 hash value of {hash}. A
-          meeting between the review team, ### and ### was held on {created_at},
-          at which time information about the code structure was presented along
-          with high level overviews of how things like authentication, data
-          validation, and logging were implemented in the code. This information
-          was used by the review team to formulate a plan for the impending
-          review. The actual review involved a manual investigation of the Java
-          code. Specific source files were not assigned to individual members;
-          rather, each member of the review team attempted to review the entire
-          application. Each reviewer recorded their specific findings within a
-          spreadsheet and assigned risk levels as they felt appropriate. At the
-          end of the review, the team looked across the individual spreadsheets
-          to compare common findings and to perform group reviews of the
-          uncommon findings. The specific findings are presented in the next
-          section.
+          {created_at} , and the project has a SHA1 hash value of {hash}
+
+          </Text>
+          <Text style={styles.text}>
+          After analysis of the code that was presented , information about the 
+          vulnerabilities found within the code were collated and displayed to the end user 
+          on the " CodeQL Alerts " page. The analysis also included the nature of the 
+          vulnerability , the files it was discovered in , and also how it affected
+          the subsequent code. Similar alerts which were discovered were then grouped 
+          together for the convenient viewing by the end user. A Neo4J virtualization graph 
+          was also developed to provide a visual representation of what each alert meant. 
+          More details about the findings can be found in the following sections below.
+
         </Text>
         <Text style={styles.subtitle} break>
           3. Finding Summary
@@ -860,11 +858,11 @@ const MyDocument = () => {
           found during the review. These details are designed to provide the
           developers with proof that the stated weaknesses exist as well as to
           provide examples that the developers can use to find and fix similar
-          areas of the code. As mentioned before, the Secure Code Review does
-          not claim to find every issue; as such the development team should use
+          areas of the code. As mentioned earlier, the Secure Code Review does
+          not provide a 100 percent foolproof solution . As such, the development team should use
           the information in these findings as an opportunity to improve the
           entire code base. Just fixing the specific examples identified below
-          will most likely not remove the higher level risks from the
+          will most likely NOT remove the higher level risks from the
           application.
         </Text>
         <Text style={styles.text}>
@@ -930,7 +928,23 @@ const MyDocument = () => {
           }
           fixed
         />
+         <Text style={styles.subtitle} break></Text>
+         <Text style={[
+            styles.text,
+            {
+              marginVertical: 0,
+              marginLeft: 120,
+              marginTop:150,
+              marginBottom: 5,
+            },
+          ]} >
+           ------------------- END OF REPORT --------------------
+         </Text>
+
+
       </Page>
+      
+
     </Document>
   );
 };

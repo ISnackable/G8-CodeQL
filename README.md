@@ -1,7 +1,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/ISnackable/DISMFYP2021GRP8/">
-    <img src="./G8/frontend/src/assets/img/G8-logo.png" alt="Logo" width="80" height="80">
+    <img src="G8/frontend/src/assets/img/G8-logo.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">DISMFYP2021GRP8</h3>
@@ -35,7 +35,7 @@
 
 <br />
 
-![G8 Pages](G8\frontend\src\assets\img\allphoto.png)
+![G8 Pages](G8/frontend/src/assets/img/allphoto.png)
 
 <br />
 

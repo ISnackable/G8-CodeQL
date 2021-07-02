@@ -57,6 +57,13 @@ router.post(
 // upload project with git
 router.post("/projects/repo", createProjectLimiter, apiController.repoUpload);
 
+// delete project
+router.delete(
+  "/projects/:id",
+  middlewares.idValidation,
+  apiController.deleteProject
+);
+
 // router.get("/verifySarifFile", apiController.verifySarifFile);
 
 /**

@@ -45,9 +45,6 @@ const DocsQuickStart = () => {
                       review workflow
                     </p>
                   </li>
-                  <li>
-                    Want to join the debate on how to define good quality code
-                  </li>
                 </ul>
 
                 <h1 className="h2 mt-4" id="">

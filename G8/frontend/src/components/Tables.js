@@ -477,7 +477,7 @@ export const ExistingProjectTable = (props) => {
       .then((response) => {
         setLogs([response.data]);
         responseData.forEach((item) => {
-          if (item.id === e.target.value) {
+          if (item.id == e.target.value) {
             setprojectInfo([
               {
                 id: item.id,

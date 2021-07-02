@@ -397,7 +397,9 @@ exports.createNeo4J = (req, res) => {
           /* encrypted: 'ENCRYPTION_OFF' */
         }
       );
-
+      const deleteQuery = `
+        MATCH (n)
+        DETACH DELETE n`;
       const query =
         CreateQuery +
         `WITH 1 as dummy
@@ -408,7 +410,8 @@ exports.createNeo4J = (req, res) => {
       const session = driver.session({ database: "neo4j" });
 
       session
-        .run(query)
+        .run(deleteQuery)
+        .then(() => session.run(query))
         .then((result) => {
           result.records.forEach((record) => {
             console.log(record.get("n"));

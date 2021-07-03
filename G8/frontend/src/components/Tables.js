@@ -471,7 +471,6 @@ export const ExistingProjectTable = (props) => {
   };
   const deleteprojectbyid = (e) => {
     e.preventDefault();
-    console.log("HIOHIHIH")
     // console.log(e.target.value); //This console logs the id
     axios
       .delete(backend_url + `/projects/` + e.target.value)

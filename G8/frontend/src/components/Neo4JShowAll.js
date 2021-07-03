@@ -47,7 +47,7 @@ function Neo4JShowAll() {
   }, [projectInfo]);
   const options = {
     layout: {
-      hierarchical: {enabled:true},
+      hierarchical: {enabled:false},
     },
     groups:{
       CodeFlows:{

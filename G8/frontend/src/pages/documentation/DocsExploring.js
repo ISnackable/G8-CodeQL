@@ -278,6 +278,7 @@ const DocsExploring = () => (
             </article>
           </Card.Body>
         </Card>
+
       </Col>
     </Row>
   </Container>

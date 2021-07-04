@@ -16,7 +16,6 @@ const { extractFull } = require("node-7z");
 const upload = middlewares.multer.array("files", 100);
 const neo4j = require("neo4j-driver");
 
-
 // --------------------------
 // helper functions
 // --------------------------
@@ -388,7 +387,7 @@ exports.repoUpload = (req, res) => {
 };
 
 exports.customQuery = (req, res) => {
-  var CusQuery = req.body.CustomQuery;
+  var CusQuery = "/**\n* @kind path-problem\n* @id your-query-id\n*/\n"+req.body.CustomQuery;
   fs.writeFile("../../codeql-custom-queries-javascript/CustomQuery.ql", CusQuery, function (err) {
     if (err) {
       console.error(err);
@@ -402,11 +401,11 @@ exports.customQuery = (req, res) => {
         "analyze", // second argv
         //"--quiet", // suppress output, Incrementally decrease the number of progress messages printed
         "--format=sarifv2.1.0", // set the result output to SARIF v2.1.0 format
-        `--output=./SarifFiles/${id}.sarif`, // output file as id.sarif in ./SarifFiles/
+        `--output=./SarifFiles/TemporaryCustomQuery.sarif`, // output file as id.sarif in ./SarifFiles/
         "--sarif-add-snippets", // include code snippets for each location mentioned in the results
         `./databases/database${id}`, // our database to scan
         "../../codeql-custom-queries-javascript/CustomQuery.ql",
-        "--search-path=../../codeql",
+        "--search-path=../../codeql/",
       ];
 
       // Run CodeQL query command, sarif output file is stored in ./SarifFiles
@@ -420,7 +419,7 @@ exports.customQuery = (req, res) => {
           projectDB.insertSarif(`${id}.sarif`, id, function (err, result) {
             if (!err) {
               if (result) {
-                var SarifFilePath = `${id}.sarif`;
+                var SarifFilePath = `TemporaryCustomQuery.sarif`;
                 var options = {
                   root: path.join(__dirname, "../SarifFiles/"),
                 };
@@ -466,6 +465,7 @@ exports.deleteProject = (req, res) => {
   const id = req.params.id;
   var databaseFolder = `./databases/database${id}`;
   var sarifFile = `./SarifFiles/${id}.sarif`;
+  var uploadsFolder = `./uploads/${id}`
 
   // Attemps to remove projectid from the database first
   projectDB.removeProject(id, function (err, result) {
@@ -491,6 +491,16 @@ exports.deleteProject = (req, res) => {
           console.log("Sarif File deleted successfully.");
         }
       });
+      fs.access(uploadsFolder, fs.F_OK, (err) => {
+        if (err) {
+          console.error(err);
+          console.log("The uploads file does not exist.");
+          return;
+        } else {
+          fs.rmdirSync(uploadsFolder, { recursive: true });
+          console.log("Uploads file deleted successfully");
+        }
+      })
 
       // TODO: replace localhost with neo
       const driver = neo4j.driver(

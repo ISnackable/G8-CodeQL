@@ -464,6 +464,7 @@ exports.deleteProject = (req, res) => {
   const id = req.params.id;
   var databaseFolder = `./databases/database${id}`;
   var sarifFile = `./SarifFiles/${id}.sarif`;
+  var uploadsFolder = `./uploads/${id}`
 
   // Attemps to remove projectid from the database first
   projectDB.removeProject(id, function (err, result) {
@@ -489,6 +490,16 @@ exports.deleteProject = (req, res) => {
           console.log("Sarif File deleted successfully.");
         }
       });
+      fs.access(uploadsFolder, fs.F_OK, (err) => {
+        if (err) {
+          console.error(err);
+          console.log("The uploads file does not exist.");
+          return;
+        } else {
+          fs.rmdirSync(uploadsFolder, { recursive: true });
+          console.log("Uploads file deleted successfully");
+        }
+      })
 
       // TODO: replace localhost with neo
       const driver = neo4j.driver(

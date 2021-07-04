@@ -58,7 +58,11 @@ router.post(
 router.post("/projects/repo", createProjectLimiter, apiController.repoUpload);
 
 // delete project
-router.delete("/projects/:id", apiController.deleteProject);
+router.delete(
+  "/projects/:id",
+  middlewares.idValidation,
+  apiController.deleteProject
+);
 
 // router.get("/verifySarifFile", apiController.verifySarifFile);
 
@@ -111,5 +115,5 @@ router.get(
 // TODO: Move middlewares.showAllInProjectNeo4J to controllers file, and change the route
 router.get("/neo4jshowallinproject/:id", middlewares.showAllInProjectNeo4J);
 
-router.post("/customquery/:id",apiController.customQuery);
+router.post("/customquery/:id",middlewares.idValidation,apiController.customQuery);
 module.exports = router; // https://expressjs.com/en/4x/api.html#app.mountpath Explains sub-app mount

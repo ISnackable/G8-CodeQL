@@ -387,6 +387,7 @@ exports.repoUpload = (req, res) => {
 };
 
 exports.customQuery = (req, res) => {
+  const id = req.params.id;
   var CusQuery = "/**\n* @kind path-problem\n* @id your-query-id\n*/\n"+req.body.CustomQuery;
   fs.writeFile("../../codeql-custom-queries-javascript/CustomQuery.ql", CusQuery, function (err) {
     if (err) {
@@ -394,8 +395,6 @@ exports.customQuery = (req, res) => {
       return;
     } else {
       console.log("Query successfully saved.");
-
-      const id = req.params.id;
       const args = [
         "database", // first argv
         "analyze", // second argv

@@ -451,7 +451,7 @@ exports.showAllInProjectNeo4J = (req, res) => {
         return { id: identity, label: labels, title: title, group: group };
       };
       var build_edge = (start, end) => {
-        return { from: start, to: end };
+        return { from: start, to: end,length:100 };
       };
       var get_label = (node) => {
         if (node.labels[0] == "CodeFlows") {

@@ -250,7 +250,6 @@ exports.createNeo4J = (req, res) => {
         if (!queries.includes(result.ruleId)) {
           queries.push(result.ruleId);
         }
-
         FileName.push(
           result.locations[0].physicalLocation.artifactLocation.uri
         );
@@ -398,7 +397,9 @@ exports.createNeo4J = (req, res) => {
           /* encrypted: 'ENCRYPTION_OFF' */
         }
       );
-
+      const deleteQuery = `
+        MATCH (n)
+        DETACH DELETE n`;
       const query =
         CreateQuery +
         `WITH 1 as dummy
@@ -409,7 +410,8 @@ exports.createNeo4J = (req, res) => {
       const session = driver.session({ database: "neo4j" });
 
       session
-        .run(query)
+        .run(deleteQuery)
+        .then(() => session.run(query))
         .then((result) => {
           result.records.forEach((record) => {
             console.log(record.get("n"));
@@ -449,7 +451,7 @@ exports.showAllInProjectNeo4J = (req, res) => {
         return { id: identity, label: labels, title: title, group: group };
       };
       var build_edge = (start, end) => {
-        return { from: start, to: end };
+        return { from: start, to: end,length:100 };
       };
       var get_label = (node) => {
         if (node.labels[0] == "CodeFlows") {

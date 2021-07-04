@@ -23,6 +23,7 @@ import {
   ProgressBar,
   Pagination,
   ButtonGroup,
+  Spinner,
 } from "@themesberg/react-bootstrap";
 import { Link } from "react-router-dom";
 
@@ -468,7 +469,18 @@ export const ExistingProjectTable = (props) => {
         alert("Error: " + error);
       });
   };
-
+  const deleteprojectbyid = (e) => {
+    e.preventDefault();
+    // console.log(e.target.value); //This console logs the id
+    axios
+      .delete(backend_url + `/projects/` + e.target.value)
+      .then((response) => {
+        alert("Success. Project has been deleted!");
+      })
+      .catch((error) => {
+        alert("Error: " + error);
+      });
+  };
   const loadProject = (e) => {
     e.preventDefault();
     // console.log(e.target.value); //This console logs the id
@@ -530,21 +542,54 @@ export const ExistingProjectTable = (props) => {
           value={id}
           onClick={(e) => functiontocall(e, "value")}
         >
+          {type === 1 && (
+            <Spinner animation="border" role="status" size="sm" as="span">
+              <span className="sr-only">Processing...</span>
+            </Spinner>
+          )}{" "}
           {msg}
         </Button>
       );
     };
 
+    const builddeletebutton=(id,type)=>{
+      if(type===1){
+        return (
+          <Button
+          variant="danger"
+          value={id}
+          onClick={(e)=>deleteprojectbyid(e)}
+          >
+            <FontAwesomeIcon icon={faTrashAlt}/>
+          </Button>
+        )
+      }else{
+        return (
+          <Button
+          variant="dark"
+          value={id}
+          onClick={(e)=>alert("Project Cannot be deleted. While processing/error. Please do it manually on the backend.")}
+          >
+            <FontAwesomeIcon icon={faTrashAlt}/>
+          </Button>
+        )
+      }
+    }
+    var delete_button
     if (sarif_filename == null) {
+      delete_button = builddeletebutton(id,1)
       sarif_filename = buildsarifbutton(id, 0, sarif_filename);
     } else if (sarif_filename === "processing") {
+      delete_button = builddeletebutton(id,0)
       sarif_filename = buildsarifbutton(id, 1, sarif_filename);
     } else if (sarif_filename === "error") {
+      delete_button = builddeletebutton(id,0)
       sarif_filename = buildsarifbutton(id, 3, sarif_filename);
     } else {
+      delete_button = builddeletebutton(id,1)
       sarif_filename = buildsarifbutton(id, 2, sarif_filename);
     }
-
+    
     return (
       <tr>
         <th scope="row">{id}</th>
@@ -552,6 +597,7 @@ export const ExistingProjectTable = (props) => {
         <td>{hash}</td>
         <td>{created_at}</td>
         <td>{sarif_filename}</td>
+        <td>{delete_button}</td>
       </tr>
     );
   };
@@ -578,6 +624,8 @@ export const ExistingProjectTable = (props) => {
             <th scope="col">Checksum</th>
             <th scope="col">Date</th>
             <th scope="col">Status</th>
+            <th scope="col">Delete</th>
+            
           </tr>
         </thead>
         <tbody>

@@ -10,6 +10,7 @@ import CodeQLAlerts from "./CodeQLAlerts";
 import Settings from "./Settings";
 import CustomQuery from "./customquery/CustomQuery";
 import SarifViewer from "./SarifViewer";
+import PDFGenerator from "./PDFGenerator";
 import BootstrapTables from "./tables/BootstrapTables";
 import Signin from "./examples/Signin";
 import Signup from "./examples/Signup";
@@ -18,6 +19,7 @@ import ResetPassword from "./examples/ResetPassword";
 import Lock from "./examples/Lock";
 import NotFoundPage from "./NotFound";
 import ServerError from "./ServerError";
+import QueryHelp from "./queryhelp/QueryHelp";
 
 // documentation pages
 import DocsAbout from "./documentation/DocsAbout";
@@ -163,6 +165,11 @@ const HomePage = () => (
     />
     <RouteWithSidebar
       exact
+      path={Routes.PDFGenerator.path}
+      component={PDFGenerator}
+    />
+    <RouteWithSidebar
+      exact
       path={Routes.SarifViewer.path}
       component={SarifViewer}
     /> 
@@ -239,6 +246,11 @@ const HomePage = () => (
       exact
       path={Routes.DocsChangelog.path}
       component={DocsChangelog}
+    />
+    <RouteWithSidebar
+      exact
+      path={Routes.QueryHelp.path}
+      component={QueryHelp}
     />
 
     <Redirect to={Routes.NotFound.path} />

@@ -51,10 +51,12 @@ import Snippet from "../components/Snippet";
 import { Routes } from "../routes";
 // import ThemesbergLogoIcon from "../assets/img/themesberg.svg";
 // import ThemesbergLogo from "../assets/img/themesberg-logo.svg";
-import MockupPresentation from "../assets/img/mockup-presentation.png";
-import MapboxImg from "../assets/img/mockup-map-presentation.png";
+import MainImage from "../assets/img/allphoto.png";
+import Neo4JImage from "../assets/img/neo4jimage.png";
 // import CalendarImg from "../assets/img/mockup-calendar-presentation.png";
-import ReactMockupImg from "../assets/img/react-mockup.png";
+import ReactMockupImg from "../assets/img/reactimage.png";
+import ExpressMockupImg from "../assets/img/expressimage.png";
+
 // import BS5IllustrationsImg from "../assets/img/illustrations/bs5-illustrations.svg";
 // import BS5Logo from "../assets/img/technologies/bootstrap-5-logo.svg";
 import ReactLogo from "../assets/img/technologies/react-logo.svg";
@@ -315,7 +317,7 @@ select sink.getNode(), source, sink,
         <Container className="mt-n10 mt-lg-n12 z-2">
           <Row className="justify-content-center">
             <Col xs={12}>
-              <Image src={MockupPresentation} alt="Mockup presentation" />
+              <Image src={MainImage} alt="Mockup presentation" />
             </Col>
           </Row>
           <Row className="justify-content-center mt-5 mt-lg-6">
@@ -416,7 +418,7 @@ select sink.getNode(), source, sink,
               </Button>
             </Col>
             <Col lg={6} className="order-lg-1">
-              <Image src={ReactMockupImg} alt="Calendar Preview" />
+              <Image src={ExpressMockupImg} alt="Calendar Preview" />
             </Col>
           </Row>
 
@@ -558,7 +560,7 @@ select sink.getNode(), source, sink,
 
             <Col lg={6} className="order-lg-1">
               <Image
-                src={MapboxImg}
+                src={Neo4JImage}
                 alt="MapBox Leaflet.js Custom Integration Mockup"
               />
             </Col>

@@ -14,7 +14,7 @@ import {
   faTimes,
   faSearch,
   faBug,
-  faPen,
+  faFilePdf,
 } from "@fortawesome/free-solid-svg-icons";
 import { faCodepen } from "@fortawesome/free-brands-svg-icons";
 import {
@@ -32,6 +32,12 @@ import { Routes } from "../routes";
 // import ReactHero from "../assets/img/technologies/react-hero-logo.svg";
 import G8Logo from "../assets/img/g8-logo.png";
 // import ProfilePicture from "../assets/img/team/profile-picture-3.jpg";
+const importAll = (r) => r.keys();
+const queryhelpMarkdownFiles = importAll(
+  require.context("../pages/queryhelp", true, /\.md$/)
+)
+  .sort()
+  .reverse();
 
 const Sidebar = (props = {}) => {
   const location = useLocation();
@@ -54,7 +60,7 @@ const Sidebar = (props = {}) => {
           >
             <span>
               <span className="sidebar-icon">
-                <FontAwesomeIcon icon={icon} />{" "}
+                {icon?.length && <FontAwesomeIcon icon={icon} />}
               </span>
               <span className="sidebar-text">{title}</span>
             </span>
@@ -177,7 +183,7 @@ const Sidebar = (props = {}) => {
                 <FontAwesomeIcon icon={faTimes} />
               </Nav.Link>
             </div>
-            <Nav className="flex-column pt-3 pt-md-0">
+            <Nav className="flex-column pt-3 pt-md-0 text-truncate">
               <NavItem
                 title="G8"
                 link={Routes.Presentation.path}
@@ -198,11 +204,6 @@ const Sidebar = (props = {}) => {
                 icon={faBug}
                 link={Routes.CodeQLAlerts.path}
               />
-              <NavItem
-                title="Custom CodeQL Query"
-                icon={faPen}
-                link={Routes.CustomQuery.path}
-              />
               {/* 
               <NavItem
                 external
@@ -214,6 +215,12 @@ const Sidebar = (props = {}) => {
               /> */}
 
               <Dropdown.Divider className="my-3 border-indigo" />
+
+              <NavItem
+                title="PDF Generator"
+                icon={faFilePdf}
+                link={Routes.PDFGenerator.path}
+              />
 
               <NavItem
                 title="Sarif Viewer"
@@ -248,6 +255,25 @@ const Sidebar = (props = {}) => {
                 <NavItem title="Glossary" link={Routes.DocsGlossary.path} />
                 <NavItem title="Build Tools" link={Routes.DocsBuild.path} />
                 <NavItem title="Changelog" link={Routes.DocsChangelog.path} />
+              </CollapsableNavItem>
+
+              <CollapsableNavItem
+                eventKey="queryhelp/"
+                title="Query Help"
+                icon={faBook}
+              >
+                {queryhelpMarkdownFiles.map((file, idx) => (
+                  <NavItem
+                    key={idx}
+                    title={file
+                      .split("/")
+                      .pop()
+                      .replace(".md", "")
+                      .replace(/([A-Z])/g, " $1")
+                      .trim()}
+                    link={`/query-help/${idx + 1}`}
+                  />
+                ))}
               </CollapsableNavItem>
 
               {/* <CollapsableNavItem

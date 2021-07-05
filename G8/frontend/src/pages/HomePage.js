@@ -8,6 +8,7 @@ import Overview from "./overview/Overview";
 import Dashboard from "./dashboard/Dashboard";
 import CodeQLAlerts from "./CodeQLAlerts";
 import Settings from "./Settings";
+import CustomQuery from "./customquery/CustomQuery";
 import SarifViewer from "./SarifViewer";
 import PDFGenerator from "./PDFGenerator";
 import BootstrapTables from "./tables/BootstrapTables";
@@ -171,7 +172,12 @@ const HomePage = () => (
       exact
       path={Routes.SarifViewer.path}
       component={SarifViewer}
-    />
+    /> 
+    <RouteWithSidebar
+    exact
+    path={Routes.CustomQuery.path}
+    component={CustomQuery}
+  />
     <RouteWithSidebar exact path={Routes.Settings.path} component={Settings} />
     <RouteWithSidebar
       exact

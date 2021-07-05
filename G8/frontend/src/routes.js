@@ -6,6 +6,7 @@ export const Routes = {
   CodeQLAlerts: { path: "/codeql-alerts" },
   PDFGenerator: { path: "/pdfgenerator" },
   SarifViewer: { path: "/sarifviewer" },
+  CustomQuery: { path: "/custom-query" },
   QueryHelp: { path: "/query-help/:id" },
   Settings: { path: "/settings" },
   BootstrapTables: { path: "/tables/bootstrap-tables" },

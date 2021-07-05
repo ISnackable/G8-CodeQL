@@ -387,24 +387,24 @@ exports.repoUpload = (req, res) => {
 };
 
 exports.customQuery = (req, res) => {
-  var CusQuery = req.body.CustomQuery;
-  fs.writeFile("../CustomQuery.ql", CusQuery, function (err) {
+  const id = req.params.id;
+  var CusQuery = "/**\n* @kind path-problem\n* @id your-query-id\n*/\n"+req.body.CustomQuery;
+  fs.writeFile("../../codeql-custom-queries-javascript/CustomQuery.ql", CusQuery, function (err) {
     if (err) {
       console.error(err);
       return;
     } else {
       console.log("Query successfully saved.");
-
-      const id = req.params.id;
       const args = [
         "database", // first argv
         "analyze", // second argv
         //"--quiet", // suppress output, Incrementally decrease the number of progress messages printed
         "--format=sarifv2.1.0", // set the result output to SARIF v2.1.0 format
-        `--output=./SarifFiles/${id}.sarif`, // output file as id.sarif in ./SarifFiles/
+        `--output=./SarifFiles/TemporaryCustomQuery.sarif`, // output file as id.sarif in ./SarifFiles/
         "--sarif-add-snippets", // include code snippets for each location mentioned in the results
-        `../databases/database${id}`, // our database to scan
-        "../CustomQuery.ql",
+        `./databases/database${id}`, // our database to scan
+        "../../codeql-custom-queries-javascript/CustomQuery.ql",
+        "--search-path=../../codeql/",
       ];
 
       // Run CodeQL query command, sarif output file is stored in ./SarifFiles
@@ -418,7 +418,7 @@ exports.customQuery = (req, res) => {
           projectDB.insertSarif(`${id}.sarif`, id, function (err, result) {
             if (!err) {
               if (result) {
-                var SarifFilePath = `${id}.sarif`;
+                var SarifFilePath = `TemporaryCustomQuery.sarif`;
                 var options = {
                   root: path.join(__dirname, "../SarifFiles/"),
                 };

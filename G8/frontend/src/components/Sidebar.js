@@ -11,6 +11,7 @@ import {
   // faFileAlt,
   // faSignOutAlt,
   // faTable,
+  faPen,
   faTimes,
   faSearch,
   faBug,
@@ -203,6 +204,11 @@ const Sidebar = (props = {}) => {
                 title="CodeQL Alerts"
                 icon={faBug}
                 link={Routes.CodeQLAlerts.path}
+              />
+              <NavItem
+                title="Custom Query"
+                icon={faPen}
+                link={Routes.CustomQuery.path}
               />
               {/* 
               <NavItem

@@ -5,26 +5,9 @@ import { FilePond } from "react-filepond";
 // Import FilePond styles
 import "filepond/dist/filepond.min.css";
 import axios from "axios";
-import {
-  // faCashRegister,
-  // faChartLine,
-  faCloudUploadAlt,
-  faPlus,
-  faRocket,
-  faTasks,
-  faUserShield,
-  faFolder,
-} from "@fortawesome/free-solid-svg-icons";
+import { faFolder } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import {
-  Col,
-  Row,
-  Button,
-  Dropdown,
-  ButtonGroup,
-  Modal,
-  Form,
-} from "@themesberg/react-bootstrap";
+import { Col, Row, Button, Modal, Form } from "@themesberg/react-bootstrap";
 
 // import {
 //   CounterWidget,
@@ -105,49 +88,6 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
-        <Dropdown className="btn-toolbar">
-          <Dropdown.Toggle
-            as={Button}
-            variant="primary"
-            size="sm"
-            className="me-2"
-          >
-            <FontAwesomeIcon icon={faPlus} className="me-2" />
-            New Task
-          </Dropdown.Toggle>
-          <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
-            <Dropdown.Item className="fw-bold">
-              <FontAwesomeIcon icon={faTasks} className="me-2" /> New Task
-            </Dropdown.Item>
-            <Dropdown.Item className="fw-bold">
-              <FontAwesomeIcon icon={faCloudUploadAlt} className="me-2" />{" "}
-              Upload Files
-            </Dropdown.Item>
-            <Dropdown.Item className="fw-bold">
-              <FontAwesomeIcon icon={faUserShield} className="me-2" /> Preview
-              Security
-            </Dropdown.Item>
-
-            <Dropdown.Divider />
-
-            <Dropdown.Item className="fw-bold">
-              <FontAwesomeIcon icon={faRocket} className="text-danger me-2" />{" "}
-              Upgrade to Pro
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-
-        <ButtonGroup>
-          <Button variant="outline-primary" size="sm">
-            Share
-          </Button>
-          <Button variant="outline-primary" size="sm">
-            Export
-          </Button>
-        </ButtonGroup>
-      </div>
-
       <Row className="justify-content-md-center">
         <Col xs={6} sm={6} className="mb-4">
           <Button

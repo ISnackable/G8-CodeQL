@@ -156,7 +156,7 @@ const Overview = () => {
         {/* Neo4J graph */}
         <Row>
           <Col xl={12} className="mb-4">
-          <Neo4jGraphWidget/>
+            <Neo4jGraphWidget />
             {/* <Card>
               <Card.Title className="h1 ms-3 mt-3">Neo4J Graph</Card.Title>
               <Card.Body>
@@ -223,9 +223,10 @@ const Overview = () => {
   return (
     <div>
       <div className="mt-4">
-        {logs.length && logs[0]?.runs[0]?.tool.driver.name === "CodeQL" && (
-          <Printthejsonparsething />
-        )}
+        {logs.length !== 0 &&
+          logs[0]?.runs[0]?.tool.driver.name === "CodeQL" && (
+            <Printthejsonparsething />
+          )}
       </div>
 
       <Row className="justify-content-md-center">

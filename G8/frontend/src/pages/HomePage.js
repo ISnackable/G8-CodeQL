@@ -11,12 +11,12 @@ import Settings from "./Settings";
 import CustomQuery from "./customquery/CustomQuery";
 import SarifViewer from "./SarifViewer";
 import PDFGenerator from "./PDFGenerator";
-import BootstrapTables from "./tables/BootstrapTables";
-import Signin from "./examples/Signin";
-import Signup from "./examples/Signup";
-import ForgotPassword from "./examples/ForgotPassword";
-import ResetPassword from "./examples/ResetPassword";
-import Lock from "./examples/Lock";
+// import BootstrapTables from "./tables/BootstrapTables";
+// import Signin from "./examples/Signin";
+// import Signup from "./examples/Signup";
+// import ForgotPassword from "./examples/ForgotPassword";
+// import ResetPassword from "./examples/ResetPassword";
+// import Lock from "./examples/Lock";
 import NotFoundPage from "./NotFound";
 import ServerError from "./ServerError";
 import QueryHelp from "./queryhelp/QueryHelp";
@@ -35,23 +35,6 @@ import Sidebar from "../components/Sidebar";
 // import Navbar from "../components/Navbar";
 // import Footer from "../components/Footer";
 import Preloader from "../components/Preloader";
-
-import Accordion from "./components/Accordion";
-import Alerts from "./components/Alerts";
-import Badges from "./components/Badges";
-import Breadcrumbs from "./components/Breadcrumbs";
-import Buttons from "./components/Buttons";
-import Forms from "./components/Forms";
-import Modals from "./components/Modals";
-import Navs from "./components/Navs";
-import Navbars from "./components/Navbars";
-import Pagination from "./components/Pagination";
-import Popovers from "./components/Popovers";
-import Progress from "./components/Progress";
-import Tables from "./components/Tables";
-import Tabs from "./components/Tabs";
-import Tooltips from "./components/Tooltips";
-import Toasts from "./components/Toasts";
 
 const RouteWithLoader = ({ component: Component, ...rest }) => {
   const [loaded, setLoaded] = useState(false);
@@ -127,7 +110,7 @@ const HomePage = () => (
       path={Routes.Presentation.path}
       component={Presentation}
     />
-    <RouteWithLoader exact path={Routes.Signin.path} component={Signin} />
+    {/* <RouteWithLoader exact path={Routes.Signin.path} component={Signin} />
     <RouteWithLoader exact path={Routes.Signup.path} component={Signup} />
     <RouteWithLoader
       exact
@@ -139,7 +122,7 @@ const HomePage = () => (
       path={Routes.ResetPassword.path}
       component={ResetPassword}
     />
-    <RouteWithLoader exact path={Routes.Lock.path} component={Lock} />
+    <RouteWithLoader exact path={Routes.Lock.path} component={Lock} /> */}
     <RouteWithLoader
       exact
       path={Routes.NotFound.path}
@@ -172,21 +155,21 @@ const HomePage = () => (
       exact
       path={Routes.SarifViewer.path}
       component={SarifViewer}
-    /> 
+    />
     <RouteWithSidebar
-    exact
-    path={Routes.CustomQuery.path}
-    component={CustomQuery}
-  />
+      exact
+      path={Routes.CustomQuery.path}
+      component={CustomQuery}
+    />
     <RouteWithSidebar exact path={Routes.Settings.path} component={Settings} />
-    <RouteWithSidebar
+    {/* <RouteWithSidebar
       exact
       path={Routes.BootstrapTables.path}
       component={BootstrapTables}
-    />
+    /> */}
 
     {/* components */}
-    <RouteWithSidebar
+    {/* <RouteWithSidebar
       exact
       path={Routes.Accordions.path}
       component={Accordion}
@@ -213,7 +196,7 @@ const HomePage = () => (
     <RouteWithSidebar exact path={Routes.Tables.path} component={Tables} />
     <RouteWithSidebar exact path={Routes.Tabs.path} component={Tabs} />
     <RouteWithSidebar exact path={Routes.Tooltips.path} component={Tooltips} />
-    <RouteWithSidebar exact path={Routes.Toasts.path} component={Toasts} />
+    <RouteWithSidebar exact path={Routes.Toasts.path} component={Toasts} /> */}
 
     {/* documentation */}
     <RouteWithSidebar

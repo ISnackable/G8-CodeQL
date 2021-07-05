@@ -79,6 +79,7 @@ const CustomQuery = () => {
   let [responseData, setResponseData] = React.useState([]);
   let [currentProject, setCurrentProject] = React.useState({id:null});
   let [currentProjectMessage, setCurrentProjectMessage] = React.useState(`No Project`);
+  const [projectInfo, setprojectInfo] = useLocalStorageState("projectInfo", []);
   const [code, setCode] = useState(`import javascript
 from BlockStmt b
 where b.getNumStmt() = 0
@@ -110,7 +111,7 @@ const DrawProjectlist=()=>{
     }
     return (
       <>
-    <Dropdown.Item className="fw-bold" onClick={()=>{setCurrentProject({id:id});setCurrentProjectMessage("Project #"+id)}}><span>{project_name}</span><span> #{id}</span></Dropdown.Item>
+    <Dropdown.Item className="fw-bold" onClick={()=>{setCurrentProject(pv);setCurrentProjectMessage("Project #"+id)}}><span>{project_name}</span><span> #{id}</span></Dropdown.Item>
       </>
     )
   })
@@ -123,6 +124,7 @@ const sendCustomQuery=()=>{
   .then((response)=>{
     console.log(response.data)
     setLogs([response.data]);
+    setprojectInfo([currentProject])
     return
   })
   .catch((error)=>{

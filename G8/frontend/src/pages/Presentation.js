@@ -1120,17 +1120,17 @@ the below part */}
                   </Card.Link>
                 </li>
                 <li>
+                  <Card.Link as={Link} to={Routes.DocsFAQ.path} target="_blank">
+                    FAQ
+                  </Card.Link>
+                </li>
+                <li>
                   <Card.Link
                     as={Link}
                     to={Routes.DocsChangelog.path}
                     target="_blank"
                   >
                     Changelog
-                  </Card.Link>
-                </li>
-                <li>
-                  <Card.Link target="_blank" href="#">
-                    License
                   </Card.Link>
                 </li>
               </ul>

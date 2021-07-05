@@ -489,6 +489,7 @@ export const ExistingProjectTable = (props) => {
       .then((response) => {
         setLogs([response.data]);
         responseData.forEach((item) => {
+          // eslint-disable-next-line eqeqeq
           if (item.id == e.target.value) {
             setprojectInfo([
               {
@@ -552,44 +553,48 @@ export const ExistingProjectTable = (props) => {
       );
     };
 
-    const builddeletebutton=(id,type)=>{
-      if(type===1){
+    const builddeletebutton = (id, type) => {
+      if (type === 1) {
         return (
           <Button
-          variant="danger"
-          value={id}
-          onClick={(e)=>deleteprojectbyid(e)}
+            variant="danger"
+            value={id}
+            onClick={(e) => deleteprojectbyid(e)}
           >
-            <FontAwesomeIcon icon={faTrashAlt}/>
+            <FontAwesomeIcon icon={faTrashAlt} />
           </Button>
-        )
-      }else{
+        );
+      } else {
         return (
           <Button
-          variant="dark"
-          value={id}
-          onClick={(e)=>alert("Project Cannot be deleted. While processing/error. Please do it manually on the backend.")}
+            variant="dark"
+            value={id}
+            onClick={(e) =>
+              alert(
+                "Project Cannot be deleted. While processing/error. Please do it manually on the backend."
+              )
+            }
           >
-            <FontAwesomeIcon icon={faTrashAlt}/>
+            <FontAwesomeIcon icon={faTrashAlt} />
           </Button>
-        )
+        );
       }
-    }
-    var delete_button
+    };
+    var delete_button;
     if (sarif_filename == null) {
-      delete_button = builddeletebutton(id,1)
+      delete_button = builddeletebutton(id, 1);
       sarif_filename = buildsarifbutton(id, 0, sarif_filename);
     } else if (sarif_filename === "processing") {
-      delete_button = builddeletebutton(id,0)
+      delete_button = builddeletebutton(id, 0);
       sarif_filename = buildsarifbutton(id, 1, sarif_filename);
     } else if (sarif_filename === "error") {
-      delete_button = builddeletebutton(id,0)
+      delete_button = builddeletebutton(id, 0);
       sarif_filename = buildsarifbutton(id, 3, sarif_filename);
     } else {
-      delete_button = builddeletebutton(id,1)
+      delete_button = builddeletebutton(id, 1);
       sarif_filename = buildsarifbutton(id, 2, sarif_filename);
     }
-    
+
     return (
       <tr>
         <th scope="row">{id}</th>
@@ -625,7 +630,6 @@ export const ExistingProjectTable = (props) => {
             <th scope="col">Date</th>
             <th scope="col">Status</th>
             <th scope="col">Delete</th>
-            
           </tr>
         </thead>
         <tbody>

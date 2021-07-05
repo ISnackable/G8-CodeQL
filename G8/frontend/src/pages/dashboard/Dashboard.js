@@ -5,26 +5,9 @@ import { FilePond } from "react-filepond";
 // Import FilePond styles
 import "filepond/dist/filepond.min.css";
 import axios from "axios";
-import {
-  // faCashRegister,
-  // faChartLine,
-  faCloudUploadAlt,
-  faPlus,
-  faRocket,
-  faTasks,
-  faUserShield,
-  faFolder,
-} from "@fortawesome/free-solid-svg-icons";
+import { faFolder } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import {
-  Col,
-  Row,
-  Button,
-  Dropdown,
-  ButtonGroup,
-  Modal,
-  Form,
-} from "@themesberg/react-bootstrap";
+import { Col, Row, Button, Modal, Form } from "@themesberg/react-bootstrap";
 
 // import {
 //   CounterWidget,

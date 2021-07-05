@@ -13,8 +13,8 @@
 
 // * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. Please contact us to request a removal.
 
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 import { HashRouter } from "react-router-dom";
 
 // core styles

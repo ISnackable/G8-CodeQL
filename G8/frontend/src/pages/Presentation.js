@@ -976,6 +976,7 @@ free version column */}
                   href="https://securitylab.github.com/tools/codeql/"
                   target="_blank"
                   className="me-3"
+                  rel="noreferrer"
                 >
                   <OverlayTrigger
                     placement="top"
@@ -1003,6 +1004,7 @@ free version column */}
                   href="https://reactjs.org/"
                   target="_blank"
                   className="me-3"
+                  rel="noreferrer"
                 >
                   <OverlayTrigger
                     placement="top"
@@ -1025,6 +1027,7 @@ free version column */}
                   href="https://www.github.com"
                   target="_blank"
                   className="me-3"
+                  rel="noreferrer"
                 >
                   <OverlayTrigger
                     placement="top"

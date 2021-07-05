@@ -140,7 +140,7 @@ const Sidebar = (props = {}) => {
           as={Link}
           to={Routes.Presentation.path}
         >
-          <Image src={G8Logo} className="navbar-brand-light" />
+          <Image src={G8Logo} alt="G8 Logo" className="navbar-brand-light" />
         </Navbar.Brand>
         <Navbar.Toggle
           as={Button}

@@ -125,10 +125,11 @@ const sendCustomQuery=()=>{
     console.log(response.data)
     setLogs([response.data]);
     setprojectInfo([currentProject])
+    alert("Finished analyzing. Please note that only the sarif file is available for viewing in the sarif viewer.")
     return
   })
   .catch((error)=>{
-    alert("ERROR!")
+    alert("An error occured in the backend.")
     return
   })
 }

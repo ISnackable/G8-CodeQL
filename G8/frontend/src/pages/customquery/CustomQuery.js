@@ -218,7 +218,7 @@ select invk, f`);
               variant="primary"
               size="lg"
               className="me-2"
-              style={{ backgroundColor: "red" }}
+              style={{ backgroundColor: "#FF6565", color: "black" }}
             >
               {currentProjectMessage}
               <FontAwesomeIcon icon={faCaretDown} className="me-2 mx-2" />
@@ -308,7 +308,7 @@ select invk, f`);
               <Button
                 variant="Success"
                 size="lg"
-                style={{ backgroundColor: "green", color: "black" }}
+                style={{ backgroundColor: "lightgreen", color: "black" }}
                 onClick={sendCustomQuery}
               >
                 Run Query

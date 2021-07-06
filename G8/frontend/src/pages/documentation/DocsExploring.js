@@ -19,6 +19,10 @@ import codeqlalerts4 from "../../assets/img/docImg/codeqlalerts4.png";
 import codeqlalerts5 from "../../assets/img/docImg/codeqlalerts5.png";
 import codeqlalerts6 from "../../assets/img/docImg/codeqlalerts6.png";
 
+import pdf1 from "../../assets/img/docImg/pdf1.png";
+
+import queryhelp1 from "../../assets/img/docImg/queryhelp1.png";
+
 const DocsExploring = () => (
   <Container className="px-0">
     <Row>
@@ -30,14 +34,14 @@ const DocsExploring = () => (
                 Exploring G8{" "}
               </h1>
               <p className="fs-5 fw-light">
-                This section give you a quick outline of all the things you can
+                This section give you an outline of all the things you can
                 do in G8.
               </p>
-              <p>
+              {/* <p>
                 If you have trouble interpreting your results, here is a guide
                 which you can use to help you understand the different elements
                 of the information.
-              </p>
+              </p> */}
               {/* <ul className="docs-list">
                 <li>
                   <Card.Link href="#" target="_blank">
@@ -61,7 +65,14 @@ const DocsExploring = () => (
                 </li>
               </ul> */}
               {/* In Dashboard Section */}
-              <h2 className="fs-5 mt-3">In Dashboard:</h2>
+              <h2 className="docs-list fs-5 mt-3">
+                <li>
+                In&nbsp; 
+              <Card.Link href="/#/dashboard" target="_blank">
+                      Dashboard
+              </Card.Link>:{" "}
+                </li>
+                </h2>
               {/* ol for ordered list, classname counter-list adds the counter number to list elements below */}
               <ol className="ps-4 docs-list counter-list">
                 <li>
@@ -177,7 +188,14 @@ const DocsExploring = () => (
               {/* In Overview Section */}
               {/* HR tag for nice horizonal line (mt-5) bootstrap class for margin-top: 5 */}
               <hr className="mt-5" />{" "}
-              <h2 className="fs-5 mt-3">In Overview:</h2>
+              <h2 className="docs-list fs-5 mt-3">
+                <li>
+                In&nbsp; 
+              <Card.Link href="/#/overview" target="_blank">
+                      Overview
+              </Card.Link>:{" "}
+                </li>
+                </h2>
               <ol className="ps-4 docs-list counter-list">
                 <li>
                   <p>You can view the errors, warnings and recommendations.</p>
@@ -206,7 +224,14 @@ const DocsExploring = () => (
               </ol>
               {/* In CodeQL Alerts Section */}
               <hr className="mt-5" />
-              <h2 className="fs-5 mt-3">In CodeQL Alerts:</h2>
+              <h2 className="docs-list fs-5 mt-3">
+                <li>
+                In&nbsp; 
+              <Card.Link href="/#/codeql-alerts" target="_blank">
+                      CodeQL Alerts
+              </Card.Link>:{" "}
+                </li>
+                </h2>
               <ol className="ps-4 docs-list counter-list">
                 <li>
                   <p>Files that have vulnerabilities are listed here</p>
@@ -274,6 +299,45 @@ const DocsExploring = () => (
                     alt="CodeQL Alerts"
                   />
                 </li>
+              </ol>
+              {/* PDF Generator */}
+              <hr className="mt-5" />
+              {/* <h2 className="fs-5 mt-3">In PDF Generator:</h2> */}
+              <h2 className="docs-list fs-5 mt-3">
+                <li>
+                In&nbsp; 
+              <Card.Link href="/#/pdfgenerator" target="_blank">
+                      PDF Generator
+              </Card.Link>:{" "}
+                </li>
+                </h2>
+              <ol className="ps-4 docs-list counter-list">
+                <li>
+                  <p>A report of the vulnerabilities which have been found in the analyzed project is produced here</p>
+                  <Image
+                    rounded
+                    className="mb-3"
+                    src={pdf1}
+                    alt="CodeQL Alerts"
+                  />
+                </li>
+              </ol>
+              {/* Query Help */}
+              <hr className="mt-5" />
+              <h2 className="fs-5 mt-3">In Query Help:</h2>
+              <ol className="ps-4 docs-list counter-list">
+                <li>
+                  <p>A more elaborate explanation of the vulnerabilties scanned can be seen here</p>
+                </li>
+                <li>
+                  You can refer to these to make your code more secure
+                </li>
+                <Image
+                    rounded
+                    className="mb-3"
+                    src={queryhelp1}
+                    alt="CodeQL Alerts"
+                  />
               </ol>
             </article>
           </Card.Body>

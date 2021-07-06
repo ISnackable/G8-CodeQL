@@ -243,10 +243,10 @@ const Sidebar = (props = {}) => {
                 icon={faBook}
               >
                 <NavItem title="About G8" link={Routes.DocsAbout.path} />
-                <NavItem
+                {/* <NavItem
                   title="Getting Started"
                   link={Routes.DocsQuickStart.path}
-                />
+                /> */}
                 <NavItem
                   title="Exploring G8"
                   link={Routes.DocsExploring.path}

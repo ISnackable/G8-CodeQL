@@ -115,4 +115,9 @@ router.get(
 // TODO: Move middlewares.showAllInProjectNeo4J to controllers file, and change the route
 router.get("/neo4jshowallinproject/:id", middlewares.showAllInProjectNeo4J);
 
+router.post(
+  "/customquery/:id",
+  middlewares.idValidation,
+  apiController.customQuery
+);
 module.exports = router; // https://expressjs.com/en/4x/api.html#app.mountpath Explains sub-app mount

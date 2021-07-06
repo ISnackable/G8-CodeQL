@@ -11,6 +11,7 @@ import {
   // faFileAlt,
   // faSignOutAlt,
   // faTable,
+  faPen,
   faTimes,
   faSearch,
   faBug,
@@ -139,7 +140,7 @@ const Sidebar = (props = {}) => {
           as={Link}
           to={Routes.Presentation.path}
         >
-          <Image src={G8Logo} className="navbar-brand-light" />
+          <Image src={G8Logo} alt="G8 Logo" className="navbar-brand-light" />
         </Navbar.Brand>
         <Navbar.Toggle
           as={Button}
@@ -203,6 +204,11 @@ const Sidebar = (props = {}) => {
                 title="CodeQL Alerts"
                 icon={faBug}
                 link={Routes.CodeQLAlerts.path}
+              />
+              <NavItem
+                title="Custom Query"
+                icon={faPen}
+                link={Routes.CustomQuery.path}
               />
               {/* 
               <NavItem

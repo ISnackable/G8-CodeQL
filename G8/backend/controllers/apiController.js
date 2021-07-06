@@ -387,83 +387,90 @@ exports.repoUpload = (req, res) => {
 };
 
 exports.customQuery = (req, res) => {
-  var CusQuery = req.body.CustomQuery;
-  fs.writeFile("../CustomQuery.ql", CusQuery, function (err) {
-    if (err) {
-      console.error(err);
-      return;
-    } else {
-      console.log("Query successfully saved.");
+  const id = req.params.id;
+  var CusQuery =
+    "/**\n* @kind path-problem\n* @id your-query-id\n*/\n" +
+    req.body.CustomQuery;
+  fs.writeFile(
+    "../../codeql-custom-queries-javascript/CustomQuery.ql",
+    CusQuery,
+    function (err) {
+      if (err) {
+        console.error(err);
+        return;
+      } else {
+        console.log("Query successfully saved.");
+        const args = [
+          "database", // first argv
+          "analyze", // second argv
+          //"--quiet", // suppress output, Incrementally decrease the number of progress messages printed
+          "--format=sarifv2.1.0", // set the result output to SARIF v2.1.0 format
+          `--output=./SarifFiles/TemporaryCustomQuery.sarif`, // output file as id.sarif in ./SarifFiles/
+          "--sarif-add-snippets", // include code snippets for each location mentioned in the results
+          `./databases/database${id}`, // our database to scan
+          "../../codeql-custom-queries-javascript/CustomQuery.ql",
+          "--search-path=../../codeql/",
+        ];
 
-      const id = req.params.id;
-      const args = [
-        "database", // first argv
-        "analyze", // second argv
-        //"--quiet", // suppress output, Incrementally decrease the number of progress messages printed
-        "--format=sarifv2.1.0", // set the result output to SARIF v2.1.0 format
-        `--output=./SarifFiles/${id}.sarif`, // output file as id.sarif in ./SarifFiles/
-        "--sarif-add-snippets", // include code snippets for each location mentioned in the results
-        `../databases/database${id}`, // our database to scan
-        "../CustomQuery.ql",
-      ];
-
-      // Run CodeQL query command, sarif output file is stored in ./SarifFiles
-      // Declaring a child variable to use for troubleshooting
-      var child = execFile("codeql", args, (error, stdout, stderr) => {
-        if (error) {
-          console.error("stderr", stderr);
-          throw error;
-        } else {
-          // If no errors, add sarif file name to the DB
-          projectDB.insertSarif(`${id}.sarif`, id, function (err, result) {
-            if (!err) {
-              if (result) {
-                var SarifFilePath = `${id}.sarif`;
-                var options = {
-                  root: path.join(__dirname, "../SarifFiles/"),
-                };
-                // This API provides access to data on the running file system.
-                // Ensure that either (a) the way in which the path argument was constructed into an absolute path is secure if it contains user input
-                // or (b) set the root option to the absolute path of a directory to contain access within.
-                res.setHeader("Content-Type", "application/json");
-                res.sendFile(SarifFilePath, options, function (err) {
-                  if (err) {
-                    console.error(err);
-                  } else {
-                    console.log(options);
-                    console.log("Sent:", SarifFilePath);
-                    res.end();
-                  }
-                });
+        // Run CodeQL query command, sarif output file is stored in ./SarifFiles
+        // Declaring a child variable to use for troubleshooting
+        var child = execFile("codeql", args, (error, stdout, stderr) => {
+          if (error) {
+            console.error("stderr", stderr);
+            throw error;
+          } else {
+            // If no errors, add sarif file name to the DB
+            projectDB.insertSarif(`${id}.sarif`, id, function (err, result) {
+              if (!err) {
+                if (result) {
+                  var SarifFilePath = `TemporaryCustomQuery.sarif`;
+                  var options = {
+                    root: path.join(__dirname, "../SarifFiles/"),
+                  };
+                  // This API provides access to data on the running file system.
+                  // Ensure that either (a) the way in which the path argument was constructed into an absolute path is secure if it contains user input
+                  // or (b) set the root option to the absolute path of a directory to contain access within.
+                  res.setHeader("Content-Type", "application/json");
+                  res.sendFile(SarifFilePath, options, function (err) {
+                    if (err) {
+                      console.error(err);
+                    } else {
+                      console.log(options);
+                      console.log("Sent:", SarifFilePath);
+                      res.end();
+                    }
+                  });
+                } else {
+                  res.status(422).send("The database does not exist.");
+                }
               } else {
-                res.status(422).send("The database does not exist.");
+                if (err.code == "ER_BAD_NULL_ERROR") {
+                  res.status(400).send("Bad Request");
+                } else {
+                  res.status(500).send("Internal Server Error");
+                }
               }
-            } else {
-              if (err.code == "ER_BAD_NULL_ERROR") {
-                res.status(400).send("Bad Request");
-              } else {
-                res.status(500).send("Internal Server Error");
-              }
-            }
-          });
-        }
-        console.error(`stderr: ${stderr}`);
-      });
-      // for debugging purposes only
-      child.stdout.on("data", function (data) {
-        console.log("[STDOUT]: ", data.toString());
-      });
-      child.stderr.on("data", function (data) {
-        console.log("[STDERR]: ", data.toString());
-      });
+            });
+          }
+          console.error(`stderr: ${stderr}`);
+        });
+        // for debugging purposes only
+        child.stdout.on("data", function (data) {
+          console.log("[STDOUT]: ", data.toString());
+        });
+        child.stderr.on("data", function (data) {
+          console.log("[STDERR]: ", data.toString());
+        });
+      }
     }
-  });
+  );
 };
 
 exports.deleteProject = (req, res) => {
   const id = req.params.id;
   var databaseFolder = `./databases/database${id}`;
   var sarifFile = `./SarifFiles/${id}.sarif`;
+  var uploadsFolder = `./uploads/${id}`;
 
   // Attemps to remove projectid from the database first
   projectDB.removeProject(id, function (err, result) {
@@ -487,6 +494,16 @@ exports.deleteProject = (req, res) => {
         } else {
           fs.rmdirSync(sarifFile, { recursive: true });
           console.log("Sarif File deleted successfully.");
+        }
+      });
+      fs.access(uploadsFolder, fs.F_OK, (err) => {
+        if (err) {
+          console.error(err);
+          console.log("The uploads file does not exist.");
+          return;
+        } else {
+          fs.rmdirSync(uploadsFolder, { recursive: true });
+          console.log("Uploads file deleted successfully");
         }
       });
 

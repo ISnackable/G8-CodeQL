@@ -398,7 +398,7 @@ const MyDocument = (props) => {
                               marginVertical: 0,
                             },
                           ]}
-                        >{`${contextRegion.startLine}\t\t>> ${hi}\n`}</Text>
+                        >{`${contextRegion.startLine}\t\t ${hi}\n`}</Text>
                       </>
                     ) : (
                       <View
@@ -688,7 +688,9 @@ const MyDocument = (props) => {
         <Text style={styles.title}>{`The analysis of ${project_name}`}</Text>
         <Text style={styles.author}>Generated with G8 Code Scanner</Text>
         <Image style={styles.image} src={G8Logo} />
-        <Text style={styles.author}>By: DISM / 3A / FT / 68 | FYP Group 8 2021</Text>
+        <Text style={styles.author}>
+          By: DISM / 3A / FT / 68 | FYP Group 8 2021
+        </Text>
         <View
           style={{
             flexDirection: "row",
@@ -713,7 +715,7 @@ const MyDocument = (props) => {
                 },
               ]}
             >
-              External Supervisor: Peter Teoh ( DSO ) 
+              External Supervisor: Peter Teoh ( DSO )
             </Text>
             <Text
               style={[
@@ -723,7 +725,7 @@ const MyDocument = (props) => {
                 },
               ]}
             >
-              Internal Supervisor: Vernon Tan ( SP ) 
+              Internal Supervisor: Vernon Tan ( SP )
             </Text>
           </View>
           <View style={{ flex: 1 }}>
@@ -828,23 +830,22 @@ const MyDocument = (props) => {
         </Text>
         <Image style={styles.image} src={CodeQLLogo} />
         <Text style={styles.text}>
-          The secure code review of the "{project_name}" was completed on
-          {created_at}
-          by utilizing CodeQL; a industry-leading semantic code analysis engine.
-          The review was performed on code obtained via the G8 Website on
-          {created_at} , and the project has a SHA1 hash value of {hash}
-
-          </Text>
-          <Text style={styles.text}>
-          After analysis of the code that was presented , information about the 
-          vulnerabilities found within the code were collated and displayed to the end user 
-          on the " CodeQL Alerts " page. The analysis also included the nature of the 
-          vulnerability , the files it was discovered in , and also how it affected
-          the subsequent code. Similar alerts which were discovered were then grouped 
-          together for the convenient viewing by the end user. A Neo4J virtualization graph 
-          was also developed to provide a visual representation of what each alert meant. 
-          More details about the findings can be found in the following sections below.
-
+          The secure code review of the "{project_name}" was completed on{" "}
+          {created_at} by utilizing CodeQL; a industry-leading semantic code
+          analysis engine. The review was performed on code obtained via the G8
+          Website on {created_at} , and the project has a SHA1 hash value of{" "}
+          {hash}.
+        </Text>
+        <Text style={styles.text}>
+          After analysis of the code that was presented , information about the
+          vulnerabilities found within the code were collated and displayed to
+          the end user on the " CodeQL Alerts " page. The analysis also included
+          the nature of the vulnerability , the files it was discovered in , and
+          also how it affected the subsequent code. Similar alerts which were
+          discovered were then grouped together for the convenient viewing by
+          the end user. A Neo4J virtualization graph was also developed to
+          provide a visual representation of what each alert meant. More details
+          about the findings can be found in the following sections below.
         </Text>
         <Text style={styles.subtitle} break>
           3. Finding Summary
@@ -859,11 +860,11 @@ const MyDocument = (props) => {
           developers with proof that the stated weaknesses exist as well as to
           provide examples that the developers can use to find and fix similar
           areas of the code. As mentioned earlier, the Secure Code Review does
-          not provide a 100 percent foolproof solution . As such, the development team should use
-          the information in these findings as an opportunity to improve the
-          entire code base. Just fixing the specific examples identified below
-          will most likely NOT remove the higher level risks from the
-          application.
+          not provide a 100 percent foolproof solution . As such, the
+          development team should use the information in these findings as an
+          opportunity to improve the entire code base. Just fixing the specific
+          examples identified below will most likely NOT remove the higher level
+          risks from the application.
         </Text>
         <Text style={styles.text}>
           Each finding is given a qualitative risk rating assigned by the
@@ -928,23 +929,21 @@ const MyDocument = (props) => {
           }
           fixed
         />
-         <Text style={styles.subtitle} break></Text>
-         <Text style={[
+        <Text style={styles.subtitle} break></Text>
+        <Text
+          style={[
             styles.text,
             {
               marginVertical: 0,
               marginLeft: 120,
-              marginTop:150,
+              marginTop: 150,
               marginBottom: 5,
             },
-          ]} >
-           ------------------- END OF REPORT --------------------
-         </Text>
-
-
+          ]}
+        >
+          ------------------- END OF REPORT --------------------
+        </Text>
       </Page>
-      
-
     </Document>
   );
 };

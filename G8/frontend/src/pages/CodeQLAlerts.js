@@ -8,7 +8,7 @@ import {
   Row,
   Card,
   Container,
-  // Alert,
+  Image,
   Button,
   Breadcrumb,
 } from "@themesberg/react-bootstrap";
@@ -21,6 +21,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Snippet from "../components/Snippet";
 import SnippetModal from "../components/SnippetModal";
 import useLocalStorageState from "use-local-storage-state";
+import G8Logo from "../assets/img/g8-logo-with-text.png";
 
 const CodeQLAlerts = () => {
   // eslint-disable-next-line no-unused-vars
@@ -72,15 +73,15 @@ const CodeQLAlerts = () => {
         i++;
         let alerts = files[file];
         let query =
-          runs[0].tool.driver.rules[alerts[0].ruleIndex].properties.name;
+          runs[0].tool.driver.rules[alerts[0].ruleIndex].properties?.name;
         let description =
-          runs[0].tool.driver.rules[alerts[0].ruleIndex].fullDescription.text;
+          runs[0].tool.driver.rules[alerts[0].ruleIndex].fullDescription?.text;
         let severity =
           runs[0].tool.driver.rules[alerts[0].ruleIndex].properties[
             "problem.severity"
           ];
         let tags =
-          runs[0].tool.driver.rules[alerts[0].ruleIndex].properties.tags;
+          runs[0].tool.driver.rules[alerts[0].ruleIndex].properties?.tags;
 
         let badgeSeverity = "warning";
         switch (severity) {
@@ -218,6 +219,25 @@ const CodeQLAlerts = () => {
         );
       }
     }
+
+    if (!runs[0]?.results.length) {
+      tempSnippets = [
+        <Card>
+          <Card.Body className="mx-auto ">
+            <h4 className="fw-bold mt-5">Congrats, no results detected!</h4>
+            <Image
+              className="mx-auto mb-5"
+              src={G8Logo}
+              alt="No Results"
+              height="400"
+              width="350"
+              rounded
+            />
+          </Card.Body>
+        </Card>,
+      ];
+    }
+
     setItems(tempSnippets.slice(0, 5));
     setSnippets(tempSnippets);
   }, [logs]);

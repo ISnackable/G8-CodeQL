@@ -1,16 +1,14 @@
 /**
-* @kind path-problem
-* @id your-query-id
+* @name my-custom-query
+* @description This is a custom query generated from the frontend web application. 
+* @kind problem
+* @problem.severity recommendation
+* @percision high
+* @id javascript/my-custom-query
+* @tags custom
 */
+
 import javascript
-import semmle.javascript.security.dataflow.CodeInjection::CodeInjection
-import DataFlow::PathGraph
-    
-from Configuration cfg, DataFlow::PathNode source, DataFlow::PathNode sink
-where cfg.hasFlowPath(source, sink)
-select sink.getNode(), source, sink,
-"$@ flows to " + sink.getNode().(Sink).getMessageSuffix() + ".", source.getNode(),
-"User-provided value"
-    
-    
-    
+from BlockStmt b
+where b.getNumStmt() = 0
+select b, "This is an empty block."

@@ -1,16 +1,7 @@
 {
-  "name": "volt-react-dashboard",
-  "description": "Volt React is a free and open source admin dashboard template powered by React.js and Bootstrap 5",
-  "author": "Themesberg",
-  "keywords": [
-    "bootstrap 5",
-    "react",
-    "react dashboard",
-    "react admin template",
-    "free react",
-    "react ui library",
-    "react bootstrap 5"
-  ],
+  "name": "g8-code-scanner",
+  "description": "G8 Code Scanner is a web dashboard created with ReactJS",
+  "author": "G8",
   "license": "MIT",
   "version": "1.0.0",
   "private": true,

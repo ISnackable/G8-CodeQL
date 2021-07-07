@@ -74,7 +74,6 @@ router.delete(
  */
 
 //
-// TODO: add some validation for id paramater
 // Create CodeQL database & Query current CodeQl database number in the counter
 router.post(
   "/analyses/:id",
@@ -83,7 +82,6 @@ router.post(
   apiController.query
 );
 
-// TODO: split database analyze into a middleware
 router.get(
   "/analyses/:id",
   apiController.query,
@@ -97,6 +95,7 @@ router.get(
  *
  * Not Important
  * 5. Snapshots, download and upload CodeQL databases
+ * codeql database bundle --output=<output> [--mode=<mode>] <options>... [--] <database>
  * GET /snapshots/{project-id}/{language} (Download a snapshot)
  * POST /snapshots/{project-id}/{language} (Start snapshot upload session)
  *
@@ -106,18 +105,24 @@ router.get(
  * GET /queryjobs/{queryjob-id} (Get the status of a query job)
  * GET /queryjobs/{queryjob-id}/results (Provide a summary of results for the projects in the query job)
  * GET /queryjobs/{queryjob-id}/results/{project-id} (Fetch the results of a query job for a specific project)
- *
+ */
+
+router.post(
+  "/queryjobs/:id",
+  middlewares.idValidation,
+  apiController.customQuery
+);
+
+/**
  * Not Important
  * 7. System, The /system endpoint is used to retrieve information about the status of the system:
  * GET /system/health, (Return an indication of whether the application is working as expected (up) or needs attention (down))
  */
 
-// TODO: Move middlewares.showAllInProjectNeo4J to controllers file, and change the route
-router.get("/neo4jshowallinproject/:id", middlewares.showAllInProjectNeo4J);
-
-router.post(
-  "/customquery/:id",
+router.get(
+  "/neo4jshowallinproject/:id",
   middlewares.idValidation,
-  apiController.customQuery
+  apiController.showAllInProjectNeo4J
 );
+
 module.exports = router; // https://expressjs.com/en/4x/api.html#app.mountpath Explains sub-app mount

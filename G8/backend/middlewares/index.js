@@ -6,6 +6,7 @@ console.log("------------------------------------");
 // ------------------------------------------------------
 const fs = require("fs");
 const path = require("path");
+const jsonMap = require("json-source-map");
 const multer = require("multer");
 const { execFile } = require("child_process");
 const { hashElement } = require("folder-hash");
@@ -219,21 +220,17 @@ exports.createNeo4J = (req, res) => {
   fs.access(SarifExist, fs.F_OK, (err) => {
     if (err) {
       console.error(err);
-      res.status(422).send("The sarif file does not exist.");
       return;
     } else {
       console.log(`Creating Neo4J on ${SarifExist}`);
 
-      exports.__esModule = true;
-      var jsonMap = require("json-source-map");
-      var fs = require("fs");
-
       var file = fs.readFileSync(SarifExist, "utf8");
-
       var testSarifJson = jsonMap.parse(file).data;
       // console.log(testSarifJson.runs);
       var results = testSarifJson.runs[0].results;
       var driverRules = testSarifJson.runs[0].tool.driver.rules;
+
+      if (!results.length || !driverRules.length) return;
       // https://betterprogramming.pub/which-is-the-fastest-while-for-foreach-for-of-9022902be15e
 
       // Global variables
@@ -361,11 +358,11 @@ exports.createNeo4J = (req, res) => {
                   "StartLine: " +
                   ResultArr[b].codeFlows[CodeFlowLen].threadFlows[0].locations[
                     z
-                  ].location.physicalLocation.contextRegion.startLine +
+                  ].location.physicalLocation?.contextRegion?.startLine +
                   ", EndLine: " +
                   ResultArr[b].codeFlows[CodeFlowLen].threadFlows[0].locations[
                     z
-                  ].location.physicalLocation.contextRegion.endLine;
+                  ].location.physicalLocation?.contextRegion?.endLine;
 
                 // Replaces " with ' to avoid conflicts/errors
                 CFMsg = CFMsg.replace(/[\"]/g, "'");
@@ -426,99 +423,6 @@ exports.createNeo4J = (req, res) => {
         });
     }
   });
-};
-
-exports.showAllInProjectNeo4J = (req, res) => {
-  const driver = neo4j.driver(
-    "bolt://localhost:7687",
-    neo4j.auth.basic("neo4j", "s3cr3t"),
-    {
-      /* encrypted: 'ENCRYPTION_OFF' */
-    }
-  );
-  const id = req.params.id;
-  const query = `WITH 1 as dummy
-  Match (n)-[r]->(m)
-  WHERE n.ProjectID = "${id}" AND r.ProjectID = "${id}" AND m.ProjectID = "${id}"
-  Return n,r,m`;
-  var nodes = [];
-  var edges = [];
-  const session = driver.session({ database: "neo4j" });
-  session
-    .run(query)
-    .then((result) => {
-      var build_node = (identity, labels, group, title) => {
-        return { id: identity, label: labels, title: title, group: group };
-      };
-      var build_edge = (start, end) => {
-        return { from: start, to: end, length: 100 };
-      };
-      var get_label = (node) => {
-        if (node.labels[0] == "CodeFlows") {
-          return node.properties.Message;
-        } else if (node.labels[0] == "Alert") {
-          return node.properties.Message_Text;
-        } else if (node.labels[0] == "Query") {
-          return node.properties.Query;
-        } else if (node.labels[0] == "File") {
-          return node.properties.File;
-        } else {
-          return undefined;
-        }
-      };
-
-      // function not used
-      // var check_duplicate_id = (node) => {
-      //   nodes.forEach((single_node) => {
-      //     if (single_node.id == node.identity.low) {
-      //       return true;
-      //     } else {
-      //       return false;
-      //     }
-      //   });
-      // };
-
-      var check_duplicate = [];
-      result.records.forEach((record) => {
-        if (!check_duplicate[record.get("n").identity.low]) {
-          check_duplicate[record.get("n").identity.low] = true;
-          nodes.push(
-            build_node(
-              record.get("n").identity.low,
-              get_label(record.get("n")),
-              record.get("n").labels[0],
-              JSON.stringify(record.get("n").properties)
-            )
-          );
-        }
-        if (!check_duplicate[record.get("m").identity.low]) {
-          check_duplicate[record.get("m").identity.low] = true;
-          nodes.push(
-            build_node(
-              record.get("m").identity.low,
-              get_label(record.get("m")),
-              record.get("m").labels[0],
-              JSON.stringify(record.get("m").properties)
-            )
-          );
-        }
-        edges.push(
-          build_edge(record.get("r").start.low, record.get("r").end.low)
-        );
-      });
-      session.close();
-      driver.close();
-      var output = {
-        nodes: nodes,
-        edges: edges,
-      };
-      console.log(output);
-      res.status(200).send(JSON.stringify(output));
-    })
-    .catch((error) => {
-      console.error(error);
-      res.status(500).send({ message: "Server error" });
-    });
 };
 
 exports.idValidation = (req, res, next) => {

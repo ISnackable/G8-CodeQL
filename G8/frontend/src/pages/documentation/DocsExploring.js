@@ -200,7 +200,10 @@ const DocsExploring = () => (
               </h2>
               <ol className="ps-4 docs-list counter-list">
                 <li>
-                  <p>You can view the errors, warnings and recommendations.</p>
+                  <p>
+                    You can view the number of errors, warnings and
+                    recommendations.
+                  </p>
                   <Image
                     rounded
                     className="mb-3"
@@ -327,6 +330,10 @@ const DocsExploring = () => (
                     src={pdf1}
                     alt="CodeQL Alerts"
                   />
+                </li>
+                <li>
+                  You can zoom in or zoom out from the report, download the report
+                  or print it
                 </li>
               </ol>
               {/* Query Help */}

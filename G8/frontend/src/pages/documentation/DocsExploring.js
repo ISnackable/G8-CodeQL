@@ -34,8 +34,8 @@ const DocsExploring = () => (
                 Exploring G8{" "}
               </h1>
               <p className="fs-5 fw-light">
-                This section give you an outline of all the things you can
-                do in G8.
+                This section gives you an elaborate outline of all the things
+                you can do in G8.
               </p>
               {/* <p>
                 If you have trouble interpreting your results, here is a guide
@@ -67,12 +67,13 @@ const DocsExploring = () => (
               {/* In Dashboard Section */}
               <h2 className="docs-list fs-5 mt-3">
                 <li>
-                In&nbsp; 
-              <Card.Link href="/#/dashboard" target="_blank">
-                      Dashboard
-              </Card.Link>:{" "}
+                  In&nbsp;
+                  <Card.Link href="/#/dashboard" target="_blank">
+                    Dashboard
+                  </Card.Link>
+                  :{" "}
                 </li>
-                </h2>
+              </h2>
               {/* ol for ordered list, classname counter-list adds the counter number to list elements below */}
               <ol className="ps-4 docs-list counter-list">
                 <li>
@@ -190,12 +191,13 @@ const DocsExploring = () => (
               <hr className="mt-5" />{" "}
               <h2 className="docs-list fs-5 mt-3">
                 <li>
-                In&nbsp; 
-              <Card.Link href="/#/overview" target="_blank">
-                      Overview
-              </Card.Link>:{" "}
+                  In&nbsp;
+                  <Card.Link href="/#/overview" target="_blank">
+                    Overview
+                  </Card.Link>
+                  :{" "}
                 </li>
-                </h2>
+              </h2>
               <ol className="ps-4 docs-list counter-list">
                 <li>
                   <p>You can view the errors, warnings and recommendations.</p>
@@ -226,12 +228,13 @@ const DocsExploring = () => (
               <hr className="mt-5" />
               <h2 className="docs-list fs-5 mt-3">
                 <li>
-                In&nbsp; 
-              <Card.Link href="/#/codeql-alerts" target="_blank">
-                      CodeQL Alerts
-              </Card.Link>:{" "}
+                  In&nbsp;
+                  <Card.Link href="/#/codeql-alerts" target="_blank">
+                    CodeQL Alerts
+                  </Card.Link>
+                  :{" "}
                 </li>
-                </h2>
+              </h2>
               <ol className="ps-4 docs-list counter-list">
                 <li>
                   <p>Files that have vulnerabilities are listed here</p>
@@ -305,15 +308,19 @@ const DocsExploring = () => (
               {/* <h2 className="fs-5 mt-3">In PDF Generator:</h2> */}
               <h2 className="docs-list fs-5 mt-3">
                 <li>
-                In&nbsp; 
-              <Card.Link href="/#/pdfgenerator" target="_blank">
-                      PDF Generator
-              </Card.Link>:{" "}
+                  In&nbsp;
+                  <Card.Link href="/#/pdfgenerator" target="_blank">
+                    PDF Generator
+                  </Card.Link>
+                  :{" "}
                 </li>
-                </h2>
+              </h2>
               <ol className="ps-4 docs-list counter-list">
                 <li>
-                  <p>A report of the vulnerabilities which have been found in the analyzed project is produced here</p>
+                  <p>
+                    A report of the vulnerabilities which have been found in the
+                    analyzed project is produced here
+                  </p>
                   <Image
                     rounded
                     className="mb-3"
@@ -327,22 +334,22 @@ const DocsExploring = () => (
               <h2 className="fs-5 mt-3">In Query Help:</h2>
               <ol className="ps-4 docs-list counter-list">
                 <li>
-                  <p>A more elaborate explanation of the vulnerabilties scanned can be seen here</p>
+                  <p>
+                    A more elaborate explanation of the vulnerabilties scanned
+                    can be seen here
+                  </p>
                 </li>
-                <li>
-                  You can refer to these to make your code more secure
-                </li>
+                <li>You can refer to these to make your code more secure</li>
                 <Image
-                    rounded
-                    className="mb-3"
-                    src={queryhelp1}
-                    alt="CodeQL Alerts"
-                  />
+                  rounded
+                  className="mb-3"
+                  src={queryhelp1}
+                  alt="CodeQL Alerts"
+                />
               </ol>
             </article>
           </Card.Body>
         </Card>
-
       </Col>
     </Row>
   </Container>

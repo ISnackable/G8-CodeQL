@@ -120,6 +120,14 @@ const DocsFAQ = () => (
               </p>
 
               <h2 className="fs-5 mt-2" id="">
+                Why is the page which I opened not showing anything?
+              </h2>
+              <p>
+                It may take some time so please be patient. You can also refresh
+                the page as well and give it a few seconds for it to load.
+              </p>
+
+              <h2 className="fs-5 mt-2" id="">
                 How do I delete the code I have uploaded and analyzed?
               </h2>
               <p>TBC</p>

@@ -432,7 +432,7 @@ export const CommandsTable = () => {
 export const ExistingProjectTable = (props) => {
   //Creates state variables
   let [responseData, setResponseData] = React.useState([]);
-  const backend_url = `http://localhost:8080/teamname/api`;
+  const backend_url = `http://localhost:8080/g8/api`;
   // eslint-disable-next-line no-unused-vars
   const [logs, setLogs] = useLocalStorageState("log", []);
   // eslint-disable-next-line no-unused-vars
@@ -554,31 +554,32 @@ export const ExistingProjectTable = (props) => {
     };
 
     const builddeletebutton = (id, type) => {
-      if (type === 1) {
-        return (
-          <Button
-            variant="danger"
-            value={id}
-            onClick={(e) => deleteprojectbyid(e)}
-          >
-            <FontAwesomeIcon icon={faTrashAlt} />
-          </Button>
-        );
-      } else {
-        return (
-          <Button
-            variant="dark"
-            value={id}
-            onClick={(e) =>
-              alert(
-                "Project Cannot be deleted. While processing/error. Please do it manually on the backend."
-              )
-            }
-          >
-            <FontAwesomeIcon icon={faTrashAlt} />
-          </Button>
-        );
-      }
+      return (
+        <Button
+          variant="danger"
+          value={id}
+          onClick={(e) => deleteprojectbyid(e)}
+        >
+          <FontAwesomeIcon icon={faTrashAlt} />
+        </Button>
+      );
+      // if (type === 1) {
+
+      // } else {
+      //   return (
+      //     <Button
+      //       variant="dark"
+      //       value={id}
+      //       onClick={(e) =>
+      //         alert(
+      //           "Project Cannot be deleted. While processing/error. Please do it manually on the backend."
+      //         )
+      //       }
+      //     >
+      //       <FontAwesomeIcon icon={faTrashAlt} />
+      //     </Button>
+      //   );
+      // }
     };
     var delete_button;
     if (sarif_filename == null) {

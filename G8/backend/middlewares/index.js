@@ -99,7 +99,7 @@ exports.checkDuplicateProject = (req, res, next) => {
         if (result) {
           try {
             //Deletes temporary folder
-            fs.rmdirSync(`./uploads/temporaryMulterUpload`, {
+            fs.rmSync(`./uploads/temporaryMulterUpload`, {
               recursive: true,
             });
             console.log(`./uploads/temporaryMulterUpload is deleted!`);

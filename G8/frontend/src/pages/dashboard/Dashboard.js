@@ -42,7 +42,7 @@ const Dashboard = () => {
   const handleUploadRepo = (repoLink) => {
     var data = { repoLink: repoLink };
     axios
-      .post(`http://localhost:8080/teamname/api/projects/repo`, data)
+      .post(`http://localhost:8080/g8/api/projects/repo`, data)
       .then((response) => {
         setValidated(true);
         alert("Success");
@@ -178,7 +178,7 @@ const Dashboard = () => {
 
                       axios({
                         method: "post",
-                        url: "http://localhost:8080/teamname/api/projects/folder",
+                        url: "http://localhost:8080/g8/api/projects/folder",
                         data: formData,
                         cancelToken: source.token,
                         onUploadProgress: (e) => {

@@ -84,8 +84,8 @@ router.post(
 
 router.get(
   "/analyses/:id",
-  apiController.query,
   middlewares.idValidation,
+  apiController.query,
   middlewares.createNeo4J
 );
 

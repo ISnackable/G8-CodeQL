@@ -19,22 +19,21 @@ const neo4j = require("neo4j-driver");
 // --------------------------
 // helper functions
 // --------------------------
+// function printDebugInfo(urlPattern, req) {
+//   console.log("-----------------------------------------");
+//   console.log("Servicing " + urlPattern + " ..");
+//   console.log("Servicing " + req.url + " ..");
 
-function printDebugInfo(urlPattern, req) {
-  console.log("-----------------------------------------");
-  console.log("Servicing " + urlPattern + " ..");
-  console.log("Servicing " + req.url + " ..");
-
-  console.log("> req.params: " + JSON.stringify(req.params));
-  console.log("> req.body: " + JSON.stringify(req.body));
-}
+//   console.log("> req.params: " + JSON.stringify(req.params));
+//   console.log("> req.body: " + JSON.stringify(req.body));
+// }
 
 // --------------------------------------------------
 // end points
 // --------------------------------------------------
 
 exports.getProject = (req, res) => {
-  printDebugInfo("/teamname/api/projects", req);
+  // printDebugInfo("/g8/api/projects", req);
 
   projectDB.getProject(function (err, result) {
     if (!err) {
@@ -49,7 +48,7 @@ exports.getProject = (req, res) => {
 };
 
 // exports.projectid = (req, res) => {
-//   printDebugInfo("/teamname/api/getProjectID", req);
+//   printDebugInfo("/g8/api/getProjectID", req);
 
 //   projectDB.getProject(function (err, result) {
 //     if (!err) {
@@ -162,7 +161,7 @@ exports.query = (req, res, next) => {
   });
 };
 
-// // http://localhost:8080/teamname/api/verifySarifFile
+// // http://localhost:8080/g8/api/verifySarifFile
 // exports.verifySarifFile = (req, res) => {
 //   var sarifFileName = req.body.sarifFileName;
 //   projectDB.getSarifFileName(sarifFileName, function (err, result) {
@@ -283,7 +282,7 @@ exports.repoUpload = (req, res) => {
   try {
     execFile(
       "git",
-      ["clone", repoLink, "./uploads/" + "temporaryGitClone", "--depth 1"],
+      ["clone", repoLink, "./uploads/" + "temporaryGitClone", "--depth=1"],
       (error, stdout, stderr) => {
         if (error) {
           console.error("stderr", stderr);
@@ -314,7 +313,7 @@ exports.repoUpload = (req, res) => {
                   );
                   try {
                     //Deletes temporary folder
-                    fs.rmdirSync(`./uploads/temporaryGitClone`, {
+                    fs.rmSync(`./uploads/temporaryGitClone`, {
                       recursive: true,
                     });
                     console.log(`./uploads/temporaryGitClone is deleted!`);
@@ -587,7 +586,7 @@ exports.deleteProject = (req, res) => {
           console.log("The database folder does not exist.");
           return;
         } else {
-          fs.rmdirSync(databaseFolder, { recursive: true });
+          fs.rmSync(databaseFolder, { recursive: true });
           console.log("CodeQL Database Folder deleted successfully");
         }
       });
@@ -597,7 +596,7 @@ exports.deleteProject = (req, res) => {
           console.log("The sarif file does not exist.");
           return;
         } else {
-          fs.rmdirSync(sarifFile, { recursive: true });
+          fs.rmSync(sarifFile, { recursive: true });
           console.log("Sarif File deleted successfully.");
         }
       });
@@ -607,7 +606,7 @@ exports.deleteProject = (req, res) => {
           console.log("The uploads file does not exist.");
           return;
         } else {
-          fs.rmdirSync(uploadsFolder, { recursive: true });
+          fs.rmSync(uploadsFolder, { recursive: true });
           console.log("Uploads file deleted successfully");
         }
       });

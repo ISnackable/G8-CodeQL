@@ -22,11 +22,11 @@ function Neo4JShowAll() {
     ],
   });
   useEffect(() => {
-    console.log(projectInfo[0].id);
+    console.log(projectInfo[0]?.id);
     axios
       .get(
         "http://localhost:8080/teamname/api/neo4jshowallinproject/" +
-          projectInfo[0].id
+          projectInfo[0]?.id
       )
       .then((response) => {
         var graph3 = {

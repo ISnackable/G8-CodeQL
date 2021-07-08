@@ -205,11 +205,6 @@ const Sidebar = (props = {}) => {
                 icon={faBug}
                 link={Routes.CodeQLAlerts.path}
               />
-              <NavItem
-                title="Custom Query"
-                icon={faPen}
-                link={Routes.CustomQuery.path}
-              />
               {/* 
               <NavItem
                 external
@@ -222,6 +217,11 @@ const Sidebar = (props = {}) => {
 
               <Dropdown.Divider className="my-3 border-indigo" />
 
+              <NavItem
+                title="Custom Query"
+                icon={faPen}
+                link={Routes.CustomQuery.path}
+              />
               <NavItem
                 title="PDF Generator"
                 icon={faFilePdf}

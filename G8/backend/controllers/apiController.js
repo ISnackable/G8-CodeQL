@@ -133,7 +133,6 @@ exports.query = (req, res, next) => {
                   } else {
                     console.log(options);
                     console.log("Sent:", SarifFilePath);
-                    res.end();
                     next();
                   }
                 });
@@ -284,7 +283,7 @@ exports.repoUpload = (req, res) => {
   try {
     execFile(
       "git",
-      ["clone", repoLink, "./uploads/" + "temporaryGitClone"],
+      ["clone", repoLink, "./uploads/" + "temporaryGitClone", "--depth 1"],
       (error, stdout, stderr) => {
         if (error) {
           console.error("stderr", stderr);
@@ -386,11 +385,116 @@ exports.repoUpload = (req, res) => {
   }
 };
 
+exports.showAllInProjectNeo4J = (req, res) => {
+  const driver = neo4j.driver(
+    "bolt://localhost:7687",
+    neo4j.auth.basic("neo4j", "s3cr3t"),
+    {
+      /* encrypted: 'ENCRYPTION_OFF' */
+    }
+  );
+  const id = req.params.id;
+  const query = `WITH 1 as dummy
+  Match (n)-[r]->(m)
+  WHERE n.ProjectID = "${id}" AND r.ProjectID = "${id}" AND m.ProjectID = "${id}"
+  Return n,r,m`;
+  var nodes = [];
+  var edges = [];
+  const session = driver.session({ database: "neo4j" });
+  session
+    .run(query)
+    .then((result) => {
+      var build_node = (identity, labels, group, title) => {
+        return { id: identity, label: labels, title: title, group: group };
+      };
+      var build_edge = (start, end) => {
+        return { from: start, to: end, length: 100 };
+      };
+      var get_label = (node) => {
+        if (node.labels[0] == "CodeFlows") {
+          return node.properties.Message;
+        } else if (node.labels[0] == "Alert") {
+          return node.properties.Message_Text;
+        } else if (node.labels[0] == "Query") {
+          return node.properties.Query;
+        } else if (node.labels[0] == "File") {
+          return node.properties.File;
+        } else {
+          return undefined;
+        }
+      };
+
+      // function not used
+      // var check_duplicate_id = (node) => {
+      //   nodes.forEach((single_node) => {
+      //     if (single_node.id == node.identity.low) {
+      //       return true;
+      //     } else {
+      //       return false;
+      //     }
+      //   });
+      // };
+
+      var check_duplicate = [];
+      result.records.forEach((record) => {
+        if (!check_duplicate[record.get("n").identity.low]) {
+          check_duplicate[record.get("n").identity.low] = true;
+          nodes.push(
+            build_node(
+              record.get("n").identity.low,
+              get_label(record.get("n")),
+              record.get("n").labels[0],
+              JSON.stringify(record.get("n").properties)
+            )
+          );
+        }
+        if (!check_duplicate[record.get("m").identity.low]) {
+          check_duplicate[record.get("m").identity.low] = true;
+          nodes.push(
+            build_node(
+              record.get("m").identity.low,
+              get_label(record.get("m")),
+              record.get("m").labels[0],
+              JSON.stringify(record.get("m").properties)
+            )
+          );
+        }
+        edges.push(
+          build_edge(record.get("r").start.low, record.get("r").end.low)
+        );
+      });
+      session.close();
+      driver.close();
+      var output = {
+        nodes: nodes,
+        edges: edges,
+      };
+      console.log(output);
+      res.status(200).send(JSON.stringify(output));
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send({ message: "Server error" });
+    });
+};
+
 exports.customQuery = (req, res) => {
   const id = req.params.id;
-  var CusQuery =
-    "/**\n* @kind path-problem\n* @id your-query-id\n*/\n" +
-    req.body.CustomQuery;
+  let metadata = `/\*\*
+\* @name my-custom-query
+\* @description This is a custom query generated from the frontend web application. 
+\* @kind ${
+    req.body.CustomQuery.toLowerCase().includes("dataflow")
+      ? "path-problem"
+      : "problem"
+  }
+\* @problem.severity recommendation
+\* @percision high
+\* @id javascript/my-custom-query
+\* @tags custom
+\*/
+\n`;
+  var CusQuery = metadata + req.body.CustomQuery;
   fs.writeFile(
     "../../codeql-custom-queries-javascript/CustomQuery.ql",
     CusQuery,
@@ -410,6 +514,7 @@ exports.customQuery = (req, res) => {
           `./databases/database${id}`, // our database to scan
           "../../codeql-custom-queries-javascript/CustomQuery.ql",
           "--search-path=../../codeql/",
+          "--rerun", // Evaluate even queries that seem to have a BQRS result stored in the database already.
         ];
 
         // Run CodeQL query command, sarif output file is stored in ./SarifFiles

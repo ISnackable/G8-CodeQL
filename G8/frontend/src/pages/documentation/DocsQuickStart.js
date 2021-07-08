@@ -17,33 +17,54 @@ const DocsQuickStart = () => {
                 </p>
                 {/* <ol className="ps-4 docs-list counter-list"> */}
                 <ul className="docs-list">
-                <li>
-                    Upload Projects from your harddrive or Github repos to be analyzed
-                    in Dashboard
+                  <li>
+                    Upload Projects from your harddrive or Github repos to be
+                    analyzed in{" "}
+                    <Card.Link href="/#/dashboard" target="_blank">
+                      Dashboard
+                    </Card.Link>
                   </li>
                   <li>
-                    The Overview tab offers a visual flow path of the project's
-                    code which you have uploaded
+                    The{" "}
+                    <Card.Link href="/#/overview" target="_blank">
+                      Overview
+                    </Card.Link>{" "}
+                    tab offers a visual flow path of the project's code which
+                    you have uploaded
                   </li>
                   <li>
                     View the alerts which have been generated with CodeQL after
-                    analyzing your project in the CodeQL Alerts tab
+                    analyzing your project in the{" "}
+                    <Card.Link href="/#/codeql-alerts" target="_blank">
+                      CodeQL Alerts
+                    </Card.Link>{" "}
+                    tab
                   </li>
                   <li>
                     Write your own CodeQL query and run them against your
                     project in the Custom Query page
                   </li>
                   <li>
-                    An analysis report will be produced in the PDF Generator page
+                    An analysis report will be produced in the{" "}
+                    <Card.Link href="/#/pdfgenerator" target="_blank">
+                      PDF Generator
+                    </Card.Link>{" "}
+                    page
                   </li>
                   <li>
-                    Sarif Viewer is an additional feature in G8 which can be used to view Sarif files in a more read-able format
+                    <Card.Link href="/#/sarifviewer" target="_blank">
+                      Sarif Viewer
+                    </Card.Link>{" "}
+                    is an additional feature in G8 which can be used to view
+                    Sarif files in a more read-able format
                   </li>
                   <li>
-                    Query Help gives an explanation on the vulnerabilites which have been found in CodeQL Alerts and also offers solution concepts to it. 
+                    Query Help gives an explanation on the vulnerabilites which
+                    have been found in CodeQL Alerts and also offers solution
+                    concepts to it.
                   </li>
                 </ul>
-                  
+
                 {/* </ol> */}
                 {/* <p>
                   G8 provides useful insights and code quality information for
@@ -65,8 +86,8 @@ const DocsQuickStart = () => {
                       Contribute to open source repositories and want to find
                       out about the quality of the code you contribute
                     </p> */}
-                    {/* <Code code="$ yarn install" language="bash" /> */}
-                  {/* </li>
+                {/* <Code code="$ yarn install" language="bash" /> */}
+                {/* </li>
                   <li>
                     <p>
                       Own or administer a public Git repository and want to
@@ -106,11 +127,11 @@ const DocsQuickStart = () => {
                     <Card.Link href="#" target="_blank">
                       Searching
                     </Card.Link>{" "} */}
-                    {/* <Alert className="my-4" variant="info">
+                {/* <Alert className="my-4" variant="info">
                       <strong>Important!</strong> Make sure the installed Node
                       version is {`>=`} 8.10 and of npm {`>=`} 5.6
                     </Alert> */}
-                  {/* </li>
+                {/* </li>
                   <li>
                     Viewing quality trends and problems in the latest revision —
                     see&nbsp;

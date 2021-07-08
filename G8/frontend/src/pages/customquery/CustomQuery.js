@@ -5,12 +5,11 @@ import AceEditor from "react-ace";
 // import mode-<language> , this imports the style and colors for the selected language.
 import "ace-builds/src-noconflict/mode-javascript";
 // there are many themes to import, I liked monokai.
-import "ace-builds/src-noconflict/theme-monokai";
-import "ace-builds/src-noconflict/theme-github";
-import "ace-builds/src-noconflict/theme-eclipse";
+// import "ace-builds/src-noconflict/theme-monokai";
+// import "ace-builds/src-noconflict/theme-github";
+// import "ace-builds/src-noconflict/theme-eclipse";
 import "ace-builds/src-noconflict/theme-nord_dark";
-
-import "ace-builds/src-noconflict/theme-solarized_dark";
+// import "ace-builds/src-noconflict/theme-solarized_dark";
 
 // this is an optional import just improved the interaction.
 import "ace-builds/src-noconflict/ext-language_tools";
@@ -23,7 +22,14 @@ import useLocalStorageState from "use-local-storage-state";
 // import "filepond/dist/filepond.min.css";
 import axios from "axios";
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
-import { Col, Row, Card, Button, Dropdown } from "@themesberg/react-bootstrap";
+import {
+  Container,
+  Col,
+  Row,
+  Card,
+  Button,
+  Dropdown,
+} from "@themesberg/react-bootstrap";
 
 // var EditSession = require("ace/edit_session").EditSession;
 // var js = new EditSession("some js code");
@@ -36,8 +42,6 @@ const backend_url = `http://localhost:8080/teamname/api`;
 const CustomQuery = () => {
   // eslint-disable-next-line no-unused-vars
   const [logs, setLogs] = useLocalStorageState("log", []);
-  // eslint-disable-next-line no-unused-vars
-  const [projectInfo, setprojectInfo] = useLocalStorageState("projectInfo", []);
   let [responseData, setResponseData] = React.useState([]);
   let [currentProject, setCurrentProject] = React.useState({ id: null });
   let [currentProjectMessage, setCurrentProjectMessage] =
@@ -92,16 +96,17 @@ select b, "This is an empty block."`);
   };
 
   const sendCustomQuery = () => {
+    if (!currentProject.id) return alert("No project specified");
     console.log(code);
     console.log(currentProject.id);
+
     axios
-      .post(backend_url + `/customquery/` + currentProject.id + `/`, {
+      .post(backend_url + `/queryjobs/` + currentProject.id + `/`, {
         CustomQuery: code,
       }) //????
       .then((response) => {
         console.log(response.data);
         setLogs([response.data]);
-        setprojectInfo([currentProject]);
         alert(
           "Finished analyzing. Please note that only the sarif file is available for viewing in the sarif viewer."
         );
@@ -209,115 +214,135 @@ select invk, f`);
   };
 
   return (
-    <Card>
-      <Card.Body>
-        <div style={{ float: "right", marginRight: "50px", marginTop: "30px" }}>
-          <Dropdown className="btn-toolbar">
-            <Dropdown.Toggle
-              as={Button}
-              variant="primary"
-              size="lg"
-              className="me-2"
-              style={{ backgroundColor: "red" }}
-            >
-              {currentProjectMessage}
-              <FontAwesomeIcon icon={faCaretDown} className="me-2 mx-2" />
-            </Dropdown.Toggle>
-            <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
-              <DrawProjectlist />
-              <Dropdown.Divider>
-                {/* Sample project goes here */}
-              </Dropdown.Divider>
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
-
-        <article>
-          <h1
-            className="h2"
-            id="quick-start"
-            style={{ marginLeft: "20px ", marginTop: "10px" }}
-          >
-            Custom Query{" "}
-          </h1>
-          <p className="fs-5 fw-light" style={{ marginLeft: "20px" }}>
-            Create your own queries and run them against your own projects !
-          </p>
-        </article>
-
-        <Row className="justify-content-md-center">
-          <Col xs={12} sm={12} xl={12} className="mb-8">
-            <div className="w-100 p-3">
-              {/* something about on clicks here  */}
-
-              <label style={{ marginBottom: "10px" }}>
-                {" "}
-                Type in the box below{" "}
-              </label>
-
-              <AceEditor
+    <Container className="px-0" fluid>
+      <Row>
+        <Col xs={12} className="p-3">
+          <Card>
+            <Card.Body>
+              <div
                 style={{
-                  height: "50vh",
-                  width: "100%",
-                  backgroundColor: "light grey",
+                  float: "right",
+                  marginRight: "50px",
+                  marginTop: "30px",
                 }}
-                placeholder="Type your query here ! "
-                mode="javascript"
-                theme="nord_dark"
-                name="basic-code-editor"
-                onChange={(currentCode) => setCode(currentCode)}
-                fontSize={18}
-                showPrintMargin={true}
-                showGutter={true}
-                highlightActiveLine={true}
-                value={code}
-                setOptions={{
-                  enableBasicAutocompletion: true,
-                  enableLiveAutocompletion: true,
-                  enableSnippets: true,
-                  showLineNumbers: true,
-                  tabSize: 4,
-                }}
-              />
-            </div>
-
-            <div
-              style={{ float: "left", marginRight: "50px", marginLeft: "20px" }}
-            >
-              <Dropdown className="btn-toolbar">
-                <Dropdown.Toggle
-                  as={Button}
-                  variant="primary"
-                  size="lg"
-                  className="me-2"
-                  style={{ backgroundColor: "#262b40" }}
-                >
-                  Click for some sample queries
-                  <FontAwesomeIcon icon={faCaretDown} className="me-2 mx-2" />
-                </Dropdown.Toggle>
-                <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
-                  <SampleQueries />
-                  <Dropdown.Divider>
-                    {/* Sample project goes here */}
-                  </Dropdown.Divider>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-
-            <div style={{ float: "right", marginRight: "50px" }}>
-              <Button
-                variant="Success"
-                size="lg"
-                style={{ backgroundColor: "green", color: "black" }}
-                onClick={sendCustomQuery}
               >
-                Run Query
-              </Button>
-            </div>
-          </Col>
-        </Row>
-      </Card.Body>
-    </Card>
+                <Dropdown className="btn-toolbar">
+                  <Dropdown.Toggle
+                    as={Button}
+                    variant="primary"
+                    size="lg"
+                    className="me-2"
+                    style={{ backgroundColor: "red" }}
+                  >
+                    {currentProjectMessage}
+                    <FontAwesomeIcon icon={faCaretDown} className="me-2 mx-2" />
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
+                    <DrawProjectlist />
+                    <Dropdown.Divider>
+                      {/* Sample project goes here */}
+                    </Dropdown.Divider>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
+
+              <article>
+                <h1
+                  className="h2"
+                  id="quick-start"
+                  style={{ marginLeft: "20px ", marginTop: "10px" }}
+                >
+                  Custom Query{" "}
+                </h1>
+                <p className="fs-5 fw-light" style={{ marginLeft: "20px" }}>
+                  Create your own queries and run them against your own projects
+                  !
+                </p>
+              </article>
+
+              <Row className="justify-content-md-center">
+                <Col xs={12} sm={12} xl={12} className="mb-8">
+                  <div className="w-100 p-3">
+                    {/* something about on clicks here  */}
+
+                    <label style={{ marginBottom: "10px" }}>
+                      {" "}
+                      Type in the box below{" "}
+                    </label>
+
+                    <AceEditor
+                      style={{
+                        height: "50vh",
+                        width: "100%",
+                        backgroundColor: "light grey",
+                      }}
+                      placeholder="Type your query here ! "
+                      mode="javascript"
+                      theme="nord_dark"
+                      name="basic-code-editor"
+                      onChange={(currentCode) => setCode(currentCode)}
+                      fontSize={18}
+                      showPrintMargin={true}
+                      showGutter={true}
+                      highlightActiveLine={true}
+                      value={code}
+                      setOptions={{
+                        enableBasicAutocompletion: true,
+                        enableLiveAutocompletion: true,
+                        enableSnippets: true,
+                        showLineNumbers: true,
+                        tabSize: 4,
+                      }}
+                    />
+                  </div>
+
+                  <div
+                    style={{
+                      float: "left",
+                      marginRight: "50px",
+                      marginLeft: "20px",
+                    }}
+                  >
+                    <Dropdown className="btn-toolbar">
+                      <Dropdown.Toggle
+                        as={Button}
+                        variant="primary"
+                        size="lg"
+                        className="me-2"
+                        style={{ backgroundColor: "#262b40" }}
+                      >
+                        Click for some sample queries
+                        <FontAwesomeIcon
+                          icon={faCaretDown}
+                          className="me-2 mx-2"
+                        />
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
+                        <SampleQueries />
+                        <Dropdown.Divider>
+                          {/* Sample project goes here */}
+                        </Dropdown.Divider>
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </div>
+
+                  <div style={{ float: "right", marginRight: "50px" }}>
+                    <Button
+                      variant="Success"
+                      size="lg"
+                      style={{ backgroundColor: "green", color: "black" }}
+                      onClick={sendCustomQuery}
+                    >
+                      Run Query
+                    </Button>
+                  </div>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

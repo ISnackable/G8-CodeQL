@@ -38,7 +38,7 @@ import {
 // editor.setSession(js);
 
 // onclick handler will call the setcode function in line 77 and replace "code" variable with the "setCode" parameter contents
-const backend_url = `http://localhost:8080/teamname/api`;
+const backend_url = `http://localhost:8080/g8/api`;
 const CustomQuery = () => {
   // eslint-disable-next-line no-unused-vars
   const [logs, setLogs] = useLocalStorageState("log", []);

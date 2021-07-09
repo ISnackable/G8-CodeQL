@@ -22,11 +22,11 @@ function Neo4JShowAll() {
     ],
   });
   useEffect(() => {
-    console.log(projectInfo[0].id);
+    console.log(projectInfo[0]?.id);
     axios
       .get(
-        "http://localhost:8080/teamname/api/neo4jshowallinproject/" +
-          projectInfo[0].id
+        "http://localhost:8080/g8/api/neo4jshowallinproject/" +
+          projectInfo[0]?.id
       )
       .then((response) => {
         var graph3 = {
@@ -47,37 +47,36 @@ function Neo4JShowAll() {
   }, [projectInfo]);
   const options = {
     layout: {
-      hierarchical: {enabled:false},
+      hierarchical: { enabled: false },
     },
-    groups:{
-      CodeFlows:{
+    groups: {
+      CodeFlows: {
         //Insert CodeFlows customization here
         color: "#c3baba",
         shape: "text",
       },
-      Alert:{
+      Alert: {
         //Insert Alert customization here
         color: "#e35959",
         shape: "box",
       },
-      Query:{
+      Query: {
         //Insert Query customization here
         color: "#8beacf",
         shape: "ellipse",
       },
-      File:{
+      File: {
         //Insert File customization here
         color: "#f9ec6d",
         shape: "circle",
-        
       },
     },
-    nodes:{
-      scaling:{min:16,max:32,}
+    nodes: {
+      scaling: { min: 16, max: 32 },
     },
     edges: {
       color: "#000000",
-      smooth:false,
+      smooth: false,
     },
     height: "700px",
   };

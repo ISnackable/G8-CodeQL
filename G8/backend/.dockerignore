@@ -4,4 +4,8 @@
 *Dockerfile*
 *docker-compose*
 node_modules
-# maybe add databases, uplaods, SarifFiles
+databases
+uploads
+SarifFiles
+tests
+utilities

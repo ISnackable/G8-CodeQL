@@ -7,26 +7,16 @@ console.log("------------------------------------");
 console.log("config > index.js");
 console.log("------------------------------------");
 
-// ------------------------------------------------------
-// load modules
-// ------------------------------------------------------
-const dotenv = require("dotenv").config();
-
-if (dotenv.error) {
+if (!process.env.NODE_ENV) {
   console.log(`
-    -------------------------------------------------------------------------------------
-    -- .env not found!                                                                 --
-    -- Setup a .env file in the root directory with the following enviroment variable. -- 
-    -- backend/.env                                                                    --
-    -- Replace <tag> with the appropriate configuration                                --
-    --                                                                                 --
-    -- EXPRESS_HOSTNAME=<express ip / hostname>                                        --
-    -- EXPRESS_PORT=<express port>                                                     --
-    -- DB_USER=<database username>                                                     --
-    -- DB_PASSWORD=<database passsword>                                                --
-    -- DB_NAME=<database name>                                                         --
-    -------------------------------------------------------------------------------------
-    `);
+-------------------------------------------------------------------------------------
+-- EXPRESS_HOSTNAME=<express ip / hostname>                                        --
+-- EXPRESS_PORT=<express port>                                                     --
+-- DB_USER=<database username>                                                     --
+-- DB_PASSWORD=<database passsword>                                                --
+-- DB_NAME=<database name>                                                         --
+-------------------------------------------------------------------------------------
+`);
 }
 
 const config = {

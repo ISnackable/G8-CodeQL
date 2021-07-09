@@ -78,6 +78,7 @@ router.delete(
 router.post(
   "/analyses/:id",
   middlewares.idValidation,
+  middlewares.checkProcessing,
   middlewares.createCodeQLDatabase,
   apiController.query
 );

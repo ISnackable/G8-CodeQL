@@ -436,3 +436,25 @@ exports.idValidation = (req, res, next) => {
     return res.status(400).send({ message: "Please enter a numeric id" });
   }
 };
+
+exports.checkProcessing = (req,res,next)=>{
+  console.log("checkProcessing Status")
+  const id = req.params.id;
+  projectDB.getProjectId(id,function (err, result) {
+    if (!err) {
+      console.log(result.sarif_filename)
+      if(result.sarif_filename=="processing"){
+          var output = {
+            error: "Still processing a project. Please wait for current project to successfully analyze.",
+          };
+        res.status(503).send(output);
+      }
+      return next();
+    } else {
+      var output = {
+        error: "Unable to get all the existing project information",
+      };
+      res.status(500).send(output);
+    }
+  });
+}

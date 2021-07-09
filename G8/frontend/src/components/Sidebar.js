@@ -264,7 +264,7 @@ const Sidebar = (props = {}) => {
               </CollapsableNavItem>
 
               <CollapsableNavItem
-                eventKey="queryhelp/"
+                eventKey="query-help/"
                 title="Query Help"
                 icon={faBook}
               >

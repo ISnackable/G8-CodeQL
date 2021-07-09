@@ -9,7 +9,7 @@ console.log("------------------------------------");
 
 if (!process.env.NODE_ENV) {
   console.log(`
--------------------------------------------------------------------------------------                                        --
+-------------------------------------------------------------------------------------
 -- EXPRESS_HOSTNAME=<express ip / hostname>                                        --
 -- EXPRESS_PORT=<express port>                                                     --
 -- DB_USER=<database username>                                                     --

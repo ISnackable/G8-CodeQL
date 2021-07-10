@@ -18,6 +18,12 @@ import codeqlalerts3 from "../../assets/img/docImg/codeqlalerts3.png";
 import codeqlalerts4 from "../../assets/img/docImg/codeqlalerts4.png";
 import codeqlalerts5 from "../../assets/img/docImg/codeqlalerts5.png";
 import codeqlalerts6 from "../../assets/img/docImg/codeqlalerts6.png";
+import codeqlalerts7 from "../../assets/img/docImg/codeqlalerts7.png";
+
+import customquery1 from "../../assets/img/docImg/customquery1.png";
+import customquery2 from "../../assets/img/docImg/customquery2.png";
+import customquery3 from "../../assets/img/docImg/customquery3.png";
+import customquery4 from "../../assets/img/docImg/customquery4.png";
 
 import pdf1 from "../../assets/img/docImg/pdf1.png";
 
@@ -240,6 +246,18 @@ const DocsExploring = () => (
               </h2>
               <ol className="ps-4 docs-list counter-list">
                 <li>
+                  <p>
+                    If your project is vulnerability-free, the following page is shown
+                  </p>
+                  <Image
+                    rounded
+                    className="mb-3"
+                    src={codeqlalerts7}
+                    alt="Dash Board"
+                  />
+                </li>
+              
+                <li>
                   <p>Files that have vulnerabilities are listed here</p>
                   <Image
                     rounded
@@ -248,9 +266,7 @@ const DocsExploring = () => (
                     alt="CodeQL Alerts"
                   />
                 </li>
-                <li>
-                  <p>There is also a Neo4J graph for code flow visuals</p>
-                </li>
+                <ol className="ps-4 docs-list counter-list">
                 <li>
                   <p>
                     You can view the explanation behind the alert when you click
@@ -306,6 +322,60 @@ const DocsExploring = () => (
                   />
                 </li>
               </ol>
+              </ol>
+              
+              {/* In Custom Query Section */}
+              <hr className="mt-5" />
+              <h2 className="docs-list fs-5 mt-3">
+                <li>
+                  In&nbsp;
+                  <Card.Link href="/#/codeql-alerts" target="_blank">
+                    Custom Query
+                  </Card.Link>
+                  :{" "}
+                </li>
+              </h2>
+              <ol className="ps-4 docs-list counter-list">
+                <li>
+                  <p>Choose a project which you wish to run a customised query on</p>
+                  <Image
+                    rounded
+                    className="mb-3"
+                    src={customquery1}
+                    alt="CodeQL Alerts"
+                  />
+                </li>
+                <li>
+                  <p>Write your custom query here</p>
+                  <Image
+                    rounded
+                    className="mb-3"
+                    src={customquery2}
+                    alt="CodeQL Alerts"
+                  />
+                </li>
+                <li>
+                  <p>After writing it, click run</p>
+                  <Image
+                    rounded
+                    className="mb-3"
+                    src={customquery3}
+                    alt="CodeQL Alerts"
+                  />
+                </li>
+                <li>
+                  <p>Wait for the following alert message to come up and click ok</p>
+                  <Image
+                    rounded
+                    className="mb-3"
+                    src={customquery4}
+                    alt="CodeQL Alerts"
+                  />
+                </li>
+                <li>
+                  <p>Proceed to view the analysis in the Sarif Viewer page or the CodeQL Alerts page</p>
+                </li>
+                </ol>
               {/* PDF Generator */}
               <hr className="mt-5" />
               {/* <h2 className="fs-5 mt-3">In PDF Generator:</h2> */}

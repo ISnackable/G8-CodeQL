@@ -70,7 +70,9 @@ const DocsFAQ = () => (
               <p>
                 We have made it convenient for you such that you get to decide
                 whether your code can be deleted or whether you still need to
-                refer to it on G8.
+                refer to it on G8. Simply go to Dashboard and look to the
+                extreme right of the project row which you wish to delete and
+                click the bin icon to delete the project.
               </p>
 
               <h2 className="fs-5 mt-2" id="">
@@ -128,9 +130,20 @@ const DocsFAQ = () => (
               </p>
 
               <h2 className="fs-5 mt-2" id="">
-                How do I delete the code I have uploaded and analyzed?
+                What happens to CodeQL Alerts page, Overview page, Sarif Viewer
+                and PDF Generator when a 2nd project is analyzed and loaded?
               </h2>
-              <p>TBC</p>
+              <p>
+                The results will be overwritten by the newly analysed project
+              </p>
+
+              <h2 className="fs-5 mt-2" id="">
+                After running custom query on chosen project, where do I view
+                the results?
+              </h2>
+              <p>
+              Previous results would be overwritten for the newly analyzed results to be shown. It can be viewed in the CodeQL Alerts page or the Sarif Viewer page. 
+              </p>
             </article>
           </Card.Body>
         </Card>

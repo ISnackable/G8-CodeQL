@@ -69,8 +69,7 @@ router.delete(
 /**
  * 3. Analyses, Most of the /analyses endpoints are used to retrieve the results of analyzing a commit:
  * POST /analyses/{project-id} (Run analysis)
- * GET /analyses/{analysis-id} (Get analysis summary)
- * GET /analyses/{analysis-id}/alerts (Get detailed alert information) application/sarif+json
+ * GET /analyses/{project-id} (Get detailed alert information) application/sarif+json
  */
 
 //
@@ -82,10 +81,11 @@ router.post(
   apiController.query
 );
 
+// Get the result of CodeQL sarif by Project ID
 router.get(
   "/analyses/:id",
   middlewares.idValidation,
-  apiController.query,
+  apiController.getAnalysesById,
   middlewares.createNeo4J
 );
 
@@ -101,12 +101,11 @@ router.get(
  *
  * 6. Query jobs
  * The /queryjobs endpoint is used to run CodeQL queries on G8 and check their progress.
- * POST /queryjobs (Submit a query to run on one or more projects on G8. The query is included in the body of the request.)
- * GET /queryjobs/{queryjob-id} (Get the status of a query job)
- * GET /queryjobs/{queryjob-id}/results (Provide a summary of results for the projects in the query job)
- * GET /queryjobs/{queryjob-id}/results/{project-id} (Fetch the results of a query job for a specific project)
+ * POST /queryjobs/{project-id} (Submit a query to run on one or more projects on G8. The query is included in the body of the request.)
+ * GET /queryjobs/{project-id} (Fetch the results of a query job for a specific project)
  */
 
+// Submit a custom CodeQL query
 router.post(
   "/queryjobs/:id",
   middlewares.idValidation,

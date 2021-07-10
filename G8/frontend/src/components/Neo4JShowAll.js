@@ -3,6 +3,11 @@ import React, { useEffect } from "react";
 import Graph from "react-graph-vis";
 import useLocalStorageState from "use-local-storage-state";
 
+const backend_url =
+  process.env.NODE_ENV === "production"
+    ? "/g8/api"
+    : `http://localhost:8080/g8/api`;
+
 function Neo4JShowAll() {
   // eslint-disable-next-line no-unused-vars
   const [projectInfo, setprojectInfo] = useLocalStorageState("projectInfo", []);
@@ -24,10 +29,7 @@ function Neo4JShowAll() {
   useEffect(() => {
     console.log(projectInfo[0]?.id);
     axios
-      .get(
-        "http://localhost:8080/g8/api/neo4jshowallinproject/" +
-          projectInfo[0]?.id
-      )
+      .get(`${backend_url}/neo4jshowallinproject/${projectInfo[0]?.id}`)
       .then((response) => {
         var graph3 = {
           nodes: [],

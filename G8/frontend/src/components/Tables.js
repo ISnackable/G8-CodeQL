@@ -429,10 +429,13 @@ export const CommandsTable = () => {
   );
 };
 
+const backend_url =
+  process.env.NODE_ENV === "production"
+    ? "/g8/api"
+    : `http://localhost:8080/g8/api`;
 export const ExistingProjectTable = (props) => {
   //Creates state variables
   let [responseData, setResponseData] = React.useState([]);
-  const backend_url = `http://localhost:8080/g8/api`;
   // eslint-disable-next-line no-unused-vars
   const [logs, setLogs] = useLocalStorageState("log", []);
   // eslint-disable-next-line no-unused-vars
@@ -471,9 +474,11 @@ export const ExistingProjectTable = (props) => {
   };
   const deleteprojectbyid = (e) => {
     e.preventDefault();
-    // console.log(e.target.value); //This console logs the id
+    // console.log(e.currentTarget.value ?? e.target.value); //This console logs the id
     axios
-      .delete(backend_url + `/projects/` + e.target.value)
+      .delete(
+        backend_url + `/projects/` + (e.currentTarget.value ?? e.target.value)
+      )
       .then((response) => {
         alert("Success. Project has been deleted!");
       })

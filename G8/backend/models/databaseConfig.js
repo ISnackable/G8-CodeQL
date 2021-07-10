@@ -10,11 +10,10 @@ const config = require("../config");
 
 // attempt to get a connection to the DB
 var conn = mariadb.createConnection({
-  host: "localhost",
-  // host: "mariadb",
-  user: config.username,
-  password: config.password,
-  database: config.database,
+  host: config.db_host,
+  user: config.db_user,
+  password: config.db_pwd,
+  database: config.db_name,
   dateStrings: true,
 });
 

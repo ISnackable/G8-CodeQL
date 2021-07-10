@@ -29,6 +29,7 @@ import {
   Card,
   Button,
   Dropdown,
+  Spinner,
 } from "@themesberg/react-bootstrap";
 
 // var EditSession = require("ace/edit_session").EditSession;
@@ -38,18 +39,24 @@ import {
 // editor.setSession(js);
 
 // onclick handler will call the setcode function in line 77 and replace "code" variable with the "setCode" parameter contents
-const backend_url = `http://localhost:8080/g8/api`;
+const backend_url =
+  process.env.NODE_ENV === "production"
+    ? "/g8/api"
+    : `http://localhost:8080/g8/api`;
+
 const CustomQuery = () => {
   // eslint-disable-next-line no-unused-vars
   const [logs, setLogs] = useLocalStorageState("log", []);
-  let [responseData, setResponseData] = React.useState([]);
-  let [currentProject, setCurrentProject] = React.useState({ id: null });
-  let [currentProjectMessage, setCurrentProjectMessage] =
-    React.useState(`No Project`);
+  const [responseData, setResponseData] = useState([]);
+  const [currentProject, setCurrentProject] = useState({ id: null });
+  const [currentProjectMessage, setCurrentProjectMessage] =
+    useState(`No Project`);
   const [code, setCode] = useState(`import javascript
 from BlockStmt b
 where b.getNumStmt() = 0
 select b, "This is an empty block."`);
+  const [showSpinner, setShowSpinner] = useState(false);
+
   const fetchData = (e) => {
     if (e) e.preventDefault();
     axios
@@ -99,6 +106,7 @@ select b, "This is an empty block."`);
     if (!currentProject.id) return alert("No project specified");
     console.log(code);
     console.log(currentProject.id);
+    setShowSpinner(true);
 
     axios
       .post(backend_url + `/queryjobs/` + currentProject.id + `/`, {
@@ -115,6 +123,9 @@ select b, "This is an empty block."`);
       .catch((error) => {
         alert("An error occured in the backend.");
         return;
+      })
+      .finally(() => {
+        setShowSpinner(false);
       });
   };
 
@@ -292,6 +303,7 @@ select invk, f`);
                         enableSnippets: true,
                         showLineNumbers: true,
                         tabSize: 4,
+                        useWorker: false,
                       }}
                     />
                   </div>
@@ -333,6 +345,14 @@ select invk, f`);
                       style={{ backgroundColor: "green", color: "black" }}
                       onClick={sendCustomQuery}
                     >
+                      {showSpinner && (
+                        <Spinner
+                          animation="border"
+                          role="status"
+                          size="sm"
+                          as="span"
+                        />
+                      )}{" "}
                       Run Query
                     </Button>
                   </div>

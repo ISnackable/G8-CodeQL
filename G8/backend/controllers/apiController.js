@@ -9,12 +9,13 @@ const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
 const { execFile } = require("child_process");
-const projectDB = require("../models/projects.js");
-const middlewares = require("../middlewares");
 const sevenBin = require("7zip-bin");
 const { extractFull } = require("node-7z");
-const upload = middlewares.multer.array("files", 100);
 const neo4j = require("neo4j-driver");
+const projectDB = require("../models/projects.js");
+const middlewares = require("../middlewares");
+const config = require("../config");
+const upload = middlewares.multer.array("files", 100);
 
 // --------------------------
 // helper functions
@@ -39,7 +40,7 @@ exports.getProject = (req, res) => {
     if (!err) {
       res.status(200).send(result);
     } else {
-      var output = {
+      let output = {
         error: "Unable to get all the existing project information",
       };
       res.status(500).send(output);
@@ -90,8 +91,7 @@ exports.query = (req, res, next) => {
   fs.access(CodeQLpath, fs.F_OK, (err) => {
     if (err) {
       console.error(err);
-      res.status(422).send("The database does not exist.");
-      return;
+      return res.status(422).send("The database does not exist.");
     } else {
       //file exists
 
@@ -105,6 +105,7 @@ exports.query = (req, res, next) => {
         `./databases/database${id}`, // our database to scan
         "../../codeql/javascript/ql/src/codeql-suites/javascript-security-extended.qls",
         "--search-path=../../codeql/misc/suite-helpers", // maybe change? seem like different QL pack use different suite-helpers
+        "--threads=0",
       ];
 
       // Run CodeQL query command, sarif output file is stored in ./SarifFiles
@@ -112,7 +113,6 @@ exports.query = (req, res, next) => {
       var child = execFile("codeql", args, (error, stdout, stderr) => {
         if (error) {
           console.error("stderr", stderr);
-          throw error;
         } else {
           // If no errors, add sarif file name to the DB
           projectDB.insertSarif(`${id}.sarif`, id, function (err, result) {
@@ -132,7 +132,6 @@ exports.query = (req, res, next) => {
                   } else {
                     console.log(options);
                     console.log("Sent:", SarifFilePath);
-                    next();
                   }
                 });
               } else {
@@ -156,6 +155,34 @@ exports.query = (req, res, next) => {
       });
       child.stderr.on("data", function (data) {
         console.log("[STDERR]: ", data.toString());
+      });
+    }
+  });
+};
+
+// Get analyses by ID
+exports.getAnalysesById = (req, res, next) => {
+  const id = req.params.id;
+  const SarifFilePath = path.resolve(__dirname, `../SarifFiles/${id}.sarif`);
+
+  // Checking if the sarif file exists
+  fs.access(SarifFilePath, fs.F_OK, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(422).send("The database does not exist.");
+    } else {
+      //file exists
+      // This API provides access to data on the running file system.
+      // Ensure that either (a) the way in which the path argument was constructed into an absolute path is secure if it contains user input
+      // or (b) set the root option to the absolute path of a directory to contain access within.
+      res.setHeader("Content-Type", "application/json");
+      res.sendFile(SarifFilePath, function (err) {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log("Sent:", SarifFilePath);
+          next();
+        }
       });
     }
   });
@@ -221,7 +248,7 @@ exports.folderUpload = (req, res, next) => {
           seven.on("end", function () {
             try {
               // delete archive file
-              fs.unlinkSync(`./${file.path}`);
+              fs.rmSync(`./${file.path}`);
 
               // done extracting last archive in files
               if (req.files.length - 1 === index) {
@@ -286,7 +313,6 @@ exports.repoUpload = (req, res) => {
       (error, stdout, stderr) => {
         if (error) {
           console.error("stderr", stderr);
-          throw error;
         }
         //For debugging purposes on the backend
         console.log("stdout", stdout);
@@ -386,7 +412,7 @@ exports.repoUpload = (req, res) => {
 
 exports.showAllInProjectNeo4J = (req, res) => {
   const driver = neo4j.driver(
-    "bolt://localhost:7687",
+    `bolt://${config.neo_host}:7687`,
     neo4j.auth.basic("neo4j", "s3cr3t"),
     {
       /* encrypted: 'ENCRYPTION_OFF' */
@@ -479,11 +505,12 @@ exports.showAllInProjectNeo4J = (req, res) => {
 
 exports.customQuery = (req, res) => {
   const id = req.params.id;
+  const CodeQLpath = `./databases/database${id}/db-javascript`;
   let metadata = `/\*\*
 \* @name my-custom-query
 \* @description This is a custom query generated from the frontend web application. 
 \* @kind ${
-    req.body.CustomQuery.toLowerCase().includes("dataflow")
+    req.body.CustomQuery?.toLowerCase().includes("dataflow")
       ? "path-problem"
       : "problem"
   }
@@ -493,81 +520,94 @@ exports.customQuery = (req, res) => {
 \* @tags custom
 \*/
 \n`;
-  var CusQuery = metadata + req.body.CustomQuery;
-  fs.writeFile(
-    "../../codeql-custom-queries-javascript/CustomQuery.ql",
-    CusQuery,
-    function (err) {
-      if (err) {
-        console.error(err);
-        return;
-      } else {
-        console.log("Query successfully saved.");
-        const args = [
-          "database", // first argv
-          "analyze", // second argv
-          //"--quiet", // suppress output, Incrementally decrease the number of progress messages printed
-          "--format=sarifv2.1.0", // set the result output to SARIF v2.1.0 format
-          `--output=./SarifFiles/TemporaryCustomQuery.sarif`, // output file as id.sarif in ./SarifFiles/
-          "--sarif-add-snippets", // include code snippets for each location mentioned in the results
-          `./databases/database${id}`, // our database to scan
-          "../../codeql-custom-queries-javascript/CustomQuery.ql",
-          "--search-path=../../codeql/",
-          "--rerun", // Evaluate even queries that seem to have a BQRS result stored in the database already.
-        ];
+  let CusQuery = metadata + req.body.CustomQuery;
 
-        // Run CodeQL query command, sarif output file is stored in ./SarifFiles
-        // Declaring a child variable to use for troubleshooting
-        var child = execFile("codeql", args, (error, stdout, stderr) => {
-          if (error) {
-            console.error("stderr", stderr);
-            throw error;
+  fs.access(CodeQLpath, fs.F_OK, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(422).send("The database does not exist.");
+    } else {
+      fs.writeFile(
+        "./codeql-custom-queries-javascript/CustomQuery.ql",
+        CusQuery,
+        function (err) {
+          if (err) {
+            console.error(err);
+            return;
           } else {
-            // If no errors, add sarif file name to the DB
-            projectDB.insertSarif(`${id}.sarif`, id, function (err, result) {
-              if (!err) {
-                if (result) {
-                  var SarifFilePath = `TemporaryCustomQuery.sarif`;
-                  var options = {
-                    root: path.join(__dirname, "../SarifFiles/"),
-                  };
-                  // This API provides access to data on the running file system.
-                  // Ensure that either (a) the way in which the path argument was constructed into an absolute path is secure if it contains user input
-                  // or (b) set the root option to the absolute path of a directory to contain access within.
-                  res.setHeader("Content-Type", "application/json");
-                  res.sendFile(SarifFilePath, options, function (err) {
-                    if (err) {
-                      console.error(err);
-                    } else {
-                      console.log(options);
-                      console.log("Sent:", SarifFilePath);
-                      res.end();
-                    }
-                  });
-                } else {
-                  res.status(422).send("The database does not exist.");
-                }
+            console.log("Query successfully saved.");
+            const args = [
+              "database", // first argv
+              "analyze", // second argv
+              //"--quiet", // suppress output, Incrementally decrease the number of progress messages printed
+              "--format=sarifv2.1.0", // set the result output to SARIF v2.1.0 format
+              `--output=./SarifFiles/TemporaryCustomQuery.sarif`, // output file as id.sarif in ./SarifFiles/
+              "--sarif-add-snippets", // include code snippets for each location mentioned in the results
+              `./databases/database${id}`, // our database to scan
+              "./codeql-custom-queries-javascript/CustomQuery.ql",
+              "--search-path=../../codeql/",
+              "--rerun", // Evaluate even queries that seem to have a BQRS result stored in the database already.
+              "--threads=0",
+            ];
+
+            // Run CodeQL query command, sarif output file is stored in ./SarifFiles
+            // Declaring a child variable to use for troubleshooting
+            var child = execFile("codeql", args, (error, stdout, stderr) => {
+              if (error) {
+                console.error("stderr", stderr);
+                return res.status(500).send("Internal Server Error");
               } else {
-                if (err.code == "ER_BAD_NULL_ERROR") {
-                  res.status(400).send("Bad Request");
-                } else {
-                  res.status(500).send("Internal Server Error");
-                }
+                // If no errors, add sarif file name to the DB
+                projectDB.insertSarif(
+                  `${id}.sarif`,
+                  id,
+                  function (err, result) {
+                    if (!err) {
+                      if (result) {
+                        var SarifFilePath = `TemporaryCustomQuery.sarif`;
+                        var options = {
+                          root: path.join(__dirname, "../SarifFiles/"),
+                        };
+                        // This API provides access to data on the running file system.
+                        // Ensure that either (a) the way in which the path argument was constructed into an absolute path is secure if it contains user input
+                        // or (b) set the root option to the absolute path of a directory to contain access within.
+                        res.setHeader("Content-Type", "application/json");
+                        res.sendFile(SarifFilePath, options, function (err) {
+                          if (err) {
+                            console.error(err);
+                          } else {
+                            console.log(options);
+                            console.log("Sent:", SarifFilePath);
+                            res.end();
+                          }
+                        });
+                      } else {
+                        res.status(422).send("The database does not exist.");
+                      }
+                    } else {
+                      if (err.code == "ER_BAD_NULL_ERROR") {
+                        res.status(400).send("Bad Request");
+                      } else {
+                        res.status(500).send("Internal Server Error");
+                      }
+                    }
+                  }
+                );
               }
+              console.error(`stderr: ${stderr}`);
+            });
+            // for debugging purposes only
+            child.stdout.on("data", function (data) {
+              console.log("[STDOUT]: ", data.toString());
+            });
+            child.stderr.on("data", function (data) {
+              console.log("[STDERR]: ", data.toString());
             });
           }
-          console.error(`stderr: ${stderr}`);
-        });
-        // for debugging purposes only
-        child.stdout.on("data", function (data) {
-          console.log("[STDOUT]: ", data.toString());
-        });
-        child.stderr.on("data", function (data) {
-          console.log("[STDERR]: ", data.toString());
-        });
-      }
+        }
+      );
     }
-  );
+  });
 };
 
 exports.deleteProject = (req, res) => {
@@ -611,9 +651,8 @@ exports.deleteProject = (req, res) => {
         }
       });
 
-      // TODO: replace localhost with neo
       const driver = neo4j.driver(
-        "bolt://localhost:7687",
+        `bolt://${config.neo_host}:7687`,
         neo4j.auth.basic("neo4j", "s3cr3t"),
         {
           /* encrypted: 'ENCRYPTION_OFF' */

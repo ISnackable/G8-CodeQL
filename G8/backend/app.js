@@ -56,9 +56,9 @@ app.use("/g8", routes);
 // ------------------------------------------------------
 function startServer() {
   try {
-    app.listen(config.port /*, config.hostname*/, () => {
+    app.listen(config.port, () => {
       console.log(
-        `Server started and accessible via http://${config.hostname}:${config.port}/`
+        `Server started and accessible via http://localhost:${config.port}/`
       );
     });
   } catch (err) {

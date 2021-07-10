@@ -12,6 +12,7 @@ const { execFile } = require("child_process");
 const { hashElement } = require("folder-hash");
 const neo4j = require("neo4j-driver");
 const projectDB = require("../models/projects.js");
+const config = require("../config");
 
 // ------------------------------------------------------
 // Multer config
@@ -159,8 +160,7 @@ exports.createCodeQLDatabase = (req, res, next) => {
   projectDB.insertProcessing(id, (err, result) => {
     if (err) {
       console.log(err);
-      res.status(500).send("Something went wrong! Server side.");
-      return;
+      return res.status(500).send("Something went wrong! Server side.");
     }
   });
 
@@ -170,6 +170,7 @@ exports.createCodeQLDatabase = (req, res, next) => {
     `./databases/database${id}`, // database name to be created
     `--source-root=./uploads/${id}`, // source code folder
     "--language=javascript", // programming language
+    "--threads=0",
   ];
 
   // Command to create a database
@@ -179,8 +180,7 @@ exports.createCodeQLDatabase = (req, res, next) => {
       projectDB.insertSarifFilenameError(id, (err, result) => {
         if (err) {
           console.log(err);
-          res.status(500).send("Something went wrong! Server side.");
-          return;
+          return res.status(500).send("Something went wrong! Server side.");
         }
       });
       console.error(error);
@@ -386,9 +386,8 @@ exports.createNeo4J = (req, res) => {
         } // End of Create Alert For Loop
       } // End of Create File Loop
 
-      // TODO: replace localhost with neo
       const driver = neo4j.driver(
-        "bolt://localhost:7687",
+        `bolt://${config.neo_host}:7687`,
         neo4j.auth.basic("neo4j", "s3cr3t"),
         {
           /* encrypted: 'ENCRYPTION_OFF' */
@@ -437,24 +436,25 @@ exports.idValidation = (req, res, next) => {
   }
 };
 
-exports.checkProcessing = (req,res,next)=>{
-  console.log("checkProcessing Status")
+exports.checkProcessing = (req, res, next) => {
+  console.log("checkProcessing Status");
   const id = req.params.id;
-  projectDB.getProjectId(id,function (err, result) {
+  projectDB.getProjectId(id, function (err, result) {
     if (!err) {
-      console.log(result.sarif_filename)
-      if(result.sarif_filename=="processing"){
-          var output = {
-            error: "Still processing a project. Please wait for current project to successfully analyze.",
-          };
-        res.status(503).send(output);
+      console.log(result.sarif_filename);
+      if (result.sarif_filename == "processing") {
+        var output = {
+          error:
+            "Still processing a project. Please wait for current project to successfully analyze.",
+        };
+        return res.status(503).send(output);
       }
       return next();
     } else {
       var output = {
         error: "Unable to get all the existing project information",
       };
-      res.status(500).send(output);
+      return res.status(500).send(output);
     }
   });
-}
+};

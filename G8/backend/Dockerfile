@@ -94,7 +94,15 @@ COPY --from=node_base /usr/src/app /usr/src/app
 # ENV CODEQL_HOME /usr/local/codeql-home
 ENV CODEQL_HOME=${CODEQL_HOME:-/usr/local/codeql-home}
 # record the latest version of the codeql-cli
-RUN curl --silent "https://api.github.com/repos/github/codeql-cli-binaries/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' > /tmp/codeql_version
+
+ARG CODEQL_VERSION
+RUN if [ -z "$CODEQL_VERSION" ] ; \
+    then echo "DEFAULTING TO LATEST CODEQL CLI VERSION" && \
+    curl --silent "https://api.github.com/repos/github/codeql-cli-binaries/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' > /tmp/codeql_version; \
+    else echo "USING CODEQL CLI $CODEQL_VERSION" && \
+    echo "$CODEQL_VERSION" > /tmp/codeql_version; fi
+# RUN curl --silent "https://api.github.com/repos/github/codeql-cli-binaries/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' > /tmp/codeql_version
+
 RUN mkdir -p ${CODEQL_HOME} \
     ${CODEQL_HOME}/codeql-repo \
     ${CODEQL_HOME}/codeql-go-repo \
@@ -123,7 +131,6 @@ RUN if [ "$PRECOMPILE_QUERIES" = "true" ] ; \
 # Pre-compile our queries to save time later
 # RUN codeql query compile --threads=0 ${CODEQL_HOME}/codeql-repo/*/ql/src/codeql-suites/*.qls
 # RUN codeql query compile --threads=0 ${CODEQL_HOME}/codeql-go-repo/ql/src/codeql-suites/*.qls
-# RUN codeql query compile --threads=0 ${CODEQL_HOME}/codeql-repo/javascript/ql/src/codeql-suites/*.qls
 
 ENV PYTHONIOENCODING=utf-8
 # ENTRYPOINT ["python3", "/usr/local/startup_scripts/startup.py"]

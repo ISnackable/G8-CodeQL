@@ -31,6 +31,10 @@ import {
 import { ExistingProjectTable } from "../../components/Tables";
 // import { trafficShares } from "../../data/charts";
 // import Code from "../../components/Code";
+const backend_url =
+  process.env.NODE_ENV === "production"
+    ? "/g8/api"
+    : `http://localhost:8080/g8/api`;
 
 const Dashboard = () => {
   const filePondRef = useRef(null);
@@ -50,7 +54,7 @@ const Dashboard = () => {
   const handleUploadRepo = (repoLink) => {
     var data = { repoLink: repoLink };
     axios
-      .post(`http://localhost:8080/g8/api/projects/repo`, data)
+      .post(`${backend_url}/projects/repo`, data)
       .then((response) => {
         setValidated(true);
         alert("Success");
@@ -100,7 +104,7 @@ const Dashboard = () => {
         <Col xs={6} sm={6} className="mb-4">
           <OverlayTrigger
             placement="bottom"
-            trigger={["hover"]}
+            trigger={["hover", "trigger"]}
             overlay={
               <Tooltip>
                 Accepts — Directory, Single File, Archive File (7zip, rar, zip,
@@ -196,7 +200,7 @@ const Dashboard = () => {
 
                       axios({
                         method: "post",
-                        url: "http://localhost:8080/g8/api/projects/folder",
+                        url: `${backend_url}/projects/folder`,
                         data: formData,
                         cancelToken: source.token,
                         onUploadProgress: (e) => {
@@ -247,7 +251,7 @@ const Dashboard = () => {
         <Col xs={6} sm={6} className="mb-4">
           <OverlayTrigger
             placement="bottom"
-            trigger={["hover"]}
+            trigger={["hover", "trigger"]}
             overlay={<Tooltip>Accepts — Git Url via HTTP(s)</Tooltip>}
           >
             <Button

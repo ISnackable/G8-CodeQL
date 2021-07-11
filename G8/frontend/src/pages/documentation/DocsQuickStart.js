@@ -1,5 +1,6 @@
 import React from "react";
-import { Row, Col, Card, Container } from "@themesberg/react-bootstrap";
+import { Alert, Row, Col, Card, Container } from "@themesberg/react-bootstrap";
+import Code from "../../components/Code";
 
 const DocsQuickStart = () => {
   return (
@@ -12,10 +13,15 @@ const DocsQuickStart = () => {
                 <h1 className="h2" id="quick-start">
                   Getting Started
                 </h1>
+                <p>
+                  G8, is a static code scanning security tool designed with
+                  ReactJS and ExpressJS. It utilizes the CodeQL semantic code
+                  analysis engine to find all variants of a vulnerability.
+                </p>
                 <p className="fs-5 fw-light">
                   Here is a brief summary of what you can do with G8
                 </p>
-                {/* <ol className="ps-4 docs-list counter-list"> */}
+
                 <ul className="docs-list">
                   <li>
                     Upload Projects from your harddrive or Github repos to be
@@ -64,88 +70,145 @@ const DocsQuickStart = () => {
                     concepts to it.
                   </li>
                 </ul>
-
-                {/* </ol> */}
-                {/* <p>
-                  G8 provides useful insights and code quality information for
-                  all sorts of people participating in software development -
-                  whether you:
-                </p> */}
-
-                {/* <h2 className="fs-5 mt-4" id="using-yarn">
-                  Using <code>yarn</code>
-                </h2> */}
-                {/* <ul className="ps-4 docs-list">
+                <hr className="mt-5" />
+                <p className="fs-5 fw-light">
+                  Here is how you can get a local copy up and running follow
+                  these simple example steps.
+                </p>
+                <h2 className="fs-5 mt-2">Dependencies</h2>
+                <i>The following tools should be installed before starting:</i>
+                <ul className="ps-4 docs-list">
                   <li>
-                    Install yarn from Use open source libraries and frameworks
-                    in private projects and want to know how well they're being
-                    maintained
-                  </li>
-                  <li>
-                    <p>
-                      Contribute to open source repositories and want to find
-                      out about the quality of the code you contribute
-                    </p> */}
-                {/* <Code code="$ yarn install" language="bash" /> */}
-                {/* </li>
-                  <li>
-                    <p>
-                      Own or administer a public Git repository and want to
-                      integrate code quality analysis into your pull request
-                      review workflow
-                    </p>
+                    <Card.Link
+                      href="https://www.docker.com/get-started"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Docker
+                    </Card.Link>
                   </li>
                 </ul>
-
-                <h1 className="h2 mt-4" id="">
-                  {" "}
-                  Exploring <code>code</code> quality
-                </h1>
+                <h2 className="fs-5 mt-4">Installation</h2>
                 <p>
-                  G8 analyzes tens of thousands of repositories hosted publicly
-                  on Bitbucket, GitHub or GitLab, ranging from massive projects
-                  such as Apache Hadoop to small projects that are just getting
-                  started. Right now G8 analyzes codebases written in
-                  <code> JavaScript/TypeScript</code>
+                  Use the provided docker configuration to deploy the project:
                 </p>
+                <Code code={`$ docker-compose up -d`} language="bash" />
 
-                <p>
-                  Projects are assessed for code quality, and to give you
-                  insight into the impact of each contribution. Every commit to
-                  a project is analyzed against a core set of queries, each of
-                  which corresponds to particular aspect of coding best
-                  practice. The result is data showing trends in productivity
-                  and quality, which also provides fine-grained details about
-                  individual contributors and individual commits.
-                </p>
-                <h2 className="fs-5 mt-2" id="">
-                  Get started by:
-                </h2>
+                <h2 className="fs-5 mt-4">Development</h2>
                 <ol className="ps-4 docs-list">
                   <li>
-                    Searching for projects you are interested in — see&nbsp;
+                    Install{" "}
                     <Card.Link href="#" target="_blank">
-                      Searching
-                    </Card.Link>{" "} */}
-                {/* <Alert className="my-4" variant="info">
-                      <strong>Important!</strong> Make sure the installed Node
-                      version is {`>=`} 8.10 and of npm {`>=`} 5.6
-                    </Alert> */}
-                {/* </li>
-                  <li>
-                    Viewing quality trends and problems in the latest revision —
-                    see&nbsp;
-                    <Card.Link href="#" target="_blank">
-                      Exploring projects
+                      CodeQL
                     </Card.Link>{" "}
+                    CLI
+                    <ol className="ps-4 docs-list">
+                      <li>Download the CodeQL CLI zip package.</li>
+                      <li>
+                        Create a new CodeQL directory where you can place the
+                        CLI and any queries and libraries you want to use. For
+                        example, /opt/codeql.
+                      </li>
+                      <li>
+                        Extract the zip archive in the CodeQL directory;
+                        /opt/codeql.
+                      </li>
+                      <li>
+                        Add CodeQL to Path.
+                        <Code
+                          code={`$ export PATH=/opt/codeql:$PATH`}
+                          language="bash"
+                        />
+                      </li>
+                      <li>
+                        Verify your CodeQL CLI setup.
+                        <Code code={`$ codeql --help`} language="bash" />
+                      </li>
+                    </ol>
                   </li>
                   <li>
-                    Following projects you use or are involved with — see&nbsp;
-                    <Card.Link href="#" target="_blank">
-                      Personalizing content
-                    </Card.Link>{" "}
+                    Install MariaDB & Neo4J
+                    <ul className="ps-4 docs-list ">
+                      <li>
+                        Installation with Docker (Recommended)
+                        <Code
+                          code={`$ docker run -p 3306:3306 -d -v G8/backend/init.sql:/docker-entrypoint-initdb.d --env MYSQL_ROOT_PASSWORD=secret docker.io/library/mariadb:10
+$ docker run -p 7474:7474 -p 7687:7687 -d -v $HOME/neo4j/data:/data --env NEO4J_AUTH=neo4j/s3cr3t neo4j:4.2.7`}
+                          language="bash"
+                        />
+                      </li>
+                      <li>
+                        Install Manually
+                        <ol>
+                          <li>
+                            Download & Install{" "}
+                            <Card.Link
+                              href="https://mariadb.org/download/"
+                              target="_blank"
+                            >
+                              MariaDB
+                            </Card.Link>{" "}
+                            on the latest version
+                          </li>
+                          <li>
+                            Verify MariaDB is installed by running the following
+                            command
+                            <Code
+                              code={`$ sudo service mysql status`}
+                              language="bash"
+                            />
+                          </li>
+                          <li>
+                            Download & Install{" "}
+                            <Card.Link
+                              href="https://neo4j.com/download-center/#community"
+                              target="_blank"
+                            >
+                              Neo4J Community Server
+                            </Card.Link>{" "}
+                            on the latest version
+                          </li>
+                          <li>
+                            Verify Neo4J is installed by visiting{" "}
+                            <Card.Link
+                              href="http://localhost:7474"
+                              target="_blank"
+                            >
+                              http://localhost:7474
+                            </Card.Link>
+                          </li>
+                        </ol>
+                      </li>
+                    </ul>
                   </li>
-                </ol> */}
+
+                  <li>
+                    You can optionally edit the configuration file depending on
+                    your needs:
+                  </li>
+                  <Alert className="my-4" variant="info">
+                    <strong>Important!</strong> Make sure the installed Node
+                    version is {`>=`} 14.0 and of npm {`>=`} 7.15.0
+                  </Alert>
+                  <li>
+                    Setup and start the frontend
+                    <Code
+                      code={`$ cd G8/frontend
+$ yarn install
+$ yarn start`}
+                      language="bash"
+                    />
+                  </li>
+                  <li>
+                    Setup and start the backend
+                    <Code
+                      code={`$ cd G8/backend
+$ yarn install
+$ yarn start`}
+                      language="bash"
+                    />
+                  </li>
+                </ol>
               </article>
             </Card.Body>
           </Card>

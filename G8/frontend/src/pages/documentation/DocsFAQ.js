@@ -16,7 +16,7 @@ const DocsFAQ = () => (
                 list of the most common questions asked and our answers to them.
               </p>
 
-              <h2 className="fs-5 mt-2" id="">
+              <h2 className="fs-5" id="">
                 How do I upload my source code for scanning?
               </h2>
               <p>
@@ -27,7 +27,7 @@ const DocsFAQ = () => (
                 the upload window.
               </p>
 
-              <h2 className="fs-5 mt-2" id="">
+              <h2 className="fs-5 mt-5" id="">
                 How do I start analyzing my code?
               </h2>
               <p>
@@ -44,7 +44,7 @@ const DocsFAQ = () => (
                 CodeQL.
               </p>
 
-              <h2 className="fs-5 mt-2" id="">
+              <h2 className="fs-5 mt-5" id="">
                 How does Sarif Viewer work?
               </h2>
               <p>
@@ -52,7 +52,7 @@ const DocsFAQ = () => (
                 use it to view Sarif files in a more read-able format.
               </p>
 
-              <h2 className="fs-5 mt-2" id="">
+              <h2 className="fs-5 mt-5" id="">
                 How to view code analysis?
               </h2>
               <p>
@@ -63,7 +63,7 @@ const DocsFAQ = () => (
                 the sarif file.
               </p>
 
-              <h2 className="fs-5 mt-2" id="">
+              <h2 className="fs-5 mt-5" id="">
                 What happens to the code after I have analyzed them?
               </h2>
 
@@ -75,7 +75,7 @@ const DocsFAQ = () => (
                 click the bin icon to delete the project.
               </p>
 
-              <h2 className="fs-5 mt-2" id="">
+              <h2 className="fs-5 mt-5" id="">
                 Is there a page which can help me better understand the
                 complicated terms used in G8.
               </h2>
@@ -85,7 +85,7 @@ const DocsFAQ = () => (
                 of.
               </p>
 
-              <h2 className="fs-5 mt-2" id="">
+              <h2 className="fs-5 mt-5" id="">
                 Can I use G8 on my mobile phone or tablet device?
               </h2>
               <p>
@@ -93,7 +93,7 @@ const DocsFAQ = () => (
                 computer-use only.
               </p>
 
-              <h2 className="fs-5 mt-2" id="">
+              <h2 className="fs-5 mt-5" id="">
                 How many files can I upload at a time?
               </h2>
               <p>
@@ -102,7 +102,7 @@ const DocsFAQ = () => (
                 uploaded as well.
               </p>
 
-              <h2 className="fs-5 mt-2" id="">
+              <h2 className="fs-5 mt-5" id="">
                 Can I use G8 on any Operating System?
               </h2>
               <p>
@@ -111,7 +111,7 @@ const DocsFAQ = () => (
                 listed.
               </p>
 
-              <h2 className="fs-5 mt-2" id="">
+              <h2 className="fs-5 mt-5" id="">
                 Approximately how long would it take for my project to be
                 analyzed?
               </h2>
@@ -121,7 +121,7 @@ const DocsFAQ = () => (
                 processing power of the workstation you are working on.
               </p>
 
-              <h2 className="fs-5 mt-2" id="">
+              <h2 className="fs-5 mt-5" id="">
                 Why is the page which I opened not showing anything?
               </h2>
               <p>
@@ -129,7 +129,7 @@ const DocsFAQ = () => (
                 the page as well and give it a few seconds for it to load.
               </p>
 
-              <h2 className="fs-5 mt-2" id="">
+              <h2 className="fs-5 mt-5" id="">
                 What happens to CodeQL Alerts page, Overview page, Sarif Viewer
                 and PDF Generator when a 2nd project is analyzed and loaded?
               </h2>
@@ -137,12 +137,14 @@ const DocsFAQ = () => (
                 The results will be overwritten by the newly analysed project
               </p>
 
-              <h2 className="fs-5 mt-2" id="">
+              <h2 className="fs-5 mt-5" id="">
                 After running custom query on chosen project, where do I view
                 the results?
               </h2>
               <p>
-              Previous results would be overwritten for the newly analyzed results to be shown. It can be viewed in the CodeQL Alerts page or the Sarif Viewer page. 
+                Previous results would be overwritten for the newly analyzed
+                results to be shown. It can be viewed in the CodeQL Alerts page
+                or the Sarif Viewer page.
               </p>
             </article>
           </Card.Body>

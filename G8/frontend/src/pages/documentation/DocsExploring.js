@@ -1,5 +1,7 @@
 import React from "react";
 import { Row, Col, Card, Image, Container } from "@themesberg/react-bootstrap";
+import ReactMarkdown from "react-markdown";
+import Code from "../../components/Code";
 
 import dashboard1 from "../../assets/img/docImg/dashboard1.png";
 import dashboard2 from "../../assets/img/docImg/dashboard2.png";
@@ -27,7 +29,26 @@ import customquery4 from "../../assets/img/docImg/customquery4.png";
 
 import pdf1 from "../../assets/img/docImg/pdf1.png";
 
+import sarifviewer1 from "../../assets/img/docImg/sarifviewer1.png";
+import sarifviewer2 from "../../assets/img/docImg/sarifviewer2.png";
+import sarifviewer3 from "../../assets/img/docImg/sarifviewer3.png";
+import sarifviewer4 from "../../assets/img/docImg/sarifviewer4.png";
+
 import queryhelp1 from "../../assets/img/docImg/queryhelp1.png";
+
+const components = {
+  code({ node, inline, className, children, ...props }) {
+    const match = /language-(\w+)/.exec(className || "");
+    return !inline && match ? (
+      <Code code={String(children).replace(/\n$/, "")} language={match[1]} />
+    ) : (
+      // <SyntaxHighlighter style={dark} language={match[1]} PreTag="div" children={String(children).replace(/\n$/, '')} {...props} />
+      <code className={className} {...props}>
+        {children}
+      </code>
+    );
+  },
+};
 
 const DocsExploring = () => (
   <Container className="px-0">
@@ -50,22 +71,22 @@ const DocsExploring = () => (
               </p> */}
               {/* <ul className="docs-list">
                 <li>
-                  <Card.Link href="#" target="_blank">
+                  <Card.Link href="#" target="_blank" rel="noopener noreferrer">
                     Searching
                   </Card.Link>
                 </li>
                 <li>
-                  <Card.Link href="#" target="_blank">
+                  <Card.Link href="#" target="_blank" rel="noopener noreferrer">
                     Exploring Projects
                   </Card.Link>
                 </li>
                 <li>
-                  <Card.Link href="#" target="_blank">
+                  <Card.Link href="#" target="_blank" rel="noopener noreferrer">
                     Using the code viewer
                   </Card.Link>
                 </li>
                 <li>
-                  <Card.Link href="#" target="_blank">
+                  <Card.Link href="#" target="_blank" rel="noopener noreferrer">
                     Exploring data flow paths
                   </Card.Link>
                 </li>
@@ -74,7 +95,11 @@ const DocsExploring = () => (
               <h2 className="docs-list fs-5 mt-3">
                 <li>
                   In&nbsp;
-                  <Card.Link href="/#/dashboard" target="_blank">
+                  <Card.Link
+                    href="/#/dashboard"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Dashboard
                   </Card.Link>
                   :{" "}
@@ -198,7 +223,11 @@ const DocsExploring = () => (
               <h2 className="docs-list fs-5 mt-3">
                 <li>
                   In&nbsp;
-                  <Card.Link href="/#/overview" target="_blank">
+                  <Card.Link
+                    href="/#/overview"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Overview
                   </Card.Link>
                   :{" "}
@@ -238,7 +267,11 @@ const DocsExploring = () => (
               <h2 className="docs-list fs-5 mt-3">
                 <li>
                   In&nbsp;
-                  <Card.Link href="/#/codeql-alerts" target="_blank">
+                  <Card.Link
+                    href="/#/codeql-alerts"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     CodeQL Alerts
                   </Card.Link>
                   :{" "}
@@ -247,7 +280,8 @@ const DocsExploring = () => (
               <ol className="ps-4 docs-list counter-list">
                 <li>
                   <p>
-                    If your project is vulnerability-free, the following page is shown
+                    If your project is vulnerability-free, the following page is
+                    shown
                   </p>
                   <Image
                     rounded
@@ -256,7 +290,7 @@ const DocsExploring = () => (
                     alt="Dash Board"
                   />
                 </li>
-              
+
                 <li>
                   <p>Files that have vulnerabilities are listed here</p>
                   <Image
@@ -267,69 +301,72 @@ const DocsExploring = () => (
                   />
                 </li>
                 <ol className="ps-4 docs-list counter-list">
-                <li>
-                  <p>
-                    You can view the explanation behind the alert when you click
-                    the downward arrow
-                  </p>
-                  <Image
-                    rounded
-                    className="mb-3"
-                    src={codeqlalerts2}
-                    alt="CodeQL Alerts"
-                  />
-                </li>
-                <li>
-                  <p>You can view the path as well</p>
-                </li>
-                <li>
-                  <p>Click "Show path"</p>
-                  <Image
-                    rounded
-                    className="mb-3"
-                    src={codeqlalerts3}
-                    alt="CodeQL Alerts"
-                  />
-                </li>
-                <li>
-                  <p>
-                    There will be a number of paths shown. Choose a path you'd
-                    like to view.
-                  </p>
-                  <Image
-                    rounded
-                    className="mb-3"
-                    src={codeqlalerts4}
-                    alt="CodeQL Alerts"
-                  />
-                </li>
-                <li>
-                  <p>
-                    Upon clicking a path, you will be shown the steps from the
-                    source to the sink
-                  </p>
-                  <Image
-                    rounded
-                    className="mb-3"
-                    src={codeqlalerts5}
-                    alt="CodeQL Alerts"
-                  />
-                  <Image
-                    rounded
-                    className="mb-3"
-                    src={codeqlalerts6}
-                    alt="CodeQL Alerts"
-                  />
-                </li>
+                  <li>
+                    <p>
+                      You can view the explanation behind the alert when you
+                      click the downward arrow
+                    </p>
+                    <Image
+                      rounded
+                      className="mb-3"
+                      src={codeqlalerts2}
+                      alt="CodeQL Alerts"
+                    />
+                  </li>
+                  <li>
+                    <p>You can view the path as well</p>
+                  </li>
+                  <li>
+                    <p>Click "Show path"</p>
+                    <Image
+                      rounded
+                      className="mb-3"
+                      src={codeqlalerts3}
+                      alt="CodeQL Alerts"
+                    />
+                  </li>
+                  <li>
+                    <p>
+                      There will be a number of paths shown. Choose a path you'd
+                      like to view.
+                    </p>
+                    <Image
+                      rounded
+                      className="mb-3"
+                      src={codeqlalerts4}
+                      alt="CodeQL Alerts"
+                    />
+                  </li>
+                  <li>
+                    <p>
+                      Upon clicking a path, you will be shown the steps from the
+                      source to the sink
+                    </p>
+                    <Image
+                      rounded
+                      className="mb-3"
+                      src={codeqlalerts5}
+                      alt="CodeQL Alerts"
+                    />
+                    <Image
+                      rounded
+                      className="mb-3"
+                      src={codeqlalerts6}
+                      alt="CodeQL Alerts"
+                    />
+                  </li>
+                </ol>
               </ol>
-              </ol>
-              
               {/* In Custom Query Section */}
               <hr className="mt-5" />
               <h2 className="docs-list fs-5 mt-3">
                 <li>
                   In&nbsp;
-                  <Card.Link href="/#/codeql-alerts" target="_blank">
+                  <Card.Link
+                    href="/#/codeql-alerts"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Custom Query
                   </Card.Link>
                   :{" "}
@@ -337,7 +374,9 @@ const DocsExploring = () => (
               </h2>
               <ol className="ps-4 docs-list counter-list">
                 <li>
-                  <p>Choose a project which you wish to run a customised query on</p>
+                  <p>
+                    Choose a project which you wish to run a customised query on
+                  </p>
                   <Image
                     rounded
                     className="mb-3"
@@ -364,7 +403,9 @@ const DocsExploring = () => (
                   />
                 </li>
                 <li>
-                  <p>Wait for the following alert message to come up and click ok</p>
+                  <p>
+                    Wait for the following alert message to come up and click ok
+                  </p>
                   <Image
                     rounded
                     className="mb-3"
@@ -373,16 +414,23 @@ const DocsExploring = () => (
                   />
                 </li>
                 <li>
-                  <p>Proceed to view the analysis in the Sarif Viewer page or the CodeQL Alerts page</p>
+                  <p>
+                    Proceed to view the analysis in the Sarif Viewer page or the
+                    CodeQL Alerts page
+                  </p>
                 </li>
-                </ol>
+              </ol>
               {/* PDF Generator */}
               <hr className="mt-5" />
               {/* <h2 className="fs-5 mt-3">In PDF Generator:</h2> */}
               <h2 className="docs-list fs-5 mt-3">
                 <li>
                   In&nbsp;
-                  <Card.Link href="/#/pdfgenerator" target="_blank">
+                  <Card.Link
+                    href="/#/pdfgenerator"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     PDF Generator
                   </Card.Link>
                   :{" "}
@@ -402,8 +450,84 @@ const DocsExploring = () => (
                   />
                 </li>
                 <li>
-                  You can zoom in or zoom out from the report, download the report
-                  or print it
+                  You can zoom in or zoom out from the report, download the
+                  report or print it
+                </li>
+              </ol>
+              {/* Sarif Viewer */}
+              <hr className="mt-5" />
+              <h2 className="docs-list fs-5 mt-3">
+                <li>
+                  In&nbsp;
+                  <Card.Link
+                    href="/#/sarifviewer"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Sarif Viewer
+                  </Card.Link>
+                  :{" "}
+                </li>
+              </h2>
+              <ol className="ps-4 docs-list counter-list">
+                <li>
+                  <p>
+                    The Sarif Viewer page provides a convenient UI for analyzing
+                    static analysis log files
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    You can click on the "Edit" button at the top left to
+                    upload/remove the log files.
+                  </p>
+                  <p>
+                    <b>
+                      <i>Note: You can also drag & drop sarif file.</i>
+                    </b>
+                  </p>
+                  <Image
+                    rounded
+                    className="mb-3"
+                    src={sarifviewer1}
+                    alt="CodeQL Alerts"
+                  />
+                </li>
+                <li>
+                  <p>
+                    There is a search bar that allow user to quickly find
+                    keywords in the sarif file
+                  </p>
+                  <Image
+                    rounded
+                    className="mb-3"
+                    src={sarifviewer2}
+                    alt="CodeQL Alerts"
+                  />
+                </li>
+                <li>
+                  <p>
+                    User can also use the filter to limit the sarif results to
+                    certain baseline or levels
+                  </p>
+                  <Image
+                    rounded
+                    className="mb-3"
+                    src={sarifviewer3}
+                    alt="CodeQL Alerts"
+                  />
+                </li>
+                <li>
+                  <p>
+                    At the top right, there is a export button which allow user
+                    to download the sarif file(s).
+                  </p>
+                  <Image
+                    rounded
+                    className="mb-3"
+                    src={sarifviewer4}
+                    alt="CodeQL Alerts"
+                  />
                 </li>
               </ol>
               {/* Query Help */}
@@ -416,13 +540,62 @@ const DocsExploring = () => (
                     can be seen here
                   </p>
                 </li>
-                <li>You can refer to these to make your code more secure</li>
-                <Image
-                  rounded
-                  className="mb-3"
-                  src={queryhelp1}
-                  alt="CodeQL Alerts"
-                />
+                <li>
+                  <p>You can refer to these to make your code more secure</p>
+                  <Image
+                    rounded
+                    className="mb-3"
+                    src={queryhelp1}
+                    alt="CodeQL Alerts"
+                  />
+                </li>
+                <li>
+                  As seen from the example:{" "}
+                  <Card.Link
+                    href="/#/query-help/94"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    http://localhost:3000/#/query-help/94
+                  </Card.Link>
+                  <Card className="p-4">
+                    <ReactMarkdown
+                      components={components}
+                      children={`# Uncontrolled command line
+Code that passes user input directly to \`require('child_process').exec\`, or some other library routine that executes a command, allows the user to execute malicious code.
+
+
+## Recommendation
+If possible, use hard-coded string literals to specify the command to run or library to load. Instead of passing the user input directly to the process or library function, examine the user input and then choose among hard-coded string literals.
+
+If the applicable libraries or commands cannot be determined at compile time, then add code to verify that the user input string is safe before using it.
+
+
+## Example
+The following example shows code that takes a shell script that can be changed maliciously by a user, and passes it straight to \`child_process.exec\` without examining it first.
+
+
+~~~javascript
+var cp = require("child_process"),
+    http = require('http'),
+    url = require('url');
+
+var server = http.createServer(function(req, res) {
+    let cmd = url.parse(req.url, true).query.path;
+
+    cp.exec(cmd); // BAD
+});
+
+~~~
+
+## References
+* OWASP: [Command Injection](https://www.owasp.org/index.php/Command_Injection).
+* Common Weakness Enumeration: [CWE-78](https://cwe.mitre.org/data/definitions/78.html).
+* Common Weakness Enumeration: [CWE-88](https://cwe.mitre.org/data/definitions/88.html).
+`}
+                    />
+                  </Card>
+                </li>
               </ol>
             </article>
           </Card.Body>

@@ -10,10 +10,10 @@ import {
 import { Viewer } from "@microsoft/sarif-web-component";
 import useLocalStorageState from "use-local-storage-state";
 import DragAndDrop from "../components/DragAndDrop";
+import cloneDeep from "lodash/cloneDeep";
 
 const SarifViewer = () => {
   const [logs, setLogs] = useLocalStorageState("log", []); // TODO: just for easy developement
-  const [logsString, setLogsString] = useState("");
   // const [logs, setLogs] = useState([
   //   {
   //     version: "2.1.0",
@@ -288,7 +288,6 @@ const SarifViewer = () => {
     fileReader.onload = (e) => {
       try {
         let log = JSON.parse(e.target.result);
-        setLogsString(e.target.result);
         setLogs([...logs, log]);
         console.log(log);
       } catch (error) {
@@ -298,7 +297,6 @@ const SarifViewer = () => {
   };
 
   const removeLogs = () => {
-    setLogsString("");
     setLogs([]);
   };
 
@@ -326,9 +324,41 @@ const SarifViewer = () => {
   };
 
   const handleExport = () => {
-    if (logs.length && logsString) {
+    if (logs.length) {
       // Creating the file
-      downloadBlob(logsString, `${Date()}.sarif`, "application/json");
+      let clonedLogs = cloneDeep(logs);
+
+      try {
+        for (let k = 0; k < clonedLogs.length; k++) {
+          delete clonedLogs[k].runs[0]._agesInUse;
+          delete clonedLogs[k].runs[0]._augmented;
+          delete clonedLogs[k].runs[0]._rulesInUse;
+
+          for (
+            let i = 0;
+            i < clonedLogs[k].runs[0].tool.driver.rules.length;
+            i++
+          ) {
+            delete clonedLogs[k].runs[0].tool.driver.rules[i]?.results;
+            delete clonedLogs[k].runs[0].tool.driver.rules[i]?.run;
+            delete clonedLogs[k].runs[0].tool.driver.rules[i]?.treeItem;
+          }
+
+          for (let j = 0; j < clonedLogs[k].runs[0].results.length; j++) {
+            delete clonedLogs[k].runs[0].results[j]._rule;
+            delete clonedLogs[k].runs[0].results[j].run;
+            delete clonedLogs[k].runs[0].results[j].tool;
+          }
+          console.log(clonedLogs[k]);
+          downloadBlob(
+            JSON.stringify(clonedLogs[k]),
+            `${Date()}.sarif`,
+            "application/json"
+          );
+        }
+      } catch (error) {
+        alert("Error exporting sarif file");
+      }
     } else {
       alert("Upload a sarif file first");
     }
@@ -352,7 +382,13 @@ const SarifViewer = () => {
           </Dropdown.Toggle>
           <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
             <input id="input-file" className="d-none" type="file" />
-            <Dropdown.Item className="fw-bold">
+            <Dropdown.Item
+              className="fw-bold"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("fileButton").click();
+              }}
+            >
               <Form>
                 <Form.Control
                   hidden
@@ -362,17 +398,9 @@ const SarifViewer = () => {
                     e.stopPropagation();
                   }}
                   onChange={(e) => handleDisplayLogs(e.target.files[0])}
-                />
-                <Form.Label
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById("fileButton").click();
-                  }}
-                >
-                  {" "}
-                  <FontAwesomeIcon icon={faCloudUploadAlt} className="me-2" />
-                  Upload Log
-                </Form.Label>
+                />{" "}
+                <FontAwesomeIcon icon={faCloudUploadAlt} className="me-2" />
+                Upload Log
               </Form>
             </Dropdown.Item>
             <Dropdown.Item className="fw-bold" onClick={removeLogs}>

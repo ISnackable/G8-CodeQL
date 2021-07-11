@@ -1,7 +1,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/ISnackable/DISMFYP2021GRP8/">
-    <img src="G8/frontend/src/assets/img/g8-logo.png" alt="Logo" width="80" height="80">
+    <img src="G8/frontend/src/assets/img/g8-logo.png" alt="Logo" width="80">
   </a>
 
   <h3 align="center">DISMFYP2021GRP8</h3>
@@ -41,7 +41,6 @@
 
 The following tools should be installed before starting:
 
-- [CodeQL](https://github.com/github/codeql)
 - [Docker](https://www.docker.com/get-started)
 
 ## Installation
@@ -52,7 +51,7 @@ Use the provided [docker configuration](./G8/docker-compose.yml) to deploy the p
 $ docker-compose up -d
 ```
 
-Then, visit 127.0.0.1, visit the dashboard page and upload a project you wish to analyze. Click analyze to begin the analysis and watch the magic unfold.
+Then, visit 127.0.0.1:3000, visit the dashboard page and upload a project you wish to analyze. Click analyze to begin the analysis and watch the magic unfold.
 
 You can optionally edit the configuration file depending on your needs:
 
@@ -62,7 +61,7 @@ You can optionally edit the configuration file depending on your needs:
 
 To start trying out the project, follow the steps below.
 
-1. Visit http://127.0.0.1/#/dashboard/
+1. Visit http://127.0.0.1:3000/#/dashboard/
 2. Click on the `Git Repo` button and paste in https://github.com/ISnackable/DISMFYP2021GRP8.git
 3. Click `Submit` to upload the project
 4. Under the Existing Project table, click on `Start Analysis` and wait for the analysis to be done
@@ -95,7 +94,7 @@ $ git clone https://github.com/ISnackable/DISMFYP2021GRP8/ --recursive --depth 1
      2. Click on `Advance System Settings`
      3. Click on `Enviroment Variables`
      4. Edit `Path` for both User variables and System variables
-     5. Click on `New` and add the CodeQL directory; `D:/Programs/codeql-home/codeql`
+     5. Click on `New` and add the CodeQL directory; `D:/programs/codeql-home/codeql`
 
    - Linux
 
@@ -118,11 +117,11 @@ $ git clone https://github.com/ISnackable/DISMFYP2021GRP8/ --recursive --depth 1
 - [Docker](https://www.docker.com/get-started)
 
 ```shell
-$ docker run -p 3306:3306 -d --env MYSQL_ROOT_PASSWORD=secret docker.io/library/mariadb:10.3
+$ docker run -p 3306:3306 -d -v G8/backend/init.sql:/docker-entrypoint-initdb.d --env MYSQL_ROOT_PASSWORD=secret docker.io/library/mariadb:10
 ```
 
 ```shell
-$ docker run -p 7474:7474 -p 7687:7687 -d -v $HOME/neo4j/data:/data --env NEO4J_AUTH=neo4j/s3cr3t neo4j:latest
+$ docker run -p 7474:7474 -p 7687:7687 -d -v $HOME/neo4j/data:/data --env NEO4J_AUTH=neo4j/s3cr3t neo4j:4.2.7
 ```
 
 ##### Install Manually

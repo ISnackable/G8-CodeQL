@@ -528,6 +528,34 @@ select sink.getNode(), source, sink,
                     />
                   </OverlayTrigger>
                 </Card.Link>
+
+                <Card.Link
+                  href="https://neo4j.com/"
+                  target="_blank"
+                  className="me-3"
+                  rel="noreferrer"
+                >
+                  <OverlayTrigger
+                    placement="top"
+                    trigger={["hover", "focus"]}
+                    overlay={
+                      <Tooltip>
+                        Neo4J · Neo4j gives developers and data scientists the
+                        most trusted and advanced tools to quickly build today’s
+                        intelligent applications and machine learning workflows.
+                        Available as a fully managed cloud service or
+                        self-hosted.
+                      </Tooltip>
+                    }
+                  >
+                    <Image
+                      src={Neo4JLogo}
+                      className="image image-sm"
+                      alt="Neo4J Logo"
+                    />
+                  </OverlayTrigger>
+                </Card.Link>
+
                 <Card.Link
                   href="https://www.github.com"
                   target="_blank"

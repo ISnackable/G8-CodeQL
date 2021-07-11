@@ -7,7 +7,15 @@ import "filepond/dist/filepond.min.css";
 import axios from "axios";
 import { faFolder } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { Col, Row, Button, Modal, Form } from "@themesberg/react-bootstrap";
+import {
+  Col,
+  Row,
+  Button,
+  Modal,
+  Form,
+  Tooltip,
+  OverlayTrigger,
+} from "@themesberg/react-bootstrap";
 
 // import {
 //   CounterWidget,
@@ -23,6 +31,10 @@ import { Col, Row, Button, Modal, Form } from "@themesberg/react-bootstrap";
 import { ExistingProjectTable } from "../../components/Tables";
 // import { trafficShares } from "../../data/charts";
 // import Code from "../../components/Code";
+const backend_url =
+  process.env.NODE_ENV === "production"
+    ? "/g8/api"
+    : `http://localhost:8080/g8/api`;
 
 const Dashboard = () => {
   const filePondRef = useRef(null);
@@ -42,7 +54,7 @@ const Dashboard = () => {
   const handleUploadRepo = (repoLink) => {
     var data = { repoLink: repoLink };
     axios
-      .post(`http://localhost:8080/teamname/api/projects/repo`, data)
+      .post(`${backend_url}/projects/repo`, data)
       .then((response) => {
         setValidated(true);
         alert("Success");
@@ -90,15 +102,25 @@ const Dashboard = () => {
     <>
       <Row className="justify-content-md-center">
         <Col xs={6} sm={6} className="mb-4">
-          <Button
-            variant="primary"
-            className="my-3 h-100 btn-block"
-            onClick={handleShowModalOne}
+          <OverlayTrigger
+            placement="bottom"
+            trigger={["hover", "trigger"]}
+            overlay={
+              <Tooltip>
+                Accepts — Directory, Single File, Archive File (7zip, rar, zip,
+                tar, gzip)
+              </Tooltip>
+            }
           >
-            <FontAwesomeIcon icon={faFolder} className="me-2" />
-            Upload
-          </Button>
-
+            <Button
+              variant="primary"
+              className="my-3 h-100 btn-block"
+              onClick={handleShowModalOne}
+            >
+              <FontAwesomeIcon icon={faFolder} className="me-2" />
+              Upload
+            </Button>
+          </OverlayTrigger>
           <Modal
             dialogClassName="my-modal"
             size="lg"
@@ -178,7 +200,7 @@ const Dashboard = () => {
 
                       axios({
                         method: "post",
-                        url: "http://localhost:8080/teamname/api/projects/folder",
+                        url: `${backend_url}/projects/folder`,
                         data: formData,
                         cancelToken: source.token,
                         onUploadProgress: (e) => {
@@ -227,15 +249,20 @@ const Dashboard = () => {
           </Modal>
         </Col>
         <Col xs={6} sm={6} className="mb-4">
-          <Button
-            variant="primary"
-            className="my-3 h-100 btn-block"
-            onClick={handleShowModalTwo}
+          <OverlayTrigger
+            placement="bottom"
+            trigger={["hover", "trigger"]}
+            overlay={<Tooltip>Accepts — Git Url via HTTP(s)</Tooltip>}
           >
-            <FontAwesomeIcon icon={faGithub} className="me-2" />
-            Git Repo
-          </Button>
-
+            <Button
+              variant="primary"
+              className="my-3 h-100 btn-block"
+              onClick={handleShowModalTwo}
+            >
+              <FontAwesomeIcon icon={faGithub} className="me-2" />
+              Git Repo
+            </Button>
+          </OverlayTrigger>
           <Modal
             centered
             show={modalState === "modal-two"}

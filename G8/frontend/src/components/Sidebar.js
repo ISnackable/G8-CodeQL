@@ -106,6 +106,7 @@ const Sidebar = (props = {}) => {
                 src={image}
                 width={20}
                 height={20}
+                alt="Logo"
                 className="sidebar-icon svg-icon"
               />
             ) : null}
@@ -264,7 +265,7 @@ const Sidebar = (props = {}) => {
               </CollapsableNavItem>
 
               <CollapsableNavItem
-                eventKey="queryhelp/"
+                eventKey="query-help/"
                 title="Query Help"
                 icon={faBook}
               >

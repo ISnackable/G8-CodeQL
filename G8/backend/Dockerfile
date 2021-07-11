@@ -94,16 +94,24 @@ COPY --from=node_base /usr/src/app /usr/src/app
 # ENV CODEQL_HOME /usr/local/codeql-home
 ENV CODEQL_HOME=${CODEQL_HOME:-/usr/local/codeql-home}
 # record the latest version of the codeql-cli
-RUN curl --silent "https://api.github.com/repos/github/codeql-cli-binaries/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' > /tmp/codeql_version
+
+ARG CODEQL_VERSION
+RUN if [ -z "$CODEQL_VERSION" ] ; \
+    then echo "DEFAULTING TO LATEST CODEQL CLI VERSION" && \
+    curl --silent "https://api.github.com/repos/github/codeql-cli-binaries/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' > /tmp/codeql_version; \
+    else echo "USING CODEQL CLI $CODEQL_VERSION" && \
+    echo "$CODEQL_VERSION" > /tmp/codeql_version; fi
+# RUN curl --silent "https://api.github.com/repos/github/codeql-cli-binaries/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' > /tmp/codeql_version
+
 RUN mkdir -p ${CODEQL_HOME} \
     ${CODEQL_HOME}/codeql-repo \
     ${CODEQL_HOME}/codeql-go-repo \
     /opt/codeql
 
 # get the latest codeql queries and record the HEAD
-RUN git clone https://github.com/github/codeql ${CODEQL_HOME}/codeql-repo && \
+RUN git clone --depth 1 https://github.com/github/codeql ${CODEQL_HOME}/codeql-repo && \
     git --git-dir ${CODEQL_HOME}/codeql-repo/.git log --pretty=reference -1 > /opt/codeql/codeql-repo-last-commit
-RUN git clone https://github.com/github/codeql-go ${CODEQL_HOME}/codeql-go-repo && \
+RUN git clone --depth 1 https://github.com/github/codeql-go ${CODEQL_HOME}/codeql-go-repo && \
     git --git-dir ${CODEQL_HOME}/codeql-go-repo/.git log --pretty=reference -1 > /opt/codeql/codeql-go-repo-last-commit
 
 RUN CODEQL_VERSION=$(cat /tmp/codeql_version) && \
@@ -116,13 +124,13 @@ ENV PATH="${CODEQL_HOME}/codeql:${PATH}"
 ARG PRECOMPILE_QUERIES=false
 
 RUN if [ "$PRECOMPILE_QUERIES" = "true" ] ; \
-    then codeql query compile --threads=0 ${CODEQL_HOME}/codeql-repo/*/ql/src/codeql-suites/*.qls && \
-    query compile --threads=0 ${CODEQL_HOME}/codeql-go-repo/ql/src/codeql-suites/*.qls; \
+    # then codeql query compile --threads=0 ${CODEQL_HOME}/codeql-repo/*/ql/src/codeql-suites/*.qls && \
+    # query compile --threads=0 ${CODEQL_HOME}/codeql-go-repo/ql/src/codeql-suites/*.qls; \
+    then codeql query compile --threads=0 ${CODEQL_HOME}/codeql-repo/javascript/ql/src/codeql-suites/*.qls; \
     else echo 'WARNING: NO PRECOMPILE_QUERIES, Pre-compiling CodeQL queries can save time later'; fi
 # Pre-compile our queries to save time later
 # RUN codeql query compile --threads=0 ${CODEQL_HOME}/codeql-repo/*/ql/src/codeql-suites/*.qls
 # RUN codeql query compile --threads=0 ${CODEQL_HOME}/codeql-go-repo/ql/src/codeql-suites/*.qls
-# RUN codeql query compile --threads=0 ${CODEQL_HOME}/codeql-repo/javascript/ql/src/codeql-suites/*.qls
 
 ENV PYTHONIOENCODING=utf-8
 # ENTRYPOINT ["python3", "/usr/local/startup_scripts/startup.py"]

@@ -14,8 +14,9 @@ const Preloader = (props) => {
     >
       <Image
         className="loader-element animate__animated animate__jackInTheBox"
+        alt="Preloader Icon"
         src={G8Logo}
-        height={40}
+        width={60}
       />
     </div>
   );

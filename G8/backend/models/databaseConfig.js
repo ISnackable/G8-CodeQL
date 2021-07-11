@@ -1,9 +1,6 @@
-console.log("-----------------------------------------");
-console.log("Class: DISM/FT/3A/03");
-console.log("-----------------------------------------");
-console.log("DISM FYP 2021 GRP 8");
-console.log("-----------------------------------------");
-
+console.log("------------------------------------");
+console.log("models > databaseConfig.js");
+console.log("------------------------------------");
 // ---------------------------------------------------------
 // load modules
 // ---------------------------------------------------------
@@ -13,11 +10,10 @@ const config = require("../config");
 
 // attempt to get a connection to the DB
 var conn = mariadb.createConnection({
-  host: "localhost",
-  // host: "mariadb",
-  user: config.username,
-  password: config.password,
-  database: config.database,
+  host: config.db_host,
+  user: config.db_user,
+  password: config.db_pwd,
+  database: config.db_name,
   dateStrings: true,
 });
 

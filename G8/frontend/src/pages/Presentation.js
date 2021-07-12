@@ -3,30 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LiveProvider, LiveEditor } from "react-live";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import themeStyle from "../assets/syntax-themes/ghcolors.json";
-
-import {
-  faBook,
-  faExternalLinkAlt,
-  // faTimesCircle,
-  // faCheckCircle,
-  // faCalendarAlt,
-  // faCodeBranch,
-  // faShoppingCart,
-  // faFolder,
-  // faMapMarkedAlt,
-  // faPager,
-  // faFileCode,
-  // faDownload,
-  // faProjectDiagram,
-  // fafileCode,
-} from "@fortawesome/free-solid-svg-icons";
-import {
-  // faBootstrap,
-  // faGithub,
-  // faJs,
-  faReact,
-  // faSass,
-} from "@fortawesome/free-brands-svg-icons";
+import { faBook, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { faReact } from "@fortawesome/free-brands-svg-icons";
 import {
   Col,
   Row,
@@ -49,16 +27,10 @@ import Snippet from "../components/Snippet";
 // import GitHubButton from "react-github-btn";
 
 import { Routes } from "../routes";
-// import ThemesbergLogoIcon from "../assets/img/themesberg.svg";
-// import ThemesbergLogo from "../assets/img/themesberg-logo.svg";
 import MainImage from "../assets/img/allphoto.png";
 import Neo4JImage from "../assets/img/neo4jimage.png";
-// import CalendarImg from "../assets/img/mockup-calendar-presentation.png";
 import ReactMockupImg from "../assets/img/reactimage.png";
 import ExpressMockupImg from "../assets/img/expressimage.png";
-
-// import BS5IllustrationsImg from "../assets/img/illustrations/bs5-illustrations.svg";
-// import BS5Logo from "../assets/img/technologies/bootstrap-5-logo.svg";
 import ReactLogo from "../assets/img/technologies/react-logo.svg";
 import G8Logo from "../assets/img/g8-logo.png";
 import Neo4JLogo from "../assets/img/neo4j-logo.png";
@@ -67,9 +39,6 @@ import ExpressJSLogo from "../assets/img/expressjs-logo.png";
 // import CodeQLQuery from "../assets/img/codeql-query.jpg";
 import GithubLogo from "../assets/img/github-logo.png";
 // import CodeQLQuery2 from "../assets/img/codeql-query-2.jpg";
-
-// import pages from "../data/pages";
-// import features from "../data/features";
 
 const Presentation = () => {
   // eslint-disable-next-line no-unused-vars
@@ -108,80 +77,14 @@ select sink.getNode(), source, sink,
     },
   };
 
+  const handleCodeChange = (newCode) => {
+    setCode(newCode);
+  };
+
   const handleCopy = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
-  // const PagePreview = (props) => {
-  //   const { name, image, link } = props;
-
-  //   return (
-  //     <Col xs={6} className="mb-5">
-  //       <Card.Link
-  //         as={Link}
-  //         to={link}
-  //         className="page-preview page-preview-lg scale-up-hover-2"
-  //       >
-  //         <Image
-  //           src={image}
-  //           className="shadow-lg rounded scale"
-  //           alt="Dashboard page preview"
-  //         />
-
-  //         <div className="text-center show-on-hover">
-  //           <h6 className="m-0 text-center text-white">
-  //             {name}{" "}
-  //             <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-2" />
-  //           </h6>
-  //         </div>
-  //       </Card.Link>
-  //     </Col>
-  //   );
-  // };
-
-  // const Feature = (props) => {
-  //   const { title, description, icon } = props;
-
-  //   return (
-  //     <Col xs={12} sm={6} lg={3}>
-  //       <Card className="bg-white shadow-soft text-primary rounded mb-4">
-  //         <div className="px-3 px-lg-4 py-5 text-center">
-  //           <span className="icon icon-lg mb-4">
-  //             <FontAwesomeIcon icon={icon} />
-  //           </span>
-  //           <h5 className="fw-bold text-primary">{title}</h5>
-  //           <p>{description}</p>
-  //         </div>
-  //       </Card>
-  //     </Col>
-  //   );
-  // };
-
-  // const FolderItem = (props) => {
-  //   const { name, icon, tooltip, iconColor } = props;
-  //   const color = iconColor ? `text-${iconColor}` : "";
-
-  //   return (
-  //     <OverlayTrigger
-  //       trigger={["hover", "focus"]}
-  //       placement="left"
-  //       overlay={<Tooltip>{tooltip}</Tooltip>}
-  //     >
-  //       <li
-  //         data-toggle="tooltip"
-  //         data-placement="left"
-  //         title="Main folder that you will be working with"
-  //       >
-  //         <FontAwesomeIcon
-  //           icon={icon ? icon : faFolder}
-  //           className={`${color} me-2`}
-  //         />{" "}
-  //         {name}
-  //       </li>
-  //     </OverlayTrigger>
-  //   );
-  // };
 
   return (
     <>
@@ -218,19 +121,8 @@ select sink.getNode(), source, sink,
                 <Nav.Link as={Link} to={Routes.DocsQuickStart.path}>
                   Getting Started
                 </Nav.Link>
-                {/* <Nav.Link as={HashLink} to="#download">
-                  Upgrade to Pro
-                </Nav.Link> */}
               </Nav>
             </Navbar.Collapse>
-            {/* <Button
-              as={HashLink}
-              to="#download"
-              variant="outline-white"
-              className="ms-3"
-            >
-              <FontAwesomeIcon icon={faDownload} className="me-1" /> Download
-            </Button> */}
           </div>
         </Container>
       </Navbar>
@@ -266,36 +158,12 @@ select sink.getNode(), source, sink,
                     className="d-none d-sm-inline ms-1"
                   />
                 </Button>
-                {/* <GitHubButton
-                  className="mt-lg-2"
-                  href="https://github.com/themesberg/volt-react-dashboard"
-                  data-size="large"
-                  data-show-count="true"
-                  aria-label="Star themesberg/volt-react-dashboard on GitHub"
-                >
-                  Star
-                </GitHubButton> */}
               </div>
 
               {/* end of explore dashboard */}
 
               <div className="d-flex justify-content-center flex-column mb-6 mb-lg-5 mt-5">
-                <div className="text-center">
-                  {/* 
-                  // Using target="_blank" without rel="noopener noreferrer" is a security risk: see https://mathiasbynens.github.io/rel-noopener  react/jsx-no-target-blank
-                  <a href="https://themesberg.com" target="_blank">
-                    <Image
-                      src={ThemesbergLogoIcon}
-                      height={25}
-                      width={25}
-                      className="mb-3"
-                      alt="Themesberg Logo"
-                    />
-                    <p className="text-muted font-small m-0">
-                      A Themesberg production
-                    </p>
-                  </a> */}
-                </div>
+                <div className="text-center"></div>
               </div>
             </Col>
           </Row>
@@ -397,7 +265,6 @@ select sink.getNode(), source, sink,
               <Image src={ReactMockupImg} alt="Calendar Preview" />
             </Col>
           </Row>
-
           <Row className="justify-content-between align-items-center mb-5 mb-lg-7">
             <Col lg={5} className="mb-5 mb-lg-0">
               <h2>Powered by Express.js</h2>
@@ -421,7 +288,6 @@ select sink.getNode(), source, sink,
               <Image src={ExpressMockupImg} alt="Calendar Preview" />
             </Col>
           </Row>
-
           {/* codeql feature  */}
           <Row
             className="justify-content-between align-items-center mb-5 mb-lg-7"
@@ -462,18 +328,11 @@ select sink.getNode(), source, sink,
                 theme={themeStyle}
               >
                 <Row>
-                  {/* <Col xs={12} className="mb-4">
-                    <Card>
-                      <Card.Body>
-                        <LivePreview />
-                      </Card.Body>
-                    </Card>
-                  </Col> */}
                   <Col xs={12} className="mb-4">
                     <Card>
                       <Card.Body className="position-relative">
                         <LiveEditor
-                          // onChange={handleCodeChange}
+                          onChange={handleCodeChange}
                           className="live-editor"
                         />
 
@@ -506,9 +365,7 @@ select sink.getNode(), source, sink,
               {/* <Image src={CodeQLQuery} /> */}
             </Col>
           </Row>
-
           {/* where the pro features are stored */}
-
           <Row
             className="justify-content-between align-items-center mb-5 mb-lg-7"
             id="neo4j"
@@ -565,190 +422,8 @@ select sink.getNode(), source, sink,
               />
             </Col>
           </Row>
-
-          {/*}
-          <Row className="justify-content-between align-items-center">
-            <Col lg={5} className="order-lg-2 mb-5 mb-lg-0">
-              <h2>Bootstrap 5</h2>
-              <p className="mb-3 lead fw-bold">Latest version of Bootstrap 5</p>
-              <p className="mb-4">
-                G8 Code Scanner is built using the latest version of Bootstrap 5
-                and we only used Vanilla Javascript for everything including the
-                plugins
-              </p>
-            </Col>
-            <Col lg={6} className="col-lg-6 order-lg-1">
-              <Image src={BS5IllustrationsImg} alt="Front pages overview" />
-            </Col>
-          </Row>
-
-
-*/}
         </Container>
       </section>
-
-      {/* 10 hand crafted pages section , deleted because we are not going to have links to any pages herer */}
-
-      {/* <section className="section section-sm pt-0" id="pages">
-        <Container>
-          <Row className="justify-content-center mb-5 mb-lg-6">
-            <Col xs={12} className="text-center">
-              <h2 className="px-lg-5">10 hand-crafted pages</h2>
-              <p className="lead px-lg-10">
-                Every page from Volt has been carefully built to provide all the
-                necessary pages your startup will require
-              </p>
-            </Col>
-          </Row>
-          <Row className="mb-5">
-            {pages.map((page) => (
-              <PagePreview key={`page-${page.id}`} {...page} />
-            ))}
-          </Row>
-        </Container>
-      </section> */}
-
-      {/* features section , code uses database to extract all the features so need to edit from there  */}
-
-      {/* 
-      <section className="section section-lg bg-primary text-white">
-        <Container>
-          <Row className="justify-content-center mb-5 mb-lg-6">
-            <Col xs={12} className="text-center">
-              <h2 className="px-lg-5">Awesome Features</h2>
-              <p className="lead px-lg-8">
-                You get all React.js components fully customized. Besides, you
-                receive numerous plugins out of the box and ready to use.
-              </p>
-            </Col>
-          </Row>
-          <Row>
-            {features.map((feature) => (
-              <Feature key={`features-${feature.id}`} {...feature} />
-            ))}
-          </Row>
-        </Container>
-      </section> */}
-
-      {/* whats inside section */}
-
-      {/* <section className="section section-lg bg-primary text-white" id="folder">
-        <Container>
-          <Row className="justify-content-center mb-5 mb-lg-6">
-            <Col xs={12} className="text-center">
-              <h2 className="px-lg-5">What's inside?</h2>
-              <p className="lead px-lg-8">
-                We have carefully crafted the perfect folder structure to ensure
-                that finding the files you're looking for are easily reachable
-                and well organized.
-              </p>
-            </Col>
-          </Row>
-          <Row className="d-flex align-items-center">
-            <Col xs={12} lg={6} className="mb-4">
-              <div className="d-none d-lg-block mt-5">
-                <h4>The perfect folder structure for your project</h4>
-                <p className="lead mb-4">
-                  The folder structure is based on the popular{" "}
-                  <code>create-react-app</code> repository using Sass source
-                  files for CSS preprocessing.
-                </p>
-                <Button
-                  as={Link}
-                  variant="secondary"
-                  size="md"
-                  to={Routes.DocsGlossary.path}
-                  target="_blank"
-                  className="text-dark"
-                >
-                  <FontAwesomeIcon icon={faCodeBranch} className="me-2" />{" "}
-                  Folder Structure
-                </Button>
-              </div>
-            </Col>
-            <Col
-              xs={12}
-              lg={6}
-              className="order-lg-first d-flex justify-content-center"
-            >
-              <ListGroup className="d-block fmw-100 list-style-none folder-structure">
-                <FolderItem
-                  name="src"
-                  tooltip="Main folder that you will be working with"
-                />
-
-                <ListGroup className="list-style-none ps-4">
-                  <FolderItem
-                    name="assets"
-                    tooltip="CSS, Images, Fonts and Javascript"
-                  />
-                  <FolderItem
-                    name="components"
-                    tooltip="Custom React.js components on top of react-bootstrap"
-                  />
-                  <FolderItem
-                    name="data"
-                    tooltip="Data source for the dashboard and components"
-                  />
-                  <FolderItem
-                    name="pages"
-                    tooltip="React.js admin dashboard pages"
-                  />
-                  <FolderItem name="scss" tooltip="Sass source files" />
-                  <FolderItem
-                    name="index.js"
-                    tooltip="Main React.js file that wraps the project"
-                    icon={faJs}
-                    iconColor="secondary"
-                  />
-                  <FolderItem
-                    name="routes.js"
-                    tooltip="The file where the routes are registered at"
-                    icon={faJs}
-                    iconColor="secondary"
-                  />
-                </ListGroup>
-
-                <FolderItem
-                  name="build"
-                  tooltip="The production build of the project"
-                />
-                <FolderItem
-                  name="node_modules"
-                  tooltip="Project dependencies from package.json"
-                />
-
-                <FolderItem
-                  name="package.json"
-                  tooltip="Project details and dependencies."
-                  icon={faFileCode}
-                  iconColor="tertiary"
-                />
-                <FolderItem
-                  name="README.md"
-                  tooltip="No project can miss a README :)"
-                  icon={faFileCode}
-                  iconColor="tertiary"
-                />
-                <FolderItem
-                  name=".gitignore"
-                  tooltip="This file ensures that generated files and folder are ignored by Git. (eg. node_modules)"
-                  icon={faFileCode}
-                  iconColor="tertiary"
-                />
-              </ListGroup>
-            </Col>
-            <Col xs={12} className="mt-5 d-lg-none">
-              <h5>The perfect folder structure for your project</h5>
-              <p className="lead mb-4">
-                The folder structure is based on the popular{" "}
-                <code>create-react-app</code> repository using Sass source files
-                for CSS preprocessing.
-              </p>
-            </Col>
-          </Row>
-        </Container>
-      </section> */}
 
       {/* Dark blue less work more flow section */}
 
@@ -796,186 +471,17 @@ select sink.getNode(), source, sink,
       </section>
       <section className="section section-lg bg-white">
         <Container>
-          {/* <Row>
-            <Col xs={12} lg={8}>
-              <h2 className="fw-light mb-3">Download or upgrade to pro</h2>
-              <p className="lead mb-4 me-lg-6">
-                Do you want to take Code Scanning to the next level? Check
-                out the premium version of G8 Code Scanner Dashboard in the
-                following comparison table.
-              </p>
-            </Col>
-            <Col xs={12} lg={4}>
-              <div className="github-big-icon">
-                <FontAwesomeIcon icon={faGithub} />
-              </div>
-            </Col>
-          </Row> */}
-          {/* 
-free version column */}
-
-          {/* <Row className="mt-6">
-            <Col xs={12} md={6} lg={4} className="mb-5 mb-lg-0">
-              <Card border="light" className="p-4">
-                <Card.Header className="bg-white border-0 pb-0">
-                  <span className="d-block">
-                    <h2 className="text-primary fw-bold align-top">
-                      Free version
-                    </h2>
-                  </span>
-                </Card.Header>
-                <Card.Body>
-                  <ListGroup className="list-group-flush price-list">
-                    <ListGroup.Item className="bg-white border-0 ps-0">
-                      <strong>100</strong> React Components
-                    </ListGroup.Item>
-                    <ListGroup.Item className="bg-white border-0 ps-0">
-                      <strong>10</strong> Example Pages
-                    </ListGroup.Item>
-                    <ListGroup.Item className="bg-white border-0 ps-0">
-                      <FontAwesomeIcon
-                        icon={faTimesCircle}
-                        className="text-danger me-2"
-                      />{" "}
-                      Advanced Sidebar
-                    </ListGroup.Item>
-                    <ListGroup.Item className="bg-white border-0 ps-0">
-                      <FontAwesomeIcon
-                        icon={faTimesCircle}
-                        className="text-danger me-2"
-                      />{" "}
-                      MapBox
-                    </ListGroup.Item>
-                    <ListGroup.Item className="bg-white border-0 ps-0">
-                      <FontAwesomeIcon
-                        icon={faTimesCircle}
-                        className="text-danger me-2"
-                      />{" "}
-                      Calendar
-                    </ListGroup.Item>
-                    <ListGroup.Item className="bg-white border-0 ps-0">
-                      <FontAwesomeIcon
-                        icon={faTimesCircle}
-                        className="text-danger me-2"
-                      />{" "}
-                      SVG Map
-                    </ListGroup.Item>
-                    <ListGroup.Item className="bg-white border-0 ps-0">
-                      <FontAwesomeIcon
-                        icon={faTimesCircle}
-                        className="text-danger me-2"
-                      />{" "}
-                      Widgets
-                    </ListGroup.Item>
-                    <ListGroup.Item className="bg-white border-0 ps-0 pb-0">
-                      <FontAwesomeIcon
-                        icon={faTimesCircle}
-                        className="text-danger me-2"
-                      />{" "}
-                      Premium Support
-                    </ListGroup.Item>
-                  </ListGroup>
-                </Card.Body>
-                <Button
-                  href="https://themesberg.com/product/dashboard/volt-react"
-                  target="_blank"
-                  variant="primary"
-                  className="w-100 m-0 mt-3 mb-3"
-                >
-                  <FontAwesomeIcon icon={faDownload} className="me-1" />{" "}
-                  Download
-                </Button>
-              </Card>
-            </Col> */}
-
-          {/* this is the pro version column  */}
-
-          {/* <Col xs={12} md={6} lg={4} className="mb-5 mb-lg-0">
-              <Card border="light" className="p-4 py-5 mt-lg-n5">
-                <Card.Header className="bg-white border-0 pb-0">
-                  <span className="d-block">
-                    <h2 className="text-primary fw-bold align-top">
-                      Pro Version
-                    </h2>
-                  </span>
-                </Card.Header>
-                <Card.Body>
-                  <ListGroup className="list-group-flush price-list">
-                    <ListGroup.Item className="bg-white border-0 ps-0">
-                      <strong>1000+</strong> React Components
-                    </ListGroup.Item>
-                    <ListGroup.Item className="bg-white border-0 ps-0">
-                      <strong>20</strong> Example Pages
-                    </ListGroup.Item>
-                    <ListGroup.Item className="bg-white border-0 ps-0">
-                      <strong>6</strong> Plugins
-                    </ListGroup.Item>
-                    <ListGroup.Item className="bg-white border-0 ps-0">
-                      <FontAwesomeIcon
-                        icon={faCheckCircle}
-                        className="text-success me-2"
-                      />{" "}
-                      Advanced Sidebar
-                    </ListGroup.Item>
-                    <ListGroup.Item className="bg-white border-0 ps-0">
-                      <FontAwesomeIcon
-                        icon={faCheckCircle}
-                        className="text-success me-2"
-                      />{" "}
-                      MapBox
-                    </ListGroup.Item>
-                    <ListGroup.Item className="bg-white border-0 ps-0">
-                      <FontAwesomeIcon
-                        icon={faCheckCircle}
-                        className="text-success me-2"
-                      />{" "}
-                      Calendar
-                    </ListGroup.Item>
-                    <ListGroup.Item className="bg-white border-0 ps-0">
-                      <FontAwesomeIcon
-                        icon={faCheckCircle}
-                        className="text-success me-2"
-                      />{" "}
-                      SVG Map
-                    </ListGroup.Item>
-                    <ListGroup.Item className="bg-white border-0 ps-0">
-                      <FontAwesomeIcon
-                        icon={faCheckCircle}
-                        className="text-success me-2"
-                      />{" "}
-                      Widgets
-                    </ListGroup.Item>
-                    <ListGroup.Item className="bg-white border-0 border-0 ps-0 pb-0">
-                      <FontAwesomeIcon
-                        icon={faCheckCircle}
-                        className="text-success me-2"
-                      />{" "}
-                      Premium Support
-                    </ListGroup.Item>
-                  </ListGroup>
-                </Card.Body>
-                <Button
-                  href="/#/"
-                  target="_blank"
-                  variant="secondary"
-                  className="w-100 m-0 mt-3"
-                >
-                  Demo G8 Code Scanner Pro{" "}
-                  <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-1" />
-                </Button>
-              </Card>
-            </Col>
-          </Row> */}
           <Row className="mt-lg-3">
             <Col xs={12} className="text-center">
               <h2 className="h5 text-gray fw-normal mb-4">
-                Available in the following technologies:
+                Made with the following technologies:
               </h2>
               <div>
                 <Card.Link
                   href="https://securitylab.github.com/tools/codeql/"
                   target="_blank"
                   className="me-3"
+                  rel="noreferrer"
                 >
                   <OverlayTrigger
                     placement="top"
@@ -1003,6 +509,7 @@ free version column */}
                   href="https://reactjs.org/"
                   target="_blank"
                   className="me-3"
+                  rel="noreferrer"
                 >
                   <OverlayTrigger
                     placement="top"
@@ -1021,10 +528,39 @@ free version column */}
                     />
                   </OverlayTrigger>
                 </Card.Link>
+
+                <Card.Link
+                  href="https://neo4j.com/"
+                  target="_blank"
+                  className="me-3"
+                  rel="noreferrer"
+                >
+                  <OverlayTrigger
+                    placement="top"
+                    trigger={["hover", "focus"]}
+                    overlay={
+                      <Tooltip>
+                        Neo4J · Neo4j gives developers and data scientists the
+                        most trusted and advanced tools to quickly build today’s
+                        intelligent applications and machine learning workflows.
+                        Available as a fully managed cloud service or
+                        self-hosted.
+                      </Tooltip>
+                    }
+                  >
+                    <Image
+                      src={Neo4JLogo}
+                      className="image image-sm"
+                      alt="Neo4J Logo"
+                    />
+                  </OverlayTrigger>
+                </Card.Link>
+
                 <Card.Link
                   href="https://www.github.com"
                   target="_blank"
                   className="me-3"
+                  rel="noreferrer"
                 >
                   <OverlayTrigger
                     placement="top"
@@ -1070,40 +606,6 @@ the below part */}
               </p>
             </Col>
 
-            {/* <Col xs={6} md={2} className="mb-5 mb-lg-0">
-              <span className="h5">Group 68</span>
-              <ul className="links-vertical mt-2">
-                <li>
-                  <Card.Link target="_blank" href="https://themesberg.com/blog">
-                    Blog
-                  </Card.Link>
-                </li>
-                <li>
-                  <Card.Link
-                    target="_blank"
-                    href="https://themesberg.com/products"
-                  >
-                    Products
-                  </Card.Link>
-                </li>
-                <li>
-                  <Card.Link
-                    target="_blank"
-                    href="https://themesberg.com/about"
-                  >
-                    About Us
-                  </Card.Link>
-                </li>
-                <li>
-                  <Card.Link
-                    target="_blank"
-                    href="https://themesberg.com/contact"
-                  >
-                    Contact Us
-                  </Card.Link>
-                </li>
-              </ul>
-            </Col> */}
             <Col xs={6} md={4} className="mb-5 mb-lg-0">
               <span className="h5">Other</span>
               <ul className="links-vertical mt-2">
@@ -1117,17 +619,17 @@ the below part */}
                   </Card.Link>
                 </li>
                 <li>
+                  <Card.Link as={Link} to={Routes.DocsFAQ.path} target="_blank">
+                    FAQ
+                  </Card.Link>
+                </li>
+                <li>
                   <Card.Link
                     as={Link}
                     to={Routes.DocsChangelog.path}
                     target="_blank"
                   >
                     Changelog
-                  </Card.Link>
-                </li>
-                <li>
-                  <Card.Link target="_blank" href="#">
-                    License
                   </Card.Link>
                 </li>
               </ul>
@@ -1181,9 +683,7 @@ the below part */}
                 role="contentinfo"
               >
                 <p className="font-weight-normal font-small mb-0">
-                  Copyright © G8 2021-
-                  <span className="current-year">2021</span>. All rights
-                  reserved.
+                  Made by © G8 DISM 2021, Sponsored by DSO.
                 </p>
               </div>
             </Col>

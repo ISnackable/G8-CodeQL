@@ -11,6 +11,7 @@ import {
   // faFileAlt,
   // faSignOutAlt,
   // faTable,
+  faPen,
   faTimes,
   faSearch,
   faBug,
@@ -105,6 +106,7 @@ const Sidebar = (props = {}) => {
                 src={image}
                 width={20}
                 height={20}
+                alt="Logo"
                 className="sidebar-icon svg-icon"
               />
             ) : null}
@@ -139,7 +141,7 @@ const Sidebar = (props = {}) => {
           as={Link}
           to={Routes.Presentation.path}
         >
-          <Image src={G8Logo} className="navbar-brand-light" />
+          <Image src={G8Logo} alt="G8 Logo" className="navbar-brand-light" />
         </Navbar.Brand>
         <Navbar.Toggle
           as={Button}
@@ -217,6 +219,11 @@ const Sidebar = (props = {}) => {
               <Dropdown.Divider className="my-3 border-indigo" />
 
               <NavItem
+                title="Custom Query"
+                icon={faPen}
+                link={Routes.CustomQuery.path}
+              />
+              <NavItem
                 title="PDF Generator"
                 icon={faFilePdf}
                 link={Routes.PDFGenerator.path}
@@ -258,7 +265,7 @@ const Sidebar = (props = {}) => {
               </CollapsableNavItem>
 
               <CollapsableNavItem
-                eventKey="queryhelp/"
+                eventKey="query-help/"
                 title="Query Help"
                 icon={faBook}
               >

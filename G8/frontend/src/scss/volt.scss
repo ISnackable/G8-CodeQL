@@ -88,3 +88,18 @@ html,
 body {
   overflow-x: hidden;
 }
+
+ol.counter-list {
+  counter-reset: item;
+}
+ol.counter-list li {
+  display: block;
+  position: relative;
+}
+ol.counter-list li:before {
+  content: counters(item, ".") ".";
+  counter-increment: item;
+  position: absolute;
+  margin-right: 100%;
+  right: 10px; /* space between number and text */
+}

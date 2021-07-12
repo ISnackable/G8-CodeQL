@@ -9,14 +9,14 @@ const DocsChangelog = () => (
           <Card.Body>
             <article>
               <h1 className="h2" id="changelog">
-                Changelog{" "}
+                Changelog
               </h1>
               <p className="fs-5 fw-light">
                 This is the changelog for the new features and bug fixes for G8
                 Code Scanner
               </p>
 
-              <p className="fs-5 fw-bold">Version 1.0.0 - June 8, 2021</p>
+              <p className="fs-5 fw-bold">Version 1.0.0 - July 11, 2021</p>
               <ul className="docs-list">
                 <li>Initial release files</li>
               </ul>

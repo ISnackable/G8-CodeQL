@@ -21,7 +21,7 @@ FROM node:14-alpine as base
 # The /usr/src/app directory should act as the main application directory
 WORKDIR /usr/src/app/
 
-RUN yarn add express && yarn install --production
+RUN yarn add express http-proxy-middleware && yarn install --production
 
 # Copy or project directory (locally) in the current directory of our docker image (/usr/src/app/)
 COPY ./server.js ./

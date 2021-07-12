@@ -1,13 +1,13 @@
 <br />
 <p align="center">
   <a href="https://github.com/ISnackable/DISMFYP2021GRP8/">
-    <img src="G8/frontend/src/assets/img/G8-logo.png" alt="Logo" width="80" height="80">
+    <img src="G8/frontend/src/assets/img/g8-logo.png" alt="Logo" width="80">
   </a>
 
   <h3 align="center">DISMFYP2021GRP8</h3>
 
   <p align="center">
-    FYP Project ultizing CodeQL for code analysis
+    FYP Project utilizing CodeQL for code analysis
     <br />
     <a href="https://github.com/ISnackable/DISMFYP2021GRP8/"><strong>Explore the docs »</strong></a>
     <br />
@@ -37,13 +37,10 @@
 
 ![G8 Pages](G8/frontend/src/assets/img/allphoto.png)
 
-<br />
-
 ## Dependencies
 
 The following tools should be installed before starting:
 
-- [CodeQL](https://github.com/github/codeql)
 - [Docker](https://www.docker.com/get-started)
 
 ## Installation
@@ -54,7 +51,7 @@ Use the provided [docker configuration](./G8/docker-compose.yml) to deploy the p
 $ docker-compose up -d
 ```
 
-Then, visit 127.0.0.1, vist the dashboard page and upload a project you wish to analyze. Click analyze to begin the analysis and watch the magic unfold.
+Then, visit 127.0.0.1:3000, visit the dashboard page and upload a project you wish to analyze. Click analyze to begin the analysis and watch the magic unfold.
 
 You can optionally edit the configuration file depending on your needs:
 
@@ -64,7 +61,7 @@ You can optionally edit the configuration file depending on your needs:
 
 To start trying out the project, follow the steps below.
 
-1. Visit http://127.0.0.1/#/dashboard/
+1. Visit http://127.0.0.1:3000/#/dashboard/
 2. Click on the `Git Repo` button and paste in https://github.com/ISnackable/DISMFYP2021GRP8.git
 3. Click `Submit` to upload the project
 4. Under the Existing Project table, click on `Start Analysis` and wait for the analysis to be done
@@ -87,7 +84,7 @@ $ git clone https://github.com/ISnackable/DISMFYP2021GRP8/ --recursive --depth 1
 #### Install CodeQL CLI
 
 1. [Download](https://github.com/github/codeql-cli-binaries/releases) the CodeQL CLI zip package.
-2. Create a new CodeQL directory where you can place the CLI and any queries and libraries you want to use. For example, `D:/programs/codeql-home` or `/usr/local/bin/codeql`.
+2. Create a new CodeQL directory where you can place the CLI and any queries and libraries you want to use. For example, `D:/programs/codeql-home` or `/opt/codeql`.
 3. Extract the zip archive in the CodeQL directory; `D:/programs/codeql-home/codeql`
 4. Add CodeQL to Path.
 
@@ -97,12 +94,12 @@ $ git clone https://github.com/ISnackable/DISMFYP2021GRP8/ --recursive --depth 1
      2. Click on `Advance System Settings`
      3. Click on `Enviroment Variables`
      4. Edit `Path` for both User variables and System variables
-     5. Click on `New` and add the CodeQL directory; `D:/Programs/codeql-home/codeql`
+     5. Click on `New` and add the CodeQL directory; `D:/programs/codeql-home/codeql`
 
    - Linux
 
      ```shell
-     $ export PATH=/usr/local/bin/codeql:$PATH
+     $ export PATH=/opt/codeql:$PATH
      ```
 
 5. Verify your CodeQL CLI setup.
@@ -120,14 +117,14 @@ $ git clone https://github.com/ISnackable/DISMFYP2021GRP8/ --recursive --depth 1
 - [Docker](https://www.docker.com/get-started)
 
 ```shell
-$ docker run -p 3306:3306 -d --env MYSQL_ROOT_PASSWORD=secret docker.io/library/mariadb:10.3
+$ docker run -p 3306:3306 -d -v G8/backend/init.sql:/docker-entrypoint-initdb.d --env MYSQL_ROOT_PASSWORD=secret docker.io/library/mariadb:10
 ```
 
 ```shell
-$ docker run -p 7474:7474 -p 7687:7687 -d -v $HOME/neo4j/data:/data --env NEO4J_AUTH=neo4j/s3cr3t neo4j:latest
+$ docker run -p 7474:7474 -p 7687:7687 -d -v $HOME/neo4j/data:/data --env NEO4J_AUTH=neo4j/s3cr3t neo4j:4.2.7
 ```
 
-##### Installat Manually
+##### Install Manually
 
 - [MariaDB](https://mariadb.org/download/)
 - [Neo4J Community Edition](https://neo4j.com/download-center/#community)
@@ -140,7 +137,7 @@ $ sudo service mysql status
 ```
 
 3. Download & Install [Neo4J Community Server](https://neo4j.com/download-center/#community) on the latest version
-4. Verify Neo4J is installed by visiting https://localhost:7474.
+4. Verify Neo4J is installed by visiting http://localhost:7474.
 
 ### Configuration
 

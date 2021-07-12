@@ -12,7 +12,7 @@ var db = require("./databaseConfig.js");
 
 var projectDB = {
   getProject: function (callback) {
-    console.log("projectDB.getProject() ...");
+    console.log("\nprojectDB.getProject()");
     var sql = "SELECT * FROM g8.projects";
     db.query(sql, [], function (err, result) {
       if (err) {
@@ -41,7 +41,7 @@ var projectDB = {
   //   });
   // },
   getProjectId: function (id, callback) {
-    console.log("projectDB.getProjectId() ...");
+    console.log("\nprojectDB.getProjectId()");
 
     // displaying all properties of a certain project
     var sql = "SELECT * FROM g8.projects WHERE id = ?";
@@ -61,6 +61,7 @@ var projectDB = {
     console.log("end of getProjectId()");
   },
   getProjectHash: function (fileChecksum, callback) {
+    console.log("\nprojectDB.getProjectHash()");
     console.log("Checking whether database already exist.");
     let sql = "SELECT * from g8.projects WHERE hash=?;"; //Returns 1 if exist else 0
     db.query(sql, [fileChecksum], function (err, result) {
@@ -80,6 +81,7 @@ var projectDB = {
     });
   },
   addProject: function (data, callback) {
+    console.log("\nprojectDB.addProject()");
     console.log("Checking whether database already exist.");
     let sql = "INSERT INTO projects (project_name,hash) VALUES(?,?);"; //Returns 1 if exist else 0
     db.query(sql, [data.projectName, data.hash], function (err, result) {
@@ -92,6 +94,7 @@ var projectDB = {
     });
   },
   removeProject: function (id, callback) {
+    console.log("\nprojectDB.removeProject()");
     console.log("Deleting project ID:" + id);
     let sql = "DELETE FROM projects WHERE (`id` = ?)";
     db.query(sql, id, function (err, result) {
@@ -103,7 +106,7 @@ var projectDB = {
     });
   },
   getSarifFileName: function (sarif_filename, callback) {
-    console.log("projectDB.getSarifFileName() ...");
+    console.log("\nprojectDB.getSarifFileName()");
     let sql = "SELECT * FROM projects WHERE sarif_filename = ?";
     db.query(sql, [sarif_filename], function (err, result) {
       if (err) {
@@ -120,7 +123,7 @@ var projectDB = {
     console.log("end of getSarifFileName()");
   },
   insertSarif: function (sarif_filename, id, callback) {
-    console.log("projectDB.insertSarif()");
+    console.log("\nprojectDB.insertSarif()");
 
     let sql = "UPDATE projects SET sarif_filename = ? WHERE id = ?";
     db.query(sql, [sarif_filename, id], function (err, result) {
@@ -138,7 +141,7 @@ var projectDB = {
   },
 
   insertProcessing: function (id, callback) {
-    console.log("projectDB.insertProcessing()");
+    console.log("\nprojectDB.insertProcessing()");
 
     let sql = "UPDATE projects SET sarif_filename = ? WHERE id = ?";
     db.query(sql, ["processing", id], function (err, result) {
@@ -146,7 +149,7 @@ var projectDB = {
         console.error(err);
         return callback(err, null);
       } else if (result.affectedRows == 1) {
-        console.log("Sarif file name \"processing\" added to database");
+        console.log('Sarif file name "processing" added to database');
         return callback(null, result);
       } else {
         console.log("Database update failed.");
@@ -156,15 +159,15 @@ var projectDB = {
   },
 
   insertSarifFilenameError: function (id, callback) {
-    console.log("projectDB.insertProcessing()");
+    console.log("\nprojectDB.insertProcessing()");
 
     let sql = "UPDATE projects SET sarif_filename = ? WHERE id = ?";
-    db.query(sql, ['error', id], function (err, result) {
+    db.query(sql, ["error", id], function (err, result) {
       if (err) {
         console.error(err);
         return callback(err, null);
       } else if (result.affectedRows == 1) {
-        console.log("Sarif file name \"null\" added to database");
+        console.log('Sarif file name "null" added to database');
         return callback(null, result);
       } else {
         console.log("Database update failed.");

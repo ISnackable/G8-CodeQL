@@ -3,7 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import TextareaAutosize from "react-textarea-autosize";
 import AceEditor from "react-ace";
 // import mode-<language> , this imports the style and colors for the selected language.
-import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/mode-mysql";
+// import CustomMode from "./components/CustomMode.js";
+import { setCompleters } from "ace-builds/src-noconflict/ext-language_tools";
+
 // there are many themes to import, I liked monokai.
 // import "ace-builds/src-noconflict/theme-monokai";
 // import "ace-builds/src-noconflict/theme-github";
@@ -30,8 +33,11 @@ import {
   Button,
   Dropdown,
   Spinner,
+  Tooltip,
+  OverlayTrigger,
 } from "@themesberg/react-bootstrap";
 
+// const customMode = new CustomMode();
 // var EditSession = require("ace/edit_session").EditSession;
 // var js = new EditSession("some js code");
 // var css = new EditSession(["some", "css", "code here"]);
@@ -70,6 +76,51 @@ select b, "This is an empty block."`);
       });
   };
   useEffect(() => {
+    const completer = {
+      getCompletions: function (editor, session, pos, prefix, callback) {
+        var completions = [
+          {
+            caption: "import",
+            snippet: `import javascript`,
+            meta: "Import CodeQL Library",
+          },
+          {
+            caption: "from",
+            snippet: `from <Type> <variable>`,
+            meta: "Variable Declaration",
+          },
+          {
+            caption: "where",
+            snippet: `where <condition>`,
+            meta: "Condition to meet",
+          },
+          {
+            caption: "select",
+            snippet: `select <variable>, "Description Text"`,
+            meta: "Value to print out",
+          },
+        ];
+
+        /* You Can get to know how to add more cool
+        autocomplete features by seeing the ext-language-tools
+        file in the ace-buils folder */
+
+        completions.forEach((i) => {
+          completions.push({
+            caption: i.caption,
+            snippet: i.snippet,
+            type: i.type,
+          });
+        });
+        callback(null, completions);
+      },
+    };
+
+    /* You can even use addCompleters instead of setCompleters like this :
+       `addCompleter(completer)`;
+     */
+
+    setCompleters([completer]);
     fetchData();
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -132,94 +183,170 @@ select b, "This is an empty block."`);
   const SampleQueries = () => {
     return (
       <>
-        <Dropdown.Item
-          className="fw-bold"
-          onClick={() => {
-            setCode(`import javascript
-import DataFlow::PathGraph
-import semmle.javascript.security.dataflow.LogInjection::LogInjection
-
-from LogInjectionConfiguration config, DataFlow::PathNode source, DataFlow::PathNode sink
-where config.hasFlowPath(source, sink)
-select sink.getNode(), source, sink, "$@ flows to log entry.", source.getNode(),"User-provided value"`);
-          }}
+        <OverlayTrigger
+          placement="right"
+          trigger={["hover", "trigger"]}
+          overlay={<Tooltip>Finds files called `index.js`</Tooltip>}
         >
-          <span>Log Injection</span>
-        </Dropdown.Item>
+          <Dropdown.Item
+            className="fw-bold"
+            onClick={() => {
+              setCode(`import javascript
 
-        <Dropdown.Item
-          className="fw-bold"
-          onClick={() => {
-            setCode(`import javascript
-import semmle.javascript.security.dataflow.StoredXss::StoredXss  
-import DataFlow::PathGraph
-    
-from Configuration cfg, DataFlow::PathNode source, DataFlow::PathNode sink
-where cfg.hasFlowPath(source, sink)
-select sink.getNode(), source, sink, "Stored cross-site scripting vulnerability due to $@.", source.getNode(), "stored value"`);
-          }}
+from File f
+where f.getBaseName() = "index.js"
+select f`);
+            }}
+          >
+            <span className="me-5">File with given name</span>
+          </Dropdown.Item>
+        </OverlayTrigger>
+        <OverlayTrigger
+          placement="right"
+          trigger={["hover", "trigger"]}
+          overlay={
+            <Tooltip>
+              Finds import statements that import from module 'react'
+            </Tooltip>
+          }
         >
-          <span>Stored XSS </span>
-        </Dropdown.Item>
+          <Dropdown.Item
+            className="fw-bold"
+            onClick={() => {
+              setCode(`import javascript
 
-        <Dropdown.Item
-          className="fw-bold"
-          onClick={() => {
-            setCode(`import javascript
-import semmle.javascript.security.dataflow.CodeInjection::CodeInjection
-import DataFlow::PathGraph
-    
-from Configuration cfg, DataFlow::PathNode source, DataFlow::PathNode sink
-where cfg.hasFlowPath(source, sink)
-select sink.getNode(), source, sink,
-"$@ flows to " + sink.getNode().(Sink).getMessageSuffix() + ".", source.getNode(), "User-provided value"`);
-          }}
+from ImportDeclaration id
+where id.getImportedPath().getValue() = "react"
+select id`);
+            }}
+          >
+            <span className="me-5">Imports from 'react'</span>
+          </Dropdown.Item>
+        </OverlayTrigger>
+        <OverlayTrigger
+          placement="right"
+          trigger={["hover", "trigger"]}
+          overlay={<Tooltip>Finds classes called 'File'</Tooltip>}
         >
-          <span> Code Injection </span>
-        </Dropdown.Item>
+          <Dropdown.Item
+            className="fw-bold"
+            onClick={() => {
+              setCode(`import javascript
 
-        <Dropdown.Item
-          className="fw-bold"
-          onClick={() => {
-            setCode(`import javascript
-import semmle.javascript.security.dataflow.RegExpInjection::RegExpInjection
-import DataFlow::PathGraph
-    
-from Configuration cfg, DataFlow::PathNode source, DataFlow::PathNode sink
-where cfg.hasFlowPath(source, sink)
-select sink.getNode(), source, sink, "This regular expression is constructed from a $@.", source.getNode(), "user-provided value"`);
-          }}
+from ClassDefinition cd
+where cd.getName() = "File"
+select cd`);
+            }}
+          >
+            <span className="me-5">Classes called 'File'</span>
+          </Dropdown.Item>
+        </OverlayTrigger>
+        <OverlayTrigger
+          placement="right"
+          trigger={["hover", "trigger"]}
+          overlay={
+            <Tooltip>
+              Finds functions that are passed as arguments to other functions
+            </Tooltip>
+          }
         >
-          <span> Regular expression Injection </span>
-        </Dropdown.Item>
-
-        <Dropdown.Item
-          className="fw-bold"
-          onClick={() => {
-            setCode(`import javascript
-import semmle.javascript.security.dataflow.CleartextStorage::CleartextStorage
-import DataFlow::PathGraph
-
-from Configuration cfg, DataFlow::PathNode source, DataFlow::PathNode sink
-where cfg.hasFlowPath(source, sink)
-select sink.getNode(), source, sink, "Sensitive data returned by $@ is stored here.", source.getNode(), source.getNode().(Source).describe()`);
-          }}
-        >
-          <span> Clear Text Storage </span>
-        </Dropdown.Item>
-
-        <Dropdown.Item
-          className="fw-bold"
-          onClick={() => {
-            setCode(`import javascript
+          <Dropdown.Item
+            className="fw-bold"
+            onClick={() => {
+              setCode(`import javascript
 
 from InvokeExpr invk, DataFlow::FunctionNode f
 where f.flowsToExpr(invk.getAnArgument())
 select invk, f`);
-          }}
+            }}
+          >
+            <span className="me-5">Callbacks</span>
+          </Dropdown.Item>
+        </OverlayTrigger>
+        <OverlayTrigger
+          placement="right"
+          trigger={["hover", "trigger"]}
+          overlay={
+            <Tooltip>Finds function calls of the form `eval(...)`</Tooltip>
+          }
         >
-          <span> Callback Query </span>
-        </Dropdown.Item>
+          <Dropdown.Item
+            className="fw-bold"
+            onClick={() => {
+              setCode(`import javascript
+
+from CallExpr c
+where c.getCalleeName() = "eval"
+select c`);
+            }}
+          >
+            <span className="me-5">Calls to function</span>
+          </Dropdown.Item>
+        </OverlayTrigger>
+        <OverlayTrigger
+          placement="right"
+          trigger={["hover", "trigger"]}
+          overlay={
+            <Tooltip>Finds calls of the form `this.isMounted(...)`</Tooltip>
+          }
+        >
+          <Dropdown.Item
+            className="fw-bold"
+            onClick={() => {
+              setCode(`import javascript
+
+from MethodCallExpr c
+where
+  c.getReceiver() instanceof ThisExpr and
+  c.getMethodName() = "isMounted"
+select c`);
+            }}
+          >
+            <span className="me-5">Method calls</span>
+          </Dropdown.Item>
+        </OverlayTrigger>
+        <OverlayTrigger
+          placement="right"
+          trigger={["hover", "trigger"]}
+          overlay={
+            <Tooltip>
+              Finds places where we reference a variable called `undefined`
+            </Tooltip>
+          }
+        >
+          <Dropdown.Item
+            className="fw-bold"
+            onClick={() => {
+              setCode(`import javascript
+
+from VarRef ref
+where ref.getVariable().getName() = "undefined"
+select ref`);
+            }}
+          >
+            <span className="me-5">Reference to variable</span>
+          </Dropdown.Item>
+        </OverlayTrigger>
+        <OverlayTrigger
+          placement="right"
+          trigger={["hover", "trigger"]}
+          overlay={
+            <Tooltip>Finds property accesses of the form `x.innerHTML`</Tooltip>
+          }
+        >
+          <Dropdown.Item
+            className="fw-bold"
+            onClick={() => {
+              setCode(`import javascript
+
+from PropAccess p
+where p.getPropertyName() = "innerHTML"
+select p`);
+            }}
+          >
+            <span className="me-5">Property accesses</span>
+          </Dropdown.Item>
+        </OverlayTrigger>
       </>
     );
   };
@@ -288,7 +415,7 @@ select invk, f`);
                         backgroundColor: "light grey",
                       }}
                       placeholder="Type your query here ! "
-                      mode="javascript"
+                      mode="mysql"
                       theme="nord_dark"
                       name="basic-code-editor"
                       onChange={(currentCode) => setCode(currentCode)}

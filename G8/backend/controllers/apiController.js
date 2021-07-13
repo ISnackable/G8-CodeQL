@@ -683,3 +683,46 @@ exports.deleteProject = (req, res) => {
     }
   });
 };
+
+exports.getSnapshots = (req, res) => {
+  const id = req.params.id;
+  const langauge = req.params.language;
+  const file = `./Snapshots/database${id}_${langauge}.zip`;
+
+  const args = [
+    "database",
+    "bundle",
+    `--output=${file}`,
+    `./CodeQLDB/database${id}/${langauge}`,
+  ];
+
+  var child = execFile("codeql", args, (error, stdout, stderr) => {
+    if (error) {
+      console.error(error);
+      console.error(`stderr: ${stderr}`);
+      if (stderr.includes("is not a recognized CodeQL database")) {
+        return res
+          .status(400)
+          .send({
+            message: "Database does not exist or the wrong folder is selected.",
+          });
+      } else if (stderr.includes("already exists")) {
+        console.log(`Downloading ${file}`);
+        res.download(file);
+      }
+    } else {
+      console.log(`Downloading ${file}`);
+      res.download(file);
+    }
+
+    console.log(stdout);
+  });
+
+  // for debugging purposes only
+  child.stdout.on("data", function (data) {
+    console.log("[STDOUT]: ", data.toString());
+  });
+  child.stderr.on("data", function (data) {
+    console.log("[STDERR]: ", data.toString());
+  });
+};

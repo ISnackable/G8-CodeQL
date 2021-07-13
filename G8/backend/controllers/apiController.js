@@ -125,8 +125,7 @@ exports.query = (req, res, next) => {
                 // This API provides access to data on the running file system.
                 // Ensure that either (a) the way in which the path argument was constructed into an absolute path is secure if it contains user input
                 // or (b) set the root option to the absolute path of a directory to contain access within.
-                res.setHeader("Content-Type", "application/json");
-                res.sendFile(SarifFilePath, options, function (err) {
+                res.contentType("application/json").sendFile(SarifFilePath, options, function (err) {
                   if (err) {
                     console.error(err);
                   } else {
@@ -701,11 +700,9 @@ exports.getSnapshots = (req, res) => {
       console.error(error);
       console.error(`stderr: ${stderr}`);
       if (stderr.includes("is not a recognized CodeQL database")) {
-        return res
-          .status(400)
-          .send({
-            message: "Database does not exist or the wrong folder is selected.",
-          });
+        return res.status(400).send({
+          message: "Database does not exist or the wrong folder is selected.",
+        });
       } else if (stderr.includes("already exists")) {
         console.log(`Downloading ${file}`);
         res.download(file);

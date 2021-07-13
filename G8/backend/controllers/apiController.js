@@ -125,14 +125,16 @@ exports.query = (req, res, next) => {
                 // This API provides access to data on the running file system.
                 // Ensure that either (a) the way in which the path argument was constructed into an absolute path is secure if it contains user input
                 // or (b) set the root option to the absolute path of a directory to contain access within.
-                res.contentType("application/json").sendFile(SarifFilePath, options, function (err) {
-                  if (err) {
-                    console.error(err);
-                  } else {
-                    console.log(options);
-                    console.log("Sent:", SarifFilePath);
-                  }
-                });
+                res
+                  .contentType("application/json")
+                  .sendFile(SarifFilePath, options, function (err) {
+                    if (err) {
+                      console.error(err);
+                    } else {
+                      console.log(options);
+                      console.log("Sent:", SarifFilePath);
+                    }
+                  });
               } else {
                 res.status(422).send("The database does not exist.");
               }

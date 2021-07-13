@@ -103,7 +103,11 @@ router.get(
  * POST /snapshots/{project-id}/{language} (Start snapshot upload session)
  */
 
-router.get("/snapshots/:id/:language", apiController.getSnapshots);
+router.get(
+  "/snapshots/:id/:language",
+  middlewares.idValidation,
+  apiController.getSnapshots
+);
 
 /*
  * 6. Query jobs

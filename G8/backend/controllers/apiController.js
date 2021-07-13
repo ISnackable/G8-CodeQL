@@ -125,15 +125,16 @@ exports.query = (req, res, next) => {
                 // This API provides access to data on the running file system.
                 // Ensure that either (a) the way in which the path argument was constructed into an absolute path is secure if it contains user input
                 // or (b) set the root option to the absolute path of a directory to contain access within.
-                res.setHeader("Content-Type", "application/json");
-                res.sendFile(SarifFilePath, options, function (err) {
-                  if (err) {
-                    console.error(err);
-                  } else {
-                    console.log(options);
-                    console.log("Sent:", SarifFilePath);
-                  }
-                });
+                res
+                  .contentType("application/json")
+                  .sendFile(SarifFilePath, options, function (err) {
+                    if (err) {
+                      console.error(err);
+                    } else {
+                      console.log(options);
+                      console.log("Sent:", SarifFilePath);
+                    }
+                  });
               } else {
                 res.status(422).send("The database does not exist.");
               }
@@ -681,5 +682,46 @@ exports.deleteProject = (req, res) => {
       };
       res.status(200).send(output);
     }
+  });
+};
+
+exports.getSnapshots = (req, res) => {
+  const id = req.params.id;
+  const langauge = req.params.language;
+  const file = `./Snapshots/database${id}_${langauge}.zip`;
+
+  const args = [
+    "database",
+    "bundle",
+    `--output=${file}`,
+    `./CodeQLDB/database${id}/${langauge}`,
+  ];
+
+  var child = execFile("codeql", args, (error, stdout, stderr) => {
+    if (error) {
+      console.error(error);
+      console.error(`stderr: ${stderr}`);
+      if (stderr.includes("is not a recognized CodeQL database")) {
+        return res.status(400).send({
+          message: "Database does not exist or the wrong folder is selected.",
+        });
+      } else if (stderr.includes("already exists")) {
+        console.log(`Downloading ${file}`);
+        res.download(file);
+      }
+    } else {
+      console.log(`Downloading ${file}`);
+      res.download(file);
+    }
+
+    console.log(stdout);
+  });
+
+  // for debugging purposes only
+  child.stdout.on("data", function (data) {
+    console.log("[STDOUT]: ", data.toString());
+  });
+  child.stderr.on("data", function (data) {
+    console.log("[STDERR]: ", data.toString());
   });
 };

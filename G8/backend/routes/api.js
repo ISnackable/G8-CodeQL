@@ -93,13 +93,23 @@ router.get(
 /**
  * 4. Operations, The /operations endpoint is used to track the progress of long-running tasks, for example, code review requests.
  * GET /operations/{operation-id} (Get operation status)
- *
+ */
+
+/*
  * Not Important
  * 5. Snapshots, download and upload CodeQL databases
  * codeql database bundle --output=<output> [--mode=<mode>] <options>... [--] <database>
  * GET /snapshots/{project-id}/{language} (Download a snapshot)
  * POST /snapshots/{project-id}/{language} (Start snapshot upload session)
- *
+ */
+
+router.get(
+  "/snapshots/:id/:language",
+  middlewares.idValidation,
+  apiController.getSnapshots
+);
+
+/*
  * 6. Query jobs
  * The /queryjobs endpoint is used to run CodeQL queries on G8 and check their progress.
  * POST /queryjobs/{project-id} (Submit a query to run on one or more projects on G8. The query is included in the body of the request.)

@@ -111,6 +111,7 @@ const DocsGlossary = () => (
                   </tr>
                 </tbody>
               </Table>
+
             </article>
           </Card.Body>
         </Card>

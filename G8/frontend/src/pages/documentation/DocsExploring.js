@@ -483,7 +483,7 @@ const DocsExploring = () => (
                   </p>
                   <p>
                     <b>
-                      <i>Note: You can also drag & drop sarif file.</i>
+                      <i>Note: You can also drag & drop a sarif file.</i>
                     </b>
                   </p>
                   <Image
@@ -495,7 +495,7 @@ const DocsExploring = () => (
                 </li>
                 <li>
                   <p>
-                    There is a search bar that allow user to quickly find
+                    There is a search bar which allows a user to quickly find
                     keywords in the sarif file
                   </p>
                   <Image
@@ -507,7 +507,7 @@ const DocsExploring = () => (
                 </li>
                 <li>
                   <p>
-                    User can also use the filter to limit the sarif results to
+                    User can also use the filter to limit the sarif results to a
                     certain baseline or levels
                   </p>
                   <Image
@@ -519,8 +519,8 @@ const DocsExploring = () => (
                 </li>
                 <li>
                   <p>
-                    At the top right, there is a export button which allow user
-                    to download the sarif file(s).
+                    At the top right, there is an export button which allows a
+                    user to download the sarif file(s).
                   </p>
                   <Image
                     rounded

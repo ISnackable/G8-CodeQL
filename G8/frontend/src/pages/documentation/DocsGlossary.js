@@ -102,9 +102,15 @@ const DocsGlossary = () => (
                       GitHub Repository
                     </td>
                   </tr>
+                  <tr>
+                    <td className="border-0">Sarif</td>
+                    <td className="border-0 fw-bold">
+                      Stands for Static Analysis Results Interchange Format.
+                      It is a JSON-based format for the output of static analysis tools.
+                    </td>
+                  </tr>
                 </tbody>
               </Table>
-
             </article>
           </Card.Body>
         </Card>

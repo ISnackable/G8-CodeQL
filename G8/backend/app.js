@@ -40,12 +40,25 @@ fs.access("./SarifFiles", fs.F_OK, (err) => {
   }
 });
 
+// force to create Snapshots folder if it does not exist
+fs.access("./Snapshots", fs.F_OK, (err) => {
+  if (err) {
+    console.error(err);
+    console.log("'Snapshots' folder does not exist, attempting to create it");
+    fs.mkdirSync("./Snapshots");
+  }
+});
+
 // --------------------------------------------------
 // MF configuration
 // --------------------------------------------------
 app.disable("x-powered-by");
-app.use(morgan("common"));
-app.use(cors());
+app.use(
+  morgan(
+    `:remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] \n\n------------------------------------\n`
+  )
+);
+app.use(cors({ exposedHeaders: ["Content-Disposition"] }));
 // express has the body parser built in so can call it directly
 app.use(express.urlencoded({ extended: false })); // extended false for no object (security reason)
 app.use(express.json());

@@ -16,6 +16,7 @@ const projectDB = require("../models/projects.js");
 const middlewares = require("../middlewares");
 const config = require("../config");
 const upload = middlewares.multer.array("files", 100);
+const { Reset, FgGreen } = require("../constants");
 
 // --------------------------
 // helper functions
@@ -35,6 +36,7 @@ const upload = middlewares.multer.array("files", 100);
 
 exports.getProject = (req, res) => {
   // printDebugInfo("/g8/api/projects", req);
+  console.log(FgGreen, `apiController.getProject()`, Reset);
 
   projectDB.getProject(function (err, result) {
     if (!err) {
@@ -48,22 +50,9 @@ exports.getProject = (req, res) => {
   });
 };
 
-// exports.projectid = (req, res) => {
-//   printDebugInfo("/g8/api/getProjectID", req);
-
-//   projectDB.getProject(function (err, result) {
-//     if (!err) {
-//       res.status(200).send(result);
-//     } else {
-//       var output = {
-//         error: "Unable to get all the project ids",
-//       };
-//       res.status(500).send(JSON.stringify(output));
-//     }
-//   });
-// };
-
 exports.getProjectById = (req, res) => {
+  console.log(FgGreen, `apiController.getProjectById()`, Reset);
+
   var projectid = req.params.id;
   const projectIDpath = `/api/projects/${projectid}`;
 
@@ -84,6 +73,8 @@ exports.getProjectById = (req, res) => {
 
 // Query current database number in the counter
 exports.query = (req, res, next) => {
+  console.log(FgGreen, `apiController.query()`, Reset);
+
   const id = req.params.id;
   const CodeQLpath = `./databases/database${id}/db-javascript`;
   // Checking if db-javascript folder exists in the database
@@ -163,6 +154,8 @@ exports.query = (req, res, next) => {
 
 // Get analyses by ID
 exports.getAnalysesById = (req, res, next) => {
+  console.log(FgGreen, `apiController.getAnalysesById()`, Reset);
+
   const id = req.params.id;
   const SarifFilePath = path.resolve(__dirname, `../SarifFiles/${id}.sarif`);
 
@@ -189,23 +182,9 @@ exports.getAnalysesById = (req, res, next) => {
   });
 };
 
-// // http://localhost:8080/g8/api/verifySarifFile
-// exports.verifySarifFile = (req, res) => {
-//   var sarifFileName = req.body.sarifFileName;
-//   projectDB.getSarifFileName(sarifFileName, function (err, result) {
-//     if (!err) {
-//       if (result.length == 0) {
-//         res.status(200).send("File not found");
-//       } else {
-//         res.status(200).send(result);
-//       }
-//     } else {
-//       res.status(500).send("Some error");
-//     }
-//   });
-// };
-
 exports.folderUpload = (req, res, next) => {
+  console.log(FgGreen, `apiController.folderUpload()`, Reset);
+
   if (fs.existsSync("./uploads/temporaryMulterUpload"))
     return res.status(409).send({ message: "A project is being uploaded" });
 
@@ -297,6 +276,8 @@ exports.folderUpload = (req, res, next) => {
     Two folders have the same content but different names
   */
 exports.repoUpload = (req, res) => {
+  console.log(FgGreen, `apiController.repoUpload()`, Reset);
+
   if (fs.existsSync("./uploads/temporaryGitClone"))
     return res.status(409).send({ message: "A project is being uploaded" });
 
@@ -412,6 +393,8 @@ exports.repoUpload = (req, res) => {
 };
 
 exports.showAllInProjectNeo4J = (req, res) => {
+  console.log(FgGreen, `apiController.showAllInProjectNeo4J()`, Reset);
+
   const driver = neo4j.driver(
     `bolt://${config.neo_host}:7687`,
     neo4j.auth.basic("neo4j", "s3cr3t"),
@@ -505,22 +488,32 @@ exports.showAllInProjectNeo4J = (req, res) => {
 };
 
 exports.customQuery = (req, res) => {
+  console.log(FgGreen, `apiController.customQuery()`, Reset);
+
   const id = req.params.id;
   const CodeQLpath = `./databases/database${id}/db-javascript`;
   let metadata = `/\*\*
 \* @name my-custom-query
 \* @description This is a custom query generated from the frontend web application. 
-\* @kind ${
-    req.body.CustomQuery?.toLowerCase().includes("dataflow")
+\* @kind ${req.body.CustomQuery?.toLowerCase().includes("dataflow")
       ? "path-problem"
       : "problem"
-  }
+    }
 \* @problem.severity recommendation
 \* @percision high
 \* @id javascript/my-custom-query
 \* @tags custom
 \*/
 \n`;
+
+  let selectQuery = req.body.CustomQuery?.match(/[Ss]elect(.*)/g)[0];
+
+  if (!selectQuery?.includes(",") || selectQuery.split(",").length % 2 !== 0) {
+    console.warn("Select statement is not even");
+    req.body.CustomQuery += `, "Filler text"`;
+    console.log(req.body.CustomQuery);
+  }
+
   let CusQuery = metadata + req.body.CustomQuery;
 
   fs.access(CodeQLpath, fs.F_OK, (err) => {
@@ -612,6 +605,8 @@ exports.customQuery = (req, res) => {
 };
 
 exports.deleteProject = (req, res) => {
+  console.log(FgGreen, `apiController.deleteProject()`, Reset);
+
   const id = req.params.id;
   var databaseFolder = `./databases/database${id}`;
   var sarifFile = `./SarifFiles/${id}.sarif`;
@@ -686,29 +681,36 @@ exports.deleteProject = (req, res) => {
 };
 
 exports.getSnapshots = (req, res) => {
+  console.log(FgGreen, `apiController.getSnapshots()`, Reset);
+
   const id = req.params.id;
-  const langauge = req.params.language;
-  const file = `./Snapshots/database${id}_${langauge}.zip`;
+  const file = `./Snapshots/database${id}.zip`;
 
   const args = [
     "database",
     "bundle",
     `--output=${file}`,
-    `./CodeQLDB/database${id}/${langauge}`,
+    `./databases/database${id}`,
   ];
 
   var child = execFile("codeql", args, (error, stdout, stderr) => {
     if (error) {
       console.error(error);
       console.error(`stderr: ${stderr}`);
-      if (stderr.includes("is not a recognized CodeQL database")) {
+      if (
+        stderr.includes("is not a recognized CodeQL database") ||
+        stderr.includes("has not been finalized")
+      ) {
         return res.status(400).send({
           message: "Database does not exist or the wrong folder is selected.",
         });
       } else if (stderr.includes("already exists")) {
         console.log(`Downloading ${file}`);
-        res.download(file);
+        return res.download(file);
       }
+      return res.status(500).send({
+        message: "Internal Server Error",
+      });
     } else {
       console.log(`Downloading ${file}`);
       res.download(file);

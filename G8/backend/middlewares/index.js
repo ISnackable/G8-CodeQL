@@ -13,6 +13,7 @@ const { hashElement } = require("folder-hash");
 const neo4j = require("neo4j-driver");
 const projectDB = require("../models/projects.js");
 const config = require("../config");
+const { Reset, FgGreen } = require("../constants");
 
 // ------------------------------------------------------
 // Multer config
@@ -82,6 +83,8 @@ exports.multer = multer({
 });
 
 exports.checkDuplicateProject = (req, res, next) => {
+  console.log(FgGreen, `middlewares.checkDuplicateProject()`, Reset);
+
   let projectName = req.projectName;
 
   const options = {
@@ -156,6 +159,8 @@ exports.checkDuplicateProject = (req, res, next) => {
 
 // Create Database
 exports.createCodeQLDatabase = (req, res, next) => {
+  console.log(FgGreen, `middlewares.createCodeQLDatabase()`, Reset);
+
   const id = req.params.id;
   projectDB.insertProcessing(id, (err, result) => {
     if (err) {
@@ -214,6 +219,8 @@ exports.createCodeQLDatabase = (req, res, next) => {
 
 // Create Neo4j
 exports.createNeo4J = (req, res) => {
+  console.log(FgGreen, `middlewares.createNeo4J()`, Reset);
+
   const id = req.params.id;
   const SarifExist = `./SarifFiles/${id}.sarif`;
 
@@ -281,9 +288,8 @@ exports.createNeo4J = (req, res) => {
       var CreateQuery = "";
       var NoDupeQuery = Array.from(new Set(qNameArr));
       for (a = 1; a <= NoDupeQuery.length; a++) {
-        CreateQuery += `CREATE (Q${a}:Query {Query:"${
-          NoDupeQuery[a - 1]
-        }", ProjectID:"${id}"})\n`;
+        CreateQuery += `CREATE (Q${a}:Query {Query:"${NoDupeQuery[a - 1]
+          }", ProjectID:"${id}"})\n`;
       }
 
       var CFCounter = 1;
@@ -293,9 +299,8 @@ exports.createNeo4J = (req, res) => {
       // For loop to loop through each different file available
       // Create File
       for (i = 0; i < NoDupeFile.length; i++) {
-        CreateQuery += `\nCREATE (F${i + 1}:File {File:"${
-          NoDupeFile[i]
-        }", ProjectID:"${id}"})\n`;
+        CreateQuery += `\nCREATE (F${i + 1}:File {File:"${NoDupeFile[i]
+          }", ProjectID:"${id}"})\n`;
 
         // Checks if current file name is related to the query by comparing rule id
         // Loops through all alerts
@@ -310,15 +315,12 @@ exports.createNeo4J = (req, res) => {
               /[\"]/g,
               "'"
             );
-            CreateQuery += `CREATE (A${b + 1}:Alert {FileName:'${
-              NoDupeFile[i]
-            }', RuleID:'${ResultArr[b].ruleId}', Message_Text:"${
-              ResultArr[b].message.text
-            }", FileLocation:'${
-              ResultArr[b].locations[0].physicalLocation.artifactLocation.uri
-            }', StartEndLine:'${JSON.stringify(
-              ResultArr[b].locations[0].physicalLocation.region
-            )}', ProjectID:"${id}"})\n`;
+            CreateQuery += `CREATE (A${b + 1}:Alert {FileName:'${NoDupeFile[i]
+              }', RuleID:'${ResultArr[b].ruleId}', Message_Text:"${ResultArr[b].message.text
+              }", FileLocation:'${ResultArr[b].locations[0].physicalLocation.artifactLocation.uri
+              }', StartEndLine:'${JSON.stringify(
+                ResultArr[b].locations[0].physicalLocation.region
+              )}', ProjectID:"${id}"})\n`;
 
             // Loops through all queries
             // Create Child
@@ -326,12 +328,10 @@ exports.createNeo4J = (req, res) => {
               // RuleID is paired with QueryName to create a child
               // CREATE (t)-[:CHILD]->(parent)
               if (RuleIDArr[b][1] == NoDupeQuery[c]) {
-                CreateQuery += `CREATE (A${
-                  b + 1
-                })-[:Child {ProjectID:"${id}"}]->(F${i + 1})\n`;
-                CreateQuery += `CREATE (A${
-                  b + 1
-                })-[:Child {ProjectID:"${id}"}]->(Q${c + 1})\n`;
+                CreateQuery += `CREATE (A${b + 1
+                  })-[:Child {ProjectID:"${id}"}]->(F${i + 1})\n`;
+                CreateQuery += `CREATE (A${b + 1
+                  })-[:Child {ProjectID:"${id}"}]->(Q${c + 1})\n`;
               }
             } // End of Create Child
 
@@ -371,13 +371,11 @@ exports.createNeo4J = (req, res) => {
                 if (z == 0) {
                   // Checks if in a new loop (Creating code flows for another Alert)
                   // Creates Child for current Alert it is looping on
-                  CreateQuery += `CREATE (CF${CFCounter})-[:Child {ProjectID:"${id}"}]->(A${
-                    b + 1
-                  })\n`;
+                  CreateQuery += `CREATE (CF${CFCounter})-[:Child {ProjectID:"${id}"}]->(A${b + 1
+                    })\n`;
                 } else {
-                  CreateQuery += `CREATE (CF${
-                    CFCounter - 1
-                  })-[:Child {ProjectID:"${id}"}]->(CF${CFCounter})\n`;
+                  CreateQuery += `CREATE (CF${CFCounter - 1
+                    })-[:Child {ProjectID:"${id}"}]->(CF${CFCounter})\n`;
                 }
                 CFCounter++;
               }
@@ -425,6 +423,8 @@ exports.createNeo4J = (req, res) => {
 };
 
 exports.idValidation = (req, res, next) => {
+  console.log(FgGreen, `middlewares.idValidation()`, Reset);
+
   const id = req.params.id;
 
   // Note: use of !NaN(0x10) or !NaN(1e1) === true
@@ -437,6 +437,9 @@ exports.idValidation = (req, res, next) => {
 };
 
 exports.checkProcessing = (req, res, next) => {
+  // This middleware checks whether the current project is processing using params id.
+  console.log(FgGreen, `middlewares.checkProcessing()`, Reset);
+
   console.log("checkProcessing Status");
   const id = req.params.id;
   projectDB.getProjectId(id, function (err, result) {

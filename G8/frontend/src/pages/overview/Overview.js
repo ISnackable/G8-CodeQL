@@ -121,7 +121,7 @@ const Overview = () => {
     return (
       <>
         <Row className="justify-content-between align-items-center mb-4">
-          <Col xs={4}>
+          <Col>
             <Card style={{ backgroundColor: "#FF6565" }}>
               <Card.Body>
                 <Card.Text className="h1">{noOfError}</Card.Text>
@@ -132,7 +132,7 @@ const Overview = () => {
             </Card>
           </Col>
 
-          <Col xs={4}>
+          <Col>
             <Card style={{ backgroundColor: "yellow" }}>
               <Card.Body>
                 <Card.Text className="h1">{noOfWarnings}</Card.Text>
@@ -143,7 +143,7 @@ const Overview = () => {
             </Card>
           </Col>
 
-          <Col xs={4}>
+          <Col>
             <Card style={{ backgroundColor: "lightgreen" }}>
               <Card.Body>
                 <Card.Text className="h1">{noOfRecommendation}</Card.Text>
@@ -157,15 +157,6 @@ const Overview = () => {
         <Row>
           <Col xl={12} className="mb-4">
             <Neo4jGraphWidget />
-            {/* <Card>
-              <Card.Title className="h1 ms-3 mt-3">Neo4J Graph</Card.Title>
-              <Card.Body>
-                <Card.Text>EMPTY</Card.Text>
-                <Card.Text>EMPTY</Card.Text>
-                <Card.Text>EMPTY</Card.Text>
-                <Card.Text>EMPTY</Card.Text>
-              </Card.Body>
-            </Card> */}
           </Col>
 
           {/* display the alerts */}

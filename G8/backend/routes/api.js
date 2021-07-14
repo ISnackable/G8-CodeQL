@@ -104,7 +104,7 @@ router.get(
  */
 
 router.get(
-  "/snapshots/:id/:language",
+  "/snapshots/:id",
   middlewares.idValidation,
   apiController.getSnapshots
 );

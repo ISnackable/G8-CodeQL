@@ -6,13 +6,15 @@ console.log("------------------------------------");
 // load modules
 // ---------------------------------------------------------
 var db = require("./databaseConfig.js");
+const { Reset, FgGreen } = require("../constants");
+
 // ---------------------------------------------------------
 // functions
 // ---------------------------------------------------------
 
 var projectDB = {
   getProject: function (callback) {
-    console.log("\nprojectDB.getProject()");
+    console.log(FgGreen, "projects.getProject()", Reset);
     var sql = "SELECT * FROM g8.projects";
     db.query(sql, [], function (err, result) {
       if (err) {
@@ -23,25 +25,8 @@ var projectDB = {
       }
     });
   },
-  // getProject: function (callback) {
-  //   console.log("projectDB.getProject() ...");
-  //   let sql = "SELECT id FROM g8.projects";
-  //   db.query(sql, function (err, result) {
-  //     if (err) {
-  //       console.log(err);
-  //       return callback(err, null);
-  //     } else {
-  //       console.log(result);
-  //       if (result.length == 0) {
-  //         return callback(null, null);
-  //       } else {
-  //         return callback(null, result);
-  //       }
-  //     }
-  //   });
-  // },
   getProjectId: function (id, callback) {
-    console.log("\nprojectDB.getProjectId()");
+    console.log(FgGreen, "projects.getProjectId()", Reset);
 
     // displaying all properties of a certain project
     var sql = "SELECT * FROM g8.projects WHERE id = ?";
@@ -61,7 +46,7 @@ var projectDB = {
     console.log("end of getProjectId()");
   },
   getProjectHash: function (fileChecksum, callback) {
-    console.log("\nprojectDB.getProjectHash()");
+    console.log(FgGreen, "projects.getProjectHash()", Reset);
     console.log("Checking whether database already exist.");
     let sql = "SELECT * from g8.projects WHERE hash=?;"; //Returns 1 if exist else 0
     db.query(sql, [fileChecksum], function (err, result) {
@@ -81,7 +66,7 @@ var projectDB = {
     });
   },
   addProject: function (data, callback) {
-    console.log("\nprojectDB.addProject()");
+    console.log(FgGreen, "projects.addProject()", Reset);
     console.log("Checking whether database already exist.");
     let sql = "INSERT INTO projects (project_name,hash) VALUES(?,?);"; //Returns 1 if exist else 0
     db.query(sql, [data.projectName, data.hash], function (err, result) {
@@ -94,7 +79,7 @@ var projectDB = {
     });
   },
   removeProject: function (id, callback) {
-    console.log("\nprojectDB.removeProject()");
+    console.log(FgGreen, "projects.removeProject()", Reset);
     console.log("Deleting project ID:" + id);
     let sql = "DELETE FROM projects WHERE (`id` = ?)";
     db.query(sql, id, function (err, result) {
@@ -105,25 +90,8 @@ var projectDB = {
       }
     });
   },
-  getSarifFileName: function (sarif_filename, callback) {
-    console.log("\nprojectDB.getSarifFileName()");
-    let sql = "SELECT * FROM projects WHERE sarif_filename = ?";
-    db.query(sql, [sarif_filename], function (err, result) {
-      if (err) {
-        console.log(err);
-        return callback(err, null);
-      } else {
-        if (result.length == 0) {
-          return callback(null, result);
-        } else {
-          return callback(null, result[0]);
-        }
-      }
-    });
-    console.log("end of getSarifFileName()");
-  },
   insertSarif: function (sarif_filename, id, callback) {
-    console.log("\nprojectDB.insertSarif()");
+    console.log(FgGreen, "projects.insertSarif()", Reset);
 
     let sql = "UPDATE projects SET sarif_filename = ? WHERE id = ?";
     db.query(sql, [sarif_filename, id], function (err, result) {
@@ -139,9 +107,8 @@ var projectDB = {
       }
     });
   },
-
   insertProcessing: function (id, callback) {
-    console.log("\nprojectDB.insertProcessing()");
+    console.log(FgGreen, "projects.insertProcessing()", Reset);
 
     let sql = "UPDATE projects SET sarif_filename = ? WHERE id = ?";
     db.query(sql, ["processing", id], function (err, result) {
@@ -157,9 +124,8 @@ var projectDB = {
       }
     });
   },
-
   insertSarifFilenameError: function (id, callback) {
-    console.log("\nprojectDB.insertProcessing()");
+    console.log(FgGreen, "projects.insertProcessing()", Reset);
 
     let sql = "UPDATE projects SET sarif_filename = ? WHERE id = ?";
     db.query(sql, ["error", id], function (err, result) {

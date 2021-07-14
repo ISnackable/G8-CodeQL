@@ -7,5 +7,6 @@ node_modules
 databases
 uploads
 SarifFiles
+Snapshots
 tests
 utilities

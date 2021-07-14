@@ -31,7 +31,7 @@ const Overview = () => {
               This page contains the overview of the report generated with CodeQL
             </p>
 
-            <p>only the files that also has a vulnerability are listed here.</p>
+            <p>details of the vulnerability are listed here.</p>
         </article>
           <Card>
             <Card.Body className="mx-auto ">

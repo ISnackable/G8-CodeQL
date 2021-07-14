@@ -75,6 +75,8 @@ function Neo4JShowAll() {
     },
     nodes: {
       scaling: { min: 16, max: 32 },
+      heightConstraint: 50,
+      widthConstraint: 100,
     },
     edges: {
       color: "#000000",

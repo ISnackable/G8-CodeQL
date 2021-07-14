@@ -17,6 +17,7 @@ const middlewares = require("../middlewares");
 const config = require("../config");
 const upload = middlewares.multer.array("files", 100);
 const { Reset, FgGreen } = require("../constants");
+const codeQL = require("../helpers/codeQL");
 
 // --------------------------
 // helper functions
@@ -86,24 +87,18 @@ exports.query = (req, res, next) => {
     } else {
       //file exists
 
-      const args = [
-        "database", // first argv
-        "analyze", // second argv
-        //"--quiet", // suppress output, Incrementally decrease the number of progress messages printed
-        "--format=sarifv2.1.0", // set the result output to SARIF v2.1.0 format
-        `--output=./SarifFiles/${id}.sarif`, // output file as id.sarif in ./SarifFiles/
-        "--sarif-add-snippets", // include code snippets for each location mentioned in the results
-        `./databases/database${id}`, // our database to scan
-        "../../codeql/javascript/ql/src/codeql-suites/javascript-security-extended.qls",
-        "--search-path=../../codeql/misc/suite-helpers", // maybe change? seem like different QL pack use different suite-helpers
-        "--threads=0",
-      ];
-
+      let query;
+      if (config.codeql_home) {
+        query = `${config.codeql_home}/codeql-repo/javascript/ql/src/codeql-suites/javascript-security-extended.qls`;
+      } else {
+        query = `../../codeql/javascript/ql/src/codeql-suites/javascript-security-extended.qls`;
+      }
       // Run CodeQL query command, sarif output file is stored in ./SarifFiles
       // Declaring a child variable to use for troubleshooting
-      var child = execFile("codeql", args, (error, stdout, stderr) => {
-        if (error) {
-          console.error("stderr", stderr);
+      codeQL.analyzeDatabase(`./databases/database${id}`, query, `./SarifFiles/${id}.sarif`, (code, output) => {
+        // if error (Exit Code >= 1)
+        if (code) {
+          console.error("stderr", output);
         } else {
           // If no errors, add sarif file name to the DB
           projectDB.insertSarif(`${id}.sarif`, id, function (err, result) {
@@ -113,19 +108,14 @@ exports.query = (req, res, next) => {
                 var options = {
                   root: path.join(__dirname, "../SarifFiles/"),
                 };
-                // This API provides access to data on the running file system.
-                // Ensure that either (a) the way in which the path argument was constructed into an absolute path is secure if it contains user input
-                // or (b) set the root option to the absolute path of a directory to contain access within.
-                res
-                  .contentType("application/json")
-                  .sendFile(SarifFilePath, options, function (err) {
-                    if (err) {
-                      console.error(err);
-                    } else {
-                      console.log(options);
-                      console.log("Sent:", SarifFilePath);
-                    }
-                  });
+                res.contentType("application/json").sendFile(SarifFilePath, options, function (err) {
+                  if (err) {
+                    console.error(err);
+                  } else {
+                    console.log(options);
+                    console.log("Sent:", SarifFilePath);
+                  }
+                });
               } else {
                 res.status(422).send("The database does not exist.");
               }
@@ -138,16 +128,7 @@ exports.query = (req, res, next) => {
             }
           });
         }
-        console.error(`stderr: ${stderr}`);
-      });
-
-      // for debugging purposes only
-      child.stdout.on("data", function (data) {
-        console.log("[STDOUT]: ", data.toString());
-      });
-      child.stderr.on("data", function (data) {
-        console.log("[STDERR]: ", data.toString());
-      });
+      })
     }
   });
 };
@@ -166,11 +147,7 @@ exports.getAnalysesById = (req, res, next) => {
       return res.status(422).send("The database does not exist.");
     } else {
       //file exists
-      // This API provides access to data on the running file system.
-      // Ensure that either (a) the way in which the path argument was constructed into an absolute path is secure if it contains user input
-      // or (b) set the root option to the absolute path of a directory to contain access within.
-      res.setHeader("Content-Type", "application/json");
-      res.sendFile(SarifFilePath, function (err) {
+      res.contentType("application/json").sendFile(SarifFilePath, function (err) {
         if (err) {
           console.error(err);
         } else {
@@ -216,14 +193,10 @@ exports.folderUpload = (req, res, next) => {
           const pathTo7zip = sevenBin.path7za;
 
           // ./${file.path} == backend/uploads/zippedfile
-          const seven = extractFull(
-            `./${file.path}`,
-            `./uploads/temporaryMulterUpload/`,
-            {
-              $bin: pathTo7zip,
-              recursive: true,
-            }
-          );
+          const seven = extractFull(`./${file.path}`, `./uploads/temporaryMulterUpload/`, {
+            $bin: pathTo7zip,
+            recursive: true,
+          });
 
           seven.on("end", function () {
             try {
@@ -281,7 +254,7 @@ exports.repoUpload = (req, res) => {
   if (fs.existsSync("./uploads/temporaryGitClone"))
     return res.status(409).send({ message: "A project is being uploaded" });
 
-  let repoLinkRegExp = /^(http(s)?)(:(\/\/)?)([\w.@:/\-~]+)(\.git)(\/)?$/;
+  let repoLinkRegExp = /^(?:https?):(\/\/)?(github|gitlab)(.*?)(\.git)(\/?|\#[-\d\w._]+?)$/;
   var repoLink = req.body.repoLink;
   if (!repoLinkRegExp.test(repoLink)) {
     //Checking using regex.
@@ -289,104 +262,83 @@ exports.repoUpload = (req, res) => {
     return;
   }
   try {
-    execFile(
-      "git",
-      ["clone", repoLink, "./uploads/" + "temporaryGitClone", "--depth=1"],
-      (error, stdout, stderr) => {
+    execFile("git", ["clone", repoLink, "./uploads/" + "temporaryGitClone", "--depth=1"], (error, stdout, stderr) => {
+      if (error) {
+        console.error("stderr", stderr);
+      }
+      //For debugging purposes on the backend
+      console.log("stdout", stdout);
+      console.error(`stderr: ${stderr}`);
+      execFile("git", ["-C", "./uploads/temporaryGitClone", "rev-parse", "HEAD"], (error, stdout, stderr) => {
         if (error) {
           console.error("stderr", stderr);
         }
-        //For debugging purposes on the backend
-        console.log("stdout", stdout);
-        console.error(`stderr: ${stderr}`);
-        execFile(
-          "git",
-          ["-C", "./uploads/temporaryGitClone", "rev-parse", "HEAD"],
-          (error, stdout, stderr) => {
-            if (error) {
-              console.error("stderr", stderr);
-            }
 
-            let hash = stdout;
-            if (!hash)
-              return res.status(500).send({ message: "Server error." });
-            projectDB.getProjectHash(hash, function (err1, result) {
-              if (err1) {
-                res.status(500).send({ message: "Server error." });
-              } else {
-                if (result) {
-                  console.log(result);
-                  console.log(
-                    "Database already exist, sending response back to frontend."
-                  );
-                  try {
-                    //Deletes temporary folder
-                    fs.rmSync(`./uploads/temporaryGitClone`, {
-                      recursive: true,
-                    });
-                    console.log(`./uploads/temporaryGitClone is deleted!`);
-                    console.log(
-                      "Database already exist, sending response back to frontend."
-                    );
-                  } catch (err) {
-                    console.error(
-                      `Error while deleting ./uploads/temporaryGitClone.`
-                    );
-                  }
-                  res
-                    .status(409)
-                    .send({ message: "Repository already exist on server." });
-                } else {
-                  console.log(result);
-
-                  // git@github.com:user/repo.git
-                  // ssh://login@server.com:12345/absolute/path/to/repository
-                  // https://<your_username>@bitbucket.org/<workspace_ID>/<repo_name>.git
-                  // https://emmap1@bitbucket.org/tutorials/tutorials.git.bitbucket.org.git
-                  // https://github.com:ISnackable/DISMFYP2021GRP8.git
-                  var matchRepoName = /^(?:git@|https:\/\/).*[:/](.*).git$/;
-                  var data = {
-                    projectName: repoLink.match(matchRepoName)[1],
-                    hash: hash,
-                  };
-                  projectDB.addProject(data, function (err3, results) {
-                    if (err3) {
-                      res.status(500).send({ message: "Server error." });
-                    } else {
-                      fs.rename(
-                        "./uploads/temporaryGitClone",
-                        "./uploads/" + results.insertId,
-                        function (err2) {
-                          if (err2) {
-                            console.log(
-                              "Error renaming temporaryGitClone to its hash."
-                            );
-                            projectDB.removeProject(
-                              results.insertId,
-                              (err4, results1) => {
-                                res
-                                  .status(500)
-                                  .send({ message: "Server error." });
-                              }
-                            );
-                          } else {
-                            console.log(results);
-                            res.status(201).send({
-                              message: "Success. File loaded onto backend",
-                              projectID: results.insertId,
-                            });
-                          }
-                        }
-                      );
-                    }
-                  });
-                }
+        let hash = stdout;
+        if (!hash)
+          return res.status(500).send({ message: "Server error." });
+        projectDB.getProjectHash(hash, function (err1, result) {
+          if (err1) {
+            res.status(500).send({ message: "Server error." });
+          } else {
+            if (result) {
+              console.log(result);
+              console.log(
+                "Database already exist, sending response back to frontend."
+              );
+              try {
+                //Deletes temporary folder
+                fs.rmSync(`./uploads/temporaryGitClone`, {
+                  recursive: true,
+                });
+                console.log(`./uploads/temporaryGitClone is deleted!`);
+                console.log("Database already exist, sending response back to frontend.");
+              } catch (err) {
+                console.error(`Error while deleting ./uploads/temporaryGitClone.`);
               }
-            });
+              res.status(409).send({ message: "Repository already exist on server." });
+            } else {
+              console.log(result);
+
+              // git@github.com:user/repo.git
+              // ssh://login@server.com:12345/absolute/path/to/repository
+              // https://<your_username>@bitbucket.org/<workspace_ID>/<repo_name>.git
+              // https://emmap1@bitbucket.org/tutorials/tutorials.git.bitbucket.org.git
+              // https://github.com:ISnackable/DISMFYP2021GRP8.git
+              var matchRepoName = /^(?:git@|https:\/\/).*[:/](.*).git$/;
+              var data = {
+                projectName: repoLink.match(matchRepoName)[1],
+                hash: hash,
+              };
+              projectDB.addProject(data, function (err3, results) {
+                if (err3) {
+                  res.status(500).send({ message: "Server error." });
+                } else {
+                  fs.rename("./uploads/temporaryGitClone", "./uploads/" + results.insertId, function (err2) {
+                    if (err2) {
+                      console.log(
+                        "Error renaming temporaryGitClone to its hash."
+                      );
+                      projectDB.removeProject(results.insertId, (err4, results1) => {
+                        res.status(500).send({ message: "Server error." });
+                      }
+                      );
+                    } else {
+                      console.log(results);
+                      res.status(201).send({
+                        message: "Success. File loaded onto backend",
+                        projectID: results.insertId,
+                      });
+                    }
+                  }
+                  );
+                }
+              });
+            }
           }
-        );
-      }
-    );
+        });
+      });
+    });
   } catch (error) {
     res.status(500).send({ message: "Server error." });
   }
@@ -521,85 +473,38 @@ exports.customQuery = (req, res) => {
       console.error(err);
       return res.status(422).send("The database does not exist.");
     } else {
-      fs.writeFile(
-        "./codeql-custom-queries-javascript/CustomQuery.ql",
-        CusQuery,
-        function (err) {
-          if (err) {
-            console.error(err);
-            return;
-          } else {
-            console.log("Query successfully saved.");
-            const args = [
-              "database", // first argv
-              "analyze", // second argv
-              //"--quiet", // suppress output, Incrementally decrease the number of progress messages printed
-              "--format=sarifv2.1.0", // set the result output to SARIF v2.1.0 format
-              `--output=./SarifFiles/TemporaryCustomQuery.sarif`, // output file as id.sarif in ./SarifFiles/
-              "--sarif-add-snippets", // include code snippets for each location mentioned in the results
-              `./databases/database${id}`, // our database to scan
-              "./codeql-custom-queries-javascript/CustomQuery.ql",
-              "--search-path=../../codeql/",
-              "--rerun", // Evaluate even queries that seem to have a BQRS result stored in the database already.
-              "--threads=0",
-            ];
+      fs.writeFile("./codeql-custom-queries-javascript/CustomQuery.ql", CusQuery, function (err) {
+        if (err) {
+          return console.error(err);
+        } else {
+          console.log("Query successfully saved.");
 
-            // Run CodeQL query command, sarif output file is stored in ./SarifFiles
-            // Declaring a child variable to use for troubleshooting
-            var child = execFile("codeql", args, (error, stdout, stderr) => {
-              if (error) {
-                console.error("stderr", stderr);
-                return res.status(500).send("Internal Server Error");
-              } else {
-                // If no errors, add sarif file name to the DB
-                projectDB.insertSarif(
-                  `${id}.sarif`,
-                  id,
-                  function (err, result) {
-                    if (!err) {
-                      if (result) {
-                        var SarifFilePath = `TemporaryCustomQuery.sarif`;
-                        var options = {
-                          root: path.join(__dirname, "../SarifFiles/"),
-                        };
-                        // This API provides access to data on the running file system.
-                        // Ensure that either (a) the way in which the path argument was constructed into an absolute path is secure if it contains user input
-                        // or (b) set the root option to the absolute path of a directory to contain access within.
-                        res.setHeader("Content-Type", "application/json");
-                        res.sendFile(SarifFilePath, options, function (err) {
-                          if (err) {
-                            console.error(err);
-                          } else {
-                            console.log(options);
-                            console.log("Sent:", SarifFilePath);
-                            res.end();
-                          }
-                        });
-                      } else {
-                        res.status(422).send("The database does not exist.");
-                      }
-                    } else {
-                      if (err.code == "ER_BAD_NULL_ERROR") {
-                        res.status(400).send("Bad Request");
-                      } else {
-                        res.status(500).send("Internal Server Error");
-                      }
-                    }
-                  }
-                );
-              }
-              console.error(`stderr: ${stderr}`);
-            });
-            // for debugging purposes only
-            child.stdout.on("data", function (data) {
-              console.log("[STDOUT]: ", data.toString());
-            });
-            child.stderr.on("data", function (data) {
-              console.log("[STDERR]: ", data.toString());
-            });
-          }
+          // Run CodeQL query command, sarif output file is stored in ./SarifFiles
+          // Declaring a child variable to use for troubleshooting
+          codeQL.analyzeDatabase(`./databases/database${id}`, `./codeql-custom-queries-javascript/CustomQuery.ql`, "./SarifFiles/TemporaryCustomQuery.sarif", (code, output) => {
+            // if error (Exit Code >= 1)
+            if (code) {
+              console.error("stderr", output);
+              return res.status(500).send("Internal Server Error");
+            } else {
+              var SarifFilePath = `TemporaryCustomQuery.sarif`;
+              var options = {
+                root: path.join(__dirname, "../SarifFiles/"),
+              };
+
+              res.contentType("application/json").sendFile(SarifFilePath, options, function (err) {
+                if (err) {
+                  console.error(err);
+                } else {
+                  console.log(options);
+                  console.log("Sent:", SarifFilePath);
+                  res.end();
+                }
+              });
+            }
+          });
         }
-      );
+      });
     }
   });
 };
@@ -686,25 +591,19 @@ exports.getSnapshots = (req, res) => {
   const id = req.params.id;
   const file = `./Snapshots/database${id}.zip`;
 
-  const args = [
-    "database",
-    "bundle",
-    `--output=${file}`,
-    `./databases/database${id}`,
-  ];
+  codeQL.createSnapshot(`./databases/database${id}`, file, (code, output) => {
+    // error
+    if (code) {
+      console.error(`stderr: ${output}`);;
 
-  var child = execFile("codeql", args, (error, stdout, stderr) => {
-    if (error) {
-      console.error(error);
-      console.error(`stderr: ${stderr}`);
       if (
-        stderr.includes("is not a recognized CodeQL database") ||
-        stderr.includes("has not been finalized")
+        output.includes("is not a recognized CodeQL database") ||
+        output.includes("has not been finalized")
       ) {
         return res.status(400).send({
           message: "Database does not exist or the wrong folder is selected.",
         });
-      } else if (stderr.includes("already exists")) {
+      } else if (output.includes("already exists")) {
         console.log(`Downloading ${file}`);
         return res.download(file);
       }
@@ -715,15 +614,5 @@ exports.getSnapshots = (req, res) => {
       console.log(`Downloading ${file}`);
       res.download(file);
     }
-
-    console.log(stdout);
-  });
-
-  // for debugging purposes only
-  child.stdout.on("data", function (data) {
-    console.log("[STDOUT]: ", data.toString());
-  });
-  child.stderr.on("data", function (data) {
-    console.log("[STDERR]: ", data.toString());
   });
 };

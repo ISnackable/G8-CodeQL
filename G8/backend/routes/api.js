@@ -64,8 +64,6 @@ router.delete(
   apiController.deleteProject
 );
 
-// router.get("/verifySarifFile", apiController.verifySarifFile);
-
 /**
  * 3. Analyses, Most of the /analyses endpoints are used to retrieve the results of analyzing a commit:
  * POST /analyses/{project-id} (Run analysis)

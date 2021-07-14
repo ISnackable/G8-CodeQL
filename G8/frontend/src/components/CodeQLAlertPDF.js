@@ -505,7 +505,7 @@ const MyDocument = (props) => {
                                     color: "#4B82BA",
                                   }}
                                 >
-                                  {messageText}
+                                  {messageText}{" "}
                                 </Link>
                                 {`\tin ${fileLoc} at Line ${startLine}`}
                               </Text>

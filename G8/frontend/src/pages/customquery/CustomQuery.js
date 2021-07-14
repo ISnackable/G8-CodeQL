@@ -374,11 +374,12 @@ select p`);
                       Create your own queries and run them against your own
                       projects !
                     </p>
+                    <small style={{ marginLeft: "20px" }}><a href="https://codeql.github.com/docs/codeql-language-guides/codeql-library-for-javascript/" target="_blank" rel="noopener noreferrer">Click here for CodeQL Language Guide</a></small>
                   </article>
                 </Col>
 
                 <Col md={{ span: 4, offset: 4 }}>
-                  <Row style={{ marginTop: "10px", float: "right" , marginRight: "15px" }}>
+                  <Row style={{ marginTop: "10px", float: "right", marginRight: "15px" }}>
                     <Col className="mb-2">
                       <DownloadCodeQLDatabaseButton
                         id={currentProject.id}
@@ -453,7 +454,7 @@ select p`);
                       variant="primary"
                       size="lg"
                       className="me-2"
-                      style={{ backgroundColor: "#262b40" , marginLeft: "15px" }}
+                      style={{ backgroundColor: "#262b40", marginLeft: "15px" }}
                     >
                       Click for some sample queries
                       <FontAwesomeIcon

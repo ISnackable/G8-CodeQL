@@ -1,3 +1,3 @@
-name: my-custom-codeql-query
+name: codeql-custom-queries-javascript
 version: 0.0.0
 libraryPathDependencies: codeql-javascript

@@ -8,11 +8,11 @@ const fs = require("fs");
 const path = require("path");
 const jsonMap = require("json-source-map");
 const multer = require("multer");
-const { execFile } = require("child_process");
 const { hashElement } = require("folder-hash");
 const neo4j = require("neo4j-driver");
 const projectDB = require("../models/projects.js");
 const config = require("../config");
+const codeQL = require("../helpers/codeQL")
 const { Reset, FgGreen } = require("../constants");
 
 // ------------------------------------------------------
@@ -169,51 +169,34 @@ exports.createCodeQLDatabase = (req, res, next) => {
     }
   });
 
-  const args = [
-    "database", // first argv
-    "create", // second argv
-    `./databases/database${id}`, // database name to be created
-    `--source-root=./uploads/${id}`, // source code folder
-    "--language=javascript", // programming language
-    "--threads=0",
-  ];
-
   // Command to create a database
   // Let the database finish creating or db-javascript will be missing.
-  var child = execFile("codeql", args, (error, stdout, stderr) => {
-    if (error) {
+  codeQL.createDatabase(`./databases/database${id}`, `./uploads/${id}`, "javascript", (code, output) => {
+    // error
+    if (code) {
       projectDB.insertSarifFilenameError(id, (err, result) => {
         if (err) {
           console.log(err);
           return res.status(500).send("Something went wrong! Server side.");
         }
       });
-      console.error(error);
-      console.error(`stderr: ${stderr}`);
-      if (stderr.includes("Invalid source root")) {
+
+      console.error(`stderr: ${output}`);
+      if (output.includes("Invalid source root")) {
         return res.status(400).send({ message: "Database does not exists" });
-      } else if (stderr.includes("exists and is not an empty directory")) {
+      } else if (output.includes("exists and is not an empty directory")) {
         return res.status(409).send({ message: "Database already exists" });
       }
 
       // in stdout
-      if (stdout.includes("No JavaScript or TypeScript code found")) {
+      if (output.includes("No JavaScript or TypeScript code found")) {
         return res.status(400).send({ message: "No JavaScript code found" });
       }
-      // console.error("stderr", stderr);
+
       return res.status(500).send({ message: "Internal Server Error" });
     }
 
-    console.log(stdout);
     next();
-    // res.status(204).send("Database updated with new hash.");
-  });
-  // for debugging purposes only
-  child.stdout.on("data", function (data) {
-    console.log("[STDOUT]: ", data.toString());
-  });
-  child.stderr.on("data", function (data) {
-    console.log("[STDERR]: ", data.toString());
   });
 };
 

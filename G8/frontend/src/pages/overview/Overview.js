@@ -5,14 +5,55 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Routes } from "../../routes";
 import { Link } from "react-router-dom";
 
-import { Col, Row, Button, Card, Table } from "@themesberg/react-bootstrap";
+import { Col, Row, Button, Card, Table ,Image , } from "@themesberg/react-bootstrap";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Neo4jGraphWidget } from "../../components/Widgets";
+
+// For show no errors image
+import G8Logo from "../../assets/img/g8-logo-with-text.png"
+
 const Overview = () => {
   // eslint-disable-next-line no-unused-vars
   const [logs, setLogs] = useLocalStorageState("log", []); // setlog function is a function to replace it
   // function to parse the information from the sarif file into readable human format
+  function Printnoerrorsfound(){
+    return (
+      <>
+      <Row>
+      <Col xs={12} className="p-3">
+      <Card>
+        <Card.Body>
+        <article>
+            <h1 className="h2" id="quick-start">
+              Overview
+            </h1>
+            <p className="fs-5 fw-light">
+              This page contains the overview of the report generated with CodeQL
+            </p>
 
+            <p>only the files that also has a vulnerability are listed here.</p>
+        </article>
+          <Card>
+            <Card.Body className="mx-auto ">
+              <h4 className="fw-bold mt-5">Congrats, no results detected!</h4>
+              <Image
+                className="mx-auto mb-5"
+                src={G8Logo}
+                alt="No Results"
+                height="400"
+                width="350"
+                rounded
+              />
+            </Card.Body>
+          </Card>
+        </Card.Body>
+      </Card>
+      </Col>
+      </Row>
+
+    </>
+    )
+  }
   function Addingalertstothetable() {
     if (logs.length === 0) return;
     if (
@@ -116,7 +157,9 @@ const Overview = () => {
         noOfRecommendation++;
       }
     }
-
+    if(noOfError===0&&noOfWarnings===0&&noOfRecommendation===0){
+      return (<Printnoerrorsfound />)
+    }
     // the html that returned when there is a poroject that is analysed
     return (
       <>

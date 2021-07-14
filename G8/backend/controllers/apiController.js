@@ -347,13 +347,7 @@ exports.repoUpload = (req, res) => {
 exports.showAllInProjectNeo4J = (req, res) => {
   console.log(FgGreen, `apiController.showAllInProjectNeo4J()`, Reset);
 
-  const driver = neo4j.driver(
-    `bolt://${config.neo_host}:7687`,
-    neo4j.auth.basic("neo4j", "s3cr3t"),
-    {
-      /* encrypted: 'ENCRYPTION_OFF' */
-    }
-  );
+  const driver = neo4j.driver(`bolt://${config.neo_host}:7687`, neo4j.auth.basic("neo4j", "s3cr3t"));
   const id = req.params.id;
   const query = `WITH 1 as dummy
   Match (n)-[r]->(m)
@@ -552,13 +546,7 @@ exports.deleteProject = (req, res) => {
         }
       });
 
-      const driver = neo4j.driver(
-        `bolt://${config.neo_host}:7687`,
-        neo4j.auth.basic("neo4j", "s3cr3t"),
-        {
-          /* encrypted: 'ENCRYPTION_OFF' */
-        }
-      );
+      const driver = neo4j.driver(`bolt://${config.neo_host}:7687`, neo4j.auth.basic("neo4j", "s3cr3t"));
 
       const query = `
         MATCH (n {ProjectID: '${id}'})

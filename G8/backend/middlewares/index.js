@@ -23,15 +23,19 @@ var storage = multer.diskStorage({
     let filePath = path.posix.normalize(file.originalname);
     let { dir, name } = path.parse(filePath);
 
+    // This is to set the project name in the database. It will take the first file as the project name
     if (!req.projectName) {
       req.projectName = dir ? dir.split("/")[1] : name;
     }
 
+    // Setting the destination to a temporary location first, so can check whether hash is same
     let newDestination = `uploads/temporaryMulterUpload/${dir}`;
     let stat = null;
     try {
+      // This is to check if the destination exists
       stat = fs.statSync(newDestination);
     } catch (err) {
+      // Create the directory if it does not exist
       fs.mkdirSync(newDestination, { recursive: true });
     }
     if (stat && !stat.isDirectory()) {
@@ -82,6 +86,7 @@ exports.multer = multer({
   },
 });
 
+// This is a middleware to check whether the multer upload is already uploaded before
 exports.checkDuplicateProject = (req, res, next) => {
   console.log(FgGreen, `middlewares.checkDuplicateProject()`, Reset);
 
@@ -93,23 +98,24 @@ exports.checkDuplicateProject = (req, res, next) => {
     folders: { ignoreRootName: true, exclude: ["node_modules"] },
   };
 
+  // Hashing the temporaryMulterUpload folder using SHA1 hex, and getting the hash result
   hashElement(`./uploads/temporaryMulterUpload`, options).then((hash) => {
     //--Insert code to check duplicate
     console.log(hash.hash);
+    // Compare the hash result in the database
     projectDB.getProjectHash(hash.hash, function (err, result) {
       if (err) {
         res.status(500).send({ message: "Internal Server Error" });
       } else {
         if (result) {
+          // results === true, hash exists in the database, remove the temporary multer upload directory
           try {
             //Deletes temporary folder
             fs.rmSync(`./uploads/temporaryMulterUpload`, {
               recursive: true,
             });
             console.log(`./uploads/temporaryMulterUpload is deleted!`);
-            console.log(
-              "Database already exist, sending response back to frontend."
-            );
+            console.log("Database already exist, sending response back to frontend.");
           } catch (err) {
             console.error(
               `Error while deleting ./uploads/temporaryMulterUpload.`
@@ -117,38 +123,37 @@ exports.checkDuplicateProject = (req, res, next) => {
           }
           res.status(409).send({ message: "Project already exist on server." });
         } else {
+          // results === false, project does not exist in database, rename the temporay multer upload into database${id}
           var data = {
             projectName: projectName,
             hash: hash.hash,
           };
 
+          // add the project into the database
           projectDB.addProject(data, function (err3, results) {
             if (err3) {
               res.status(500).send({ message: "Server error." });
             } else {
-              fs.rename(
-                "./uploads/temporaryMulterUpload",
-                "./uploads/" + results.insertId,
-                function (err2) {
-                  if (err2) {
-                    console.log(
-                      "Error renaming temporaryMulterUpload to its projectId."
-                    );
-                    projectDB.removeProject(
-                      results.insertId,
-                      (err4, results1) => {
-                        res.status(500).send({ message: "Server error." });
-                      }
-                    );
-                  } else {
-                    console.log(results);
-                    res.status(201).send({
-                      message: "Success. File loaded onto backend",
-                      projectID: results.insertId,
-                    });
-                  }
+              // rename the temporay multer upload into database${id} in the uploads folder
+              fs.rename("./uploads/temporaryMulterUpload", "./uploads/" + results.insertId, function (err2) {
+                if (err2) {
+                  console.log(
+                    "Error renaming temporaryMulterUpload to its projectId."
+                  );
+                  projectDB.removeProject(
+                    results.insertId,
+                    (err4, results1) => {
+                      res.status(500).send({ message: "Server error." });
+                    }
+                  );
+                } else {
+                  console.log(results);
+                  res.status(201).send({
+                    message: "Success. File loaded onto backend",
+                    projectID: results.insertId,
+                  });
                 }
-              );
+              });
             }
           });
         }
@@ -162,6 +167,7 @@ exports.createCodeQLDatabase = (req, res, next) => {
   console.log(FgGreen, `middlewares.createCodeQLDatabase()`, Reset);
 
   const id = req.params.id;
+  // When creating a codeql database, insert "processing" to "sarif_filename" column
   projectDB.insertProcessing(id, (err, result) => {
     if (err) {
       console.log(err);
@@ -174,6 +180,7 @@ exports.createCodeQLDatabase = (req, res, next) => {
   codeQL.createDatabase(`./databases/database${id}`, `./uploads/${id}`, "javascript", (code, output) => {
     // error
     if (code) {
+      // If error, insert "error" to "sarif_filename" column
       projectDB.insertSarifFilenameError(id, (err, result) => {
         if (err) {
           console.log(err);
@@ -405,6 +412,7 @@ exports.createNeo4J = (req, res) => {
   });
 };
 
+// This is a middleware for the id params validation. Id has to be a decimal number
 exports.idValidation = (req, res, next) => {
   console.log(FgGreen, `middlewares.idValidation()`, Reset);
 
@@ -419,8 +427,8 @@ exports.idValidation = (req, res, next) => {
   }
 };
 
+// This is a middleware to check whether a project is already being processed using the params id
 exports.checkProcessing = (req, res, next) => {
-  // This middleware checks whether the current project is processing using params id.
   console.log(FgGreen, `middlewares.checkProcessing()`, Reset);
 
   console.log("checkProcessing Status");

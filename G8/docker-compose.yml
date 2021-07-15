@@ -38,7 +38,7 @@ services:
       args:
         # UNCOMMENT TO SPECIFY A CODEQL CLI VERSION, defaults to latest version
         # CODEQL_VERSION: "v2.5.7"
-        PRECOMPILE_QUERIES: "false" # FALSE TO REDUCE CREATION TIME
+        PRECOMPILE_QUERIES: "true" # FALSE TO REDUCE CREATION TIME
     environment:
       CODEQL_HOME: /usr/local/codeql-home
       DB_HOST: mariadb

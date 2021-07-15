@@ -86,7 +86,9 @@ exports.multer = multer({
   },
 });
 
-// This is a middleware to check whether the multer upload is already uploaded before
+/**
+ * This is a middleware to check whether the multer upload is already uploaded before
+ */
 exports.checkDuplicateProject = (req, res, next) => {
   console.log(FgGreen, `middlewares.checkDuplicateProject()`, Reset);
 
@@ -111,9 +113,7 @@ exports.checkDuplicateProject = (req, res, next) => {
           // results === true, hash exists in the database, remove the temporary multer upload directory
           try {
             //Deletes temporary folder
-            fs.rmSync(`./uploads/temporaryMulterUpload`, {
-              recursive: true,
-            });
+            fs.rmSync(`./uploads/temporaryMulterUpload`, { recursive: true, });
             console.log(`./uploads/temporaryMulterUpload is deleted!`);
             console.log("Database already exist, sending response back to frontend.");
           } catch (err) {
@@ -137,14 +137,10 @@ exports.checkDuplicateProject = (req, res, next) => {
               // rename the temporay multer upload into database${id} in the uploads folder
               fs.rename("./uploads/temporaryMulterUpload", "./uploads/" + results.insertId, function (err2) {
                 if (err2) {
-                  console.log(
-                    "Error renaming temporaryMulterUpload to its projectId."
-                  );
-                  projectDB.removeProject(
-                    results.insertId,
-                    (err4, results1) => {
-                      res.status(500).send({ message: "Server error." });
-                    }
+                  console.log("Error renaming temporaryMulterUpload to its projectId.");
+                  projectDB.removeProject(results.insertId, (err4, results1) => {
+                    res.status(500).send({ message: "Server error." });
+                  }
                   );
                 } else {
                   console.log(results);
@@ -162,7 +158,9 @@ exports.checkDuplicateProject = (req, res, next) => {
   });
 };
 
-// Create Database
+/**
+ * Create CodeQL database middleware
+ */
 exports.createCodeQLDatabase = (req, res, next) => {
   console.log(FgGreen, `middlewares.createCodeQLDatabase()`, Reset);
 
@@ -172,42 +170,45 @@ exports.createCodeQLDatabase = (req, res, next) => {
     if (err) {
       console.log(err);
       return res.status(500).send("Something went wrong! Server side.");
-    }
-  });
+    } else {
+      // Command to create a database
+      // Let the database finish creating or db-javascript will be missing.
+      codeQL.createDatabase(`./databases/database${id}`, `./uploads/${id}`, "javascript", (code, output) => {
+        // error
+        if (code) {
+          // If error, insert "error" to "sarif_filename" column
+          projectDB.insertSarifFilenameError(id, (err, result) => {
+            if (err) {
+              console.log(err);
+              return res.status(500).send("Something went wrong! Server side.");
+            }
+          });
 
-  // Command to create a database
-  // Let the database finish creating or db-javascript will be missing.
-  codeQL.createDatabase(`./databases/database${id}`, `./uploads/${id}`, "javascript", (code, output) => {
-    // error
-    if (code) {
-      // If error, insert "error" to "sarif_filename" column
-      projectDB.insertSarifFilenameError(id, (err, result) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).send("Something went wrong! Server side.");
+          console.error(`stderr: ${output}`);
+          if (output.includes("Invalid source root")) {
+            return res.status(400).send({ message: "Database does not exists" });
+          } else if (output.includes("exists and is not an empty directory")) {
+            return res.status(409).send({ message: "Database already exists" });
+          }
+
+          // in stdout
+          if (output.includes("No JavaScript or TypeScript code found")) {
+            return res.status(400).send({ message: "No JavaScript code found" });
+          }
+
+          return res.status(500).send({ message: "Internal Server Error" });
         }
+
+        next();
       });
-
-      console.error(`stderr: ${output}`);
-      if (output.includes("Invalid source root")) {
-        return res.status(400).send({ message: "Database does not exists" });
-      } else if (output.includes("exists and is not an empty directory")) {
-        return res.status(409).send({ message: "Database already exists" });
-      }
-
-      // in stdout
-      if (output.includes("No JavaScript or TypeScript code found")) {
-        return res.status(400).send({ message: "No JavaScript code found" });
-      }
-
-      return res.status(500).send({ message: "Internal Server Error" });
     }
-
-    next();
   });
+
 };
 
-// Create Neo4j
+/**
+ * Create a Neo4J data base of the sarif file middleware
+ */
 exports.createNeo4J = (req, res) => {
   console.log(FgGreen, `middlewares.createNeo4J()`, Reset);
 
@@ -374,13 +375,7 @@ exports.createNeo4J = (req, res) => {
         } // End of Create Alert For Loop
       } // End of Create File Loop
 
-      const driver = neo4j.driver(
-        `bolt://${config.neo_host}:7687`,
-        neo4j.auth.basic("neo4j", "s3cr3t"),
-        {
-          /* encrypted: 'ENCRYPTION_OFF' */
-        }
-      );
+      const driver = neo4j.driver(`bolt://${config.neo_host}:7687`, neo4j.auth.basic("neo4j", "s3cr3t"));
       const deleteQuery = `
         MATCH (n)
         DETACH DELETE n`;
@@ -412,7 +407,9 @@ exports.createNeo4J = (req, res) => {
   });
 };
 
-// This is a middleware for the id params validation. Id has to be a decimal number
+/**
+ * This is a middleware for the id params validation. Id has to be a decimal number
+ */
 exports.idValidation = (req, res, next) => {
   console.log(FgGreen, `middlewares.idValidation()`, Reset);
 
@@ -427,26 +424,28 @@ exports.idValidation = (req, res, next) => {
   }
 };
 
-// This is a middleware to check whether a project is already being processed using the params id
+/**
+ * This is a middleware to check whether a project is already being processed using the params id
+ */
 exports.checkProcessing = (req, res, next) => {
   console.log(FgGreen, `middlewares.checkProcessing()`, Reset);
 
   console.log("checkProcessing Status");
   const id = req.params.id;
+  
   projectDB.getProjectId(id, function (err, result) {
     if (!err) {
       console.log(result.sarif_filename);
       if (result.sarif_filename == "processing") {
         var output = {
-          error:
-            "Still processing a project. Please wait for current project to successfully analyze.",
+          message: "Still processing a project. Please wait for current project to successfully analyze.",
         };
         return res.status(503).send(output);
       }
       return next();
     } else {
       var output = {
-        error: "Unable to get all the existing project information",
+        message: "Unable to get all the existing project information",
       };
       return res.status(500).send(output);
     }

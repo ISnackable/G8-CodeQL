@@ -53,8 +53,8 @@ const createDatabase = (
   });
   child.stderr.on("data", function (data) {
     data = data.toString();
-
     console.log("[STDERR]: ", data);
+
     scriptOutput += data;
   });
   child.on("close", function (code) {
@@ -94,6 +94,7 @@ const analyzeDatabase = (
     `--output=${output}`, // output file as id.sarif in ./SarifFiles/
     `--search-path=${config.codeql_home ?? "../../codeql"}`,
     "--threads=0",
+    "--ram=4000" // set the maximum ram codeQL should use for analyze, causes an issue in Docker if not set.
   ];
 
   if (query.includes("CustomQuery.ql")) args.push("--rerun");
@@ -113,8 +114,8 @@ const analyzeDatabase = (
   });
   child.stderr.on("data", function (data) {
     data = data.toString();
-
     console.log("[STDERR]: ", data);
+
     scriptOutput += data;
   });
   child.on("close", function (code) {
@@ -153,8 +154,8 @@ const createSnapshot = (database, output, callback) => {
   });
   child.stderr.on("data", function (data) {
     data = data.toString();
-
     console.log("[STDERR]: ", data);
+
     scriptOutput += data;
   });
   child.on("close", function (code) {

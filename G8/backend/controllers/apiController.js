@@ -15,9 +15,10 @@ const neo4j = require("neo4j-driver");
 const projectDB = require("../models/projects.js");
 const middlewares = require("../middlewares");
 const config = require("../config");
-const upload = middlewares.multer.array("files", 100);
 const { Reset, FgGreen } = require("../constants");
 const codeQL = require("../helpers/codeQL");
+
+const upload = middlewares.multer.array("files", 100);
 
 // --------------------------
 // helper functions
@@ -35,44 +36,54 @@ const codeQL = require("../helpers/codeQL");
 // end points
 // --------------------------------------------------
 
+/**
+ * A express endpoint to get all of the projects in the database
+ */
 exports.getProject = (req, res) => {
   // printDebugInfo("/g8/api/projects", req);
   console.log(FgGreen, `apiController.getProject()`, Reset);
 
   projectDB.getProject(function (err, result) {
+    // Returns the all columns of the all project table if no error
     if (!err) {
       res.status(200).send(result);
     } else {
       let output = {
-        error: "Unable to get all the existing project information",
+        message: "Unable to get all the existing project information",
       };
       res.status(500).send(output);
     }
   });
 };
 
+/**
+ * A express endpoint to get a single projects in the database by id
+ */
 exports.getProjectById = (req, res) => {
   console.log(FgGreen, `apiController.getProjectById()`, Reset);
 
-  var projectid = req.params.id;
+  const projectid = req.params.id;
   const projectIDpath = `/api/projects/${projectid}`;
 
   fs.access(projectIDpath, fs.F_OK, (err) => {
     projectDB.getProjectId(projectid, function (err, result) {
+      // Returns the all columns of the specifed project table id if no error
       if (!err) {
         if (result.length == 0) {
-          res.status(200).send("Project not found");
+          res.status(200).send({ message: "Project not found" });
         } else {
           res.status(200).send(result);
         }
       } else {
-        res.status(500).send("Some error");
+        res.status(500).send({ message: "Internal Server Error" });
       }
     });
   });
 };
 
-// Query current database number in the counter
+/**
+ * A express endpoint to query a codeQL database by the id
+ */
 exports.query = (req, res, next) => {
   console.log(FgGreen, `apiController.query()`, Reset);
 
@@ -83,7 +94,7 @@ exports.query = (req, res, next) => {
   fs.access(CodeQLpath, fs.F_OK, (err) => {
     if (err) {
       console.error(err);
-      return res.status(422).send("The database does not exist.");
+      return res.status(422).send({ message: "The database does not exist." });
     } else {
       //file exists
 
@@ -115,15 +126,19 @@ exports.query = (req, res, next) => {
                     console.log(options);
                     console.log("Sent:", SarifFilePath);
                   }
+                  console.log(`application/jsonapplication/json" `);
                 });
               } else {
-                res.status(422).send("The database does not exist.");
+                console.log(`message: "Bhe database does not exist.st" `);
+                res.status(422).send({ message: "The database does not exist." });
               }
             } else {
+              console.log(`message: "Bad Request" `);
               if (err.code == "ER_BAD_NULL_ERROR") {
-                res.status(400).send("Bad Request");
+                res.status(400).send({ message: "Bad Request" });
               } else {
-                res.status(500).send("Internal Server Error");
+                console.log(`message: "Internal Server Error" `);
+                res.status(500).send({ message: "Internal Server Error" });
               }
             }
           });
@@ -133,7 +148,9 @@ exports.query = (req, res, next) => {
   });
 };
 
-// Get analyses by ID
+/**
+ * A express endpoint to get the analyses result (sarif) by id
+ */
 exports.getAnalysesById = (req, res, next) => {
   console.log(FgGreen, `apiController.getAnalysesById()`, Reset);
 
@@ -144,7 +161,7 @@ exports.getAnalysesById = (req, res, next) => {
   fs.access(SarifFilePath, fs.F_OK, (err) => {
     if (err) {
       console.error(err);
-      return res.status(422).send("The database does not exist.");
+      return res.status(422).send({ message: "The database does not exist." });
     } else {
       //file exists
       res.contentType("application/json").sendFile(SarifFilePath, function (err) {
@@ -159,16 +176,19 @@ exports.getAnalysesById = (req, res, next) => {
   });
 };
 
+/**
+ * A express endpoint to upload files with multer
+ */
 exports.folderUpload = (req, res, next) => {
   console.log(FgGreen, `apiController.folderUpload()`, Reset);
 
   if (fs.existsSync("./uploads/temporaryMulterUpload"))
-    return res.status(409).send({ message: "A project is being uploaded" });
+    return res.status(409).send({ message: "A project is being uploaded, if you suspect this is an error. Manually delete the 'temporaryMulterUpload' in the backend" });
 
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
-      return res.status(500).send("Internal Server Error");
+      return res.status(500).send({ message: "Internal Server Error" });
     } else if (err) {
       // An unknown error occurred when uploading.
       if (req.fileValidationError)
@@ -193,7 +213,8 @@ exports.folderUpload = (req, res, next) => {
           const pathTo7zip = sevenBin.path7za;
 
           // ./${file.path} == backend/uploads/zippedfile
-          const seven = extractFull(`./${file.path}`, `./uploads/temporaryMulterUpload/`, {
+          let temporaryMulterUploadPath = path.join(".", "uploads", "temporaryMulterUpload");
+          const seven = extractFull(`./${file.path.split(path.sep).join(path.posix.sep)}`, temporaryMulterUploadPath, {
             $bin: pathTo7zip,
             recursive: true,
           });
@@ -218,7 +239,7 @@ exports.folderUpload = (req, res, next) => {
           // cannot set res.status(500) here as callback is too slow, causes express http header error
           seven.on("error", function (err) {
             console.error(err);
-            throw new Error("Failed to extract file");
+            
           });
         } else {
           if (req.files.length - 1 === index) {
@@ -300,11 +321,6 @@ exports.repoUpload = (req, res) => {
             } else {
               console.log(result);
 
-              // git@github.com:user/repo.git
-              // ssh://login@server.com:12345/absolute/path/to/repository
-              // https://<your_username>@bitbucket.org/<workspace_ID>/<repo_name>.git
-              // https://emmap1@bitbucket.org/tutorials/tutorials.git.bitbucket.org.git
-              // https://github.com:ISnackable/DISMFYP2021GRP8.git
               var matchRepoName = /^(?:git@|https:\/\/).*[:/](.*).git$/;
               var data = {
                 projectName: repoLink.match(matchRepoName)[1],
@@ -344,6 +360,9 @@ exports.repoUpload = (req, res) => {
   }
 };
 
+/**
+ * A express endpoint to get all the neo4j nodes by id
+ */
 exports.showAllInProjectNeo4J = (req, res) => {
   console.log(FgGreen, `apiController.showAllInProjectNeo4J()`, Reset);
 
@@ -433,6 +452,9 @@ exports.showAllInProjectNeo4J = (req, res) => {
     });
 };
 
+/**
+ * A express endpoint to create a custom query & send the result back
+ */
 exports.customQuery = (req, res) => {
   console.log(FgGreen, `apiController.customQuery()`, Reset);
 
@@ -465,7 +487,7 @@ exports.customQuery = (req, res) => {
   fs.access(CodeQLpath, fs.F_OK, (err) => {
     if (err) {
       console.error(err);
-      return res.status(422).send("The database does not exist.");
+      return res.status(422).send({ message: "The database does not exist." });
     } else {
       fs.writeFile("./codeql-custom-queries-javascript/CustomQuery.ql", CusQuery, function (err) {
         if (err) {
@@ -479,7 +501,7 @@ exports.customQuery = (req, res) => {
             // if error (Exit Code >= 1)
             if (code) {
               console.error("stderr", output);
-              return res.status(500).send("Internal Server Error");
+              return res.status(500).send({ message: "Internal Server Error" });
             } else {
               var SarifFilePath = `TemporaryCustomQuery.sarif`;
               var options = {
@@ -503,13 +525,28 @@ exports.customQuery = (req, res) => {
   });
 };
 
+/**
+ * A express endpoint to delete a project in the database by id
+ */
 exports.deleteProject = (req, res) => {
   console.log(FgGreen, `apiController.deleteProject()`, Reset);
 
   const id = req.params.id;
-  var databaseFolder = `./databases/database${id}`;
-  var sarifFile = `./SarifFiles/${id}.sarif`;
-  var uploadsFolder = `./uploads/${id}`;
+  const databaseFolder = `./databases/database${id}`;
+  const sarifFile = `./SarifFiles/${id}.sarif`;
+  const uploadsFolder = `./uploads/${id}`;
+
+  if (databaseFolder.indexOf('\0') !== -1 || sarifFile.indexOf('\0') !== -1 || uploadsFolder.indexOf('\0') !== -1) {
+    return res.status(400).send('That was evil.');
+  }
+
+  let rootDirectory = "/usr/src/app/";
+  let databaseFolderPath = path.join(rootDirectory, databaseFolder).split(path.sep).join(path.posix.sep);
+  let sarifFilePath = path.join(rootDirectory, sarifFile).split(path.sep).join(path.posix.sep);
+  let uploadsFolderPath = path.join(rootDirectory, uploadsFolder).split(path.sep).join(path.posix.sep);
+  if (databaseFolderPath.indexOf(rootDirectory) !== 0 || sarifFilePath.indexOf(rootDirectory) !== 0 || uploadsFolderPath.indexOf(rootDirectory) !== 0) {
+    return res.status(400).send('trying to sneak out of the web root?');
+  }
 
   // Attemps to remove projectid from the database first
   projectDB.removeProject(id, function (err, result) {
@@ -566,13 +603,17 @@ exports.deleteProject = (req, res) => {
         });
 
       var output = {
-        "Project deleted": result.affectedRows,
+        message: "Project deleted",
+        affectedRows: result.affectedRows,
       };
       res.status(200).send(output);
     }
   });
 };
 
+/**
+ * A express endpoint to download a codeQL database snapshot by id
+ */
 exports.getSnapshots = (req, res) => {
   console.log(FgGreen, `apiController.getSnapshots()`, Reset);
 

@@ -126,7 +126,8 @@ ARG PRECOMPILE_QUERIES=false
 RUN if [ "$PRECOMPILE_QUERIES" = "true" ] ; \
     # then codeql query compile --threads=0 ${CODEQL_HOME}/codeql-repo/*/ql/src/codeql-suites/*.qls && \
     # query compile --threads=0 ${CODEQL_HOME}/codeql-go-repo/ql/src/codeql-suites/*.qls; \
-    then codeql query compile --threads=0 ${CODEQL_HOME}/codeql-repo/javascript/ql/src/codeql-suites/*.qls; \
+    # then codeql query compile --threads=0 ${CODEQL_HOME}/codeql-repo/javascript/ql/src/codeql-suites/*.qls; \
+    then codeql query compile --threads=0 ${CODEQL_HOME}/codeql-repo/javascript/ql/src/codeql-suites/javascript-security-extended.qls; \
     else echo 'WARNING: NO PRECOMPILE_QUERIES, Pre-compiling CodeQL queries can save time later'; fi
 # Pre-compile our queries to save time later
 # RUN codeql query compile --threads=0 ${CODEQL_HOME}/codeql-repo/*/ql/src/codeql-suites/*.qls

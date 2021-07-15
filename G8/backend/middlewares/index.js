@@ -86,6 +86,21 @@ exports.multer = multer({
   },
 });
 
+/*
+    Creating hashes over folders (with default options)
+    Content means in this case a folder's children - both the files and the subfolders with their children.
+
+    The hashes are the same if:
+
+    A folder is checked again
+    Two folders have the same name and content (but have different parent folders)
+
+    The hashes are different if:
+
+    A file somewhere in the directory structure was renamed or its content was changed
+    Two folders have the same name but different content
+    Two folders have the same content but different names
+  */
 /**
  * This is a middleware to check whether the multer upload is already uploaded before
  */

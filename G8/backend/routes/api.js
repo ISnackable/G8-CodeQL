@@ -15,7 +15,7 @@ const createProjectLimiter = rateLimit({
   windowMs: 1 * 10 * 1000, // 10 seconds
   max: 2, // limit each IP to 2 requests per windowMs
   message:
-    "Too many project created from this IP, please try again after an hour",
+    "Too many request from this IP, please try again after 10 seconds",
 });
 // ------------------------------------------------------
 // end points

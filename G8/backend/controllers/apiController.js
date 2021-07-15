@@ -63,22 +63,20 @@ exports.getProjectById = (req, res) => {
   console.log(FgGreen, `apiController.getProjectById()`, Reset);
 
   const projectid = req.params.id;
-  const projectIDpath = `/api/projects/${projectid}`;
 
-  fs.access(projectIDpath, fs.F_OK, (err) => {
-    projectDB.getProjectId(projectid, function (err, result) {
-      // Returns the all columns of the specifed project table id if no error
-      if (!err) {
-        if (result.length == 0) {
-          res.status(200).send({ message: "Project not found" });
-        } else {
-          res.status(200).send(result);
-        }
+  projectDB.getProjectId(projectid, function (err, result) {
+    // Returns the all columns of the specifed project table id if no error
+    if (!err) {
+      if (result.length === 0) {
+        res.status(200).send({ message: "Project not found" });
       } else {
-        res.status(500).send({ message: "Internal Server Error" });
+        res.status(200).send(result);
       }
-    });
+    } else {
+      res.status(500).send({ message: "Internal Server Error" });
+    }
   });
+
 };
 
 /**
@@ -197,78 +195,63 @@ exports.folderUpload = (req, res, next) => {
     } else if (!req.files) {
       return res.status(400).send({ message: "No files selected" });
     }
-    try {
-      req.files.forEach((file, index) => {
-        let { ext } = path.parse(file.path);
-        if (
-          file.mimetype === "application/x-7z-compressed" ||
-          file.mimetype === "application/x-zip-compressed" ||
-          file.mimetype === "application/zip" ||
-          file.mimetype === "application/x-tar" ||
-          file.mimetype === "application/x-gzip" ||
-          file.mimetype === "application/vnd.rar" ||
-          (file.mimetype === "application/octet-stream" &&
-            (ext === ".7z" || ext === ".zip"))
-        ) {
-          const pathTo7zip = sevenBin.path7za;
 
-          // ./${file.path} == backend/uploads/zippedfile
-          let temporaryMulterUploadPath = path.join(".", "uploads", "temporaryMulterUpload");
-          const seven = extractFull(`./${file.path.split(path.sep).join(path.posix.sep)}`, temporaryMulterUploadPath, {
-            $bin: pathTo7zip,
-            recursive: true,
-          });
+    req.files.forEach((file, index) => {
+      let { ext } = path.parse(file.path);
+      if (
+        file.mimetype === "application/x-7z-compressed" ||
+        file.mimetype === "application/x-zip-compressed" ||
+        file.mimetype === "application/zip" ||
+        file.mimetype === "application/x-tar" ||
+        file.mimetype === "application/x-gzip" ||
+        file.mimetype === "application/vnd.rar" ||
+        (file.mimetype === "application/octet-stream" &&
+          (ext === ".7z" || ext === ".zip"))
+      ) {
+        const pathTo7zip = sevenBin.path7za;
 
-          seven.on("end", function () {
-            try {
-              // delete archive file
-              fs.rmSync(`./${file.path}`);
+        // ./${file.path} == backend/uploads/zippedfile
+        let temporaryMulterUploadPath = path.join(".", "uploads", "temporaryMulterUpload");
+        const seven = extractFull(`./${file.path.split(path.sep).join(path.posix.sep)}`, temporaryMulterUploadPath, {
+          $bin: pathTo7zip,
+          recursive: true,
+        });
 
-              // done extracting last archive in files
-              if (req.files.length - 1 === index) {
-                return next();
-                // Assumed no error
-                // res.setHeader("Content-Type", "text/plain");
-                // return res.status(200).send({ message: "OK." });
-              }
-            } catch (err) {
-              console.error(`Error while deleting ${file.path}.`);
+        // 7zip successfully extracted the archive
+        seven.on("end", function () {
+          try {
+            // delete archive file
+            fs.rmSync(`./${file.path}`);
+
+            // done extracting last archive in files
+            // It is neccessary to check whether index is the last index of files
+            // so that we can extract all archive files before returning to the next middleware
+            if (req.files.length - 1 === index) {
+              return next();
             }
-          });
-
-          // cannot set res.status(500) here as callback is too slow, causes express http header error
-          seven.on("error", function (err) {
-            console.error(err);
-            
-          });
-        } else {
-          if (req.files.length - 1 === index) {
-            // Assumed no error
-            return next();
+          } catch (err) {
+            console.error(`Error while deleting ${file.path}.`);
           }
+        });
+
+        // cannot set res.status(500) here as callback is too slow, causes express http header error
+        seven.on("error", function (err) {
+          console.error(err);
+        });
+      } else {
+        if (req.files.length - 1 === index) {
+          // Assumed no error
+          return next();
         }
-      });
-    } catch (error) {
-      return res.status(500).send({ message: "Internal Server Error" });
-    }
+      }
+    });
+
   });
 };
 
-/*
-    Creating hashes over folders (with default options)
-    Content means in this case a folder's children - both the files and the subfolders with their children.
-
-    The hashes are the same if:
-
-    A folder is checked again
-    Two folders have the same name and content (but have different parent folders)
-
-    The hashes are different if:
-
-    A file somewhere in the directory structure was renamed or its content was changed
-    Two folders have the same name but different content
-    Two folders have the same content but different names
-  */
+/**
+ * A express endpoint to upload files with git clone
+ */
 exports.repoUpload = (req, res) => {
   console.log(FgGreen, `apiController.repoUpload()`, Reset);
 
@@ -321,7 +304,7 @@ exports.repoUpload = (req, res) => {
             } else {
               console.log(result);
 
-              var matchRepoName = /^(?:git@|https:\/\/).*[:/](.*).git$/;
+              const matchRepoName = /^(?:https?:\/\/).*[:/](.*).git$/;
               var data = {
                 projectName: repoLink.match(matchRepoName)[1],
                 hash: hash,
@@ -346,8 +329,7 @@ exports.repoUpload = (req, res) => {
                         projectID: results.insertId,
                       });
                     }
-                  }
-                  );
+                  });
                 }
               });
             }
@@ -372,8 +354,8 @@ exports.showAllInProjectNeo4J = (req, res) => {
   Match (n)-[r]->(m)
   WHERE n.ProjectID = "${id}" AND r.ProjectID = "${id}" AND m.ProjectID = "${id}"
   Return n,r,m`;
-  var nodes = [];
-  var edges = [];
+  const nodes = [];
+  const edges = [];
   const session = driver.session({ database: "neo4j" });
   session
     .run(query)
@@ -397,17 +379,6 @@ exports.showAllInProjectNeo4J = (req, res) => {
           return undefined;
         }
       };
-
-      // function not used
-      // var check_duplicate_id = (node) => {
-      //   nodes.forEach((single_node) => {
-      //     if (single_node.id == node.identity.low) {
-      //       return true;
-      //     } else {
-      //       return false;
-      //     }
-      //   });
-      // };
 
       var check_duplicate = [];
       result.records.forEach((record) => {
@@ -476,6 +447,9 @@ exports.customQuery = (req, res) => {
 
   let selectQuery = req.body.CustomQuery?.match(/[Ss]elect(.*)/g)[0];
 
+  // This is to check whether the select statement contains mutiple fields
+  // This check is required as @kind path/path-problems requires even fields
+  // Adds a filler text if it is not even
   if (!selectQuery?.includes(",") || selectQuery.split(",").length % 2 !== 0) {
     console.warn("Select statement is not even");
     req.body.CustomQuery += `, "Filler text"`;
@@ -602,7 +576,7 @@ exports.deleteProject = (req, res) => {
           console.error(error);
         });
 
-      var output = {
+      let output = {
         message: "Project deleted",
         affectedRows: result.affectedRows,
       };

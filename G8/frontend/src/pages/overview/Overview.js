@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Routes } from "../../routes";
 import { Link } from "react-router-dom";
 
-import { Col, Row, Button, Card, Table ,Image , } from "@themesberg/react-bootstrap";
+import { Col, Row, Button, Card, Table, Image } from "@themesberg/react-bootstrap";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Neo4jGraphWidget } from "../../components/Widgets";
 
@@ -16,42 +16,41 @@ const Overview = () => {
   // eslint-disable-next-line no-unused-vars
   const [logs, setLogs] = useLocalStorageState("log", []); // setlog function is a function to replace it
   // function to parse the information from the sarif file into readable human format
-  function Printnoerrorsfound(){
+  function Printnoerrorsfound() {
     return (
       <>
-      <Row>
-      <Col xs={12} className="p-3">
-      <Card>
-        <Card.Body>
-        <article>
-            <h1 className="h2" id="quick-start">
-              Overview
-            </h1>
-            <p className="fs-5 fw-light">
-              This page contains the overview of the report generated with CodeQL
-            </p>
+        <Row>
+          <Col xs={12} className="p-3">
+            <Card>
+              <Card.Body>
+                <article>
+                  <h1 className="h2" id="quick-start">
+                    Overview
+                  </h1>
+                  <p className="fs-5 fw-light">
+                    This page contains the overview of the report generated with CodeQL
+                  </p>
 
-            <p>details of the vulnerability are listed here.</p>
-        </article>
-          <Card>
-            <Card.Body className="mx-auto ">
-              <h4 className="fw-bold mt-5">Congrats, no results detected!</h4>
-              <Image
-                className="mx-auto mb-5"
-                src={G8Logo}
-                alt="No Results"
-                height="400"
-                width="350"
-                rounded
-              />
-            </Card.Body>
-          </Card>
-        </Card.Body>
-      </Card>
-      </Col>
-      </Row>
-
-    </>
+                  <p>details of the vulnerability are listed here.</p>
+                </article>
+                <Card>
+                  <Card.Body className="mx-auto ">
+                    <h4 className="fw-bold mt-5">Congrats, no results detected!</h4>
+                    <Image
+                      className="mx-auto mb-5"
+                      src={G8Logo}
+                      alt="No Results"
+                      height="400"
+                      width="350"
+                      rounded
+                    />
+                  </Card.Body>
+                </Card>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </>
     )
   }
   function Addingalertstothetable() {
@@ -73,7 +72,7 @@ const Overview = () => {
       if (grouped[r.ruleIndex] === undefined) grouped[r.ruleIndex] = {};
       if (
         grouped[r.ruleIndex][
-          driverRules[results[i].ruleIndex].properties["problem.severity"]
+        driverRules[results[i].ruleIndex].properties["problem.severity"]
         ] === undefined
       )
         grouped[r.ruleIndex][
@@ -157,7 +156,7 @@ const Overview = () => {
         noOfRecommendation++;
       }
     }
-    if(noOfError===0&&noOfWarnings===0&&noOfRecommendation===0){
+    if (noOfError === 0 && noOfWarnings === 0 && noOfRecommendation === 0) {
       return (<Printnoerrorsfound />)
     }
     // the html that returned when there is a poroject that is analysed
@@ -200,15 +199,6 @@ const Overview = () => {
         <Row>
           <Col xl={12} className="mb-4">
             <Neo4jGraphWidget />
-            {/* <Card>
-              <Card.Title className="h1 ms-3 mt-3">Neo4J Graph</Card.Title>
-              <Card.Body>
-                <Card.Text>EMPTY</Card.Text>
-                <Card.Text>EMPTY</Card.Text>
-                <Card.Text>EMPTY</Card.Text>
-                <Card.Text>EMPTY</Card.Text>
-              </Card.Body>
-            </Card> */}
           </Col>
 
           {/* display the alerts */}
@@ -273,7 +263,6 @@ const Overview = () => {
       </div>
 
       <Row className="justify-content-md-center">
-        {/* <Code code="$ yarn install" language="bash" /> */}
         <Col xs={12} sm={6} xl={4} className="mb-4">
           <div className="d-flex align-items-center justify-content-center">
             {!logs.length &&

@@ -190,15 +190,15 @@ const MyDocument = (props) => {
       const rxLink = /\[([^\]]*)\]\(([^)]+)\)/; // Matches [text](id). Similar to below, but with an extra grouping around the id part.
       return text.match(rxLink)
         ? text.split(/(\[[^\]]*\]\([^)]+\))/g).map((item, i) => {
-            if (i % 2 === 0) return item;
-            // eslint-disable-next-line no-unused-vars
-            const [_, text, id] = item.match(rxLink); // Safe since it was split by the same RegExp.
-            return (
-              <Link key={i} src={id} style={{ color: "#4B82BA" }}>
-                {text}
-              </Link>
-            );
-          })
+          if (i % 2 === 0) return item;
+          // eslint-disable-next-line no-unused-vars
+          const [_, text, id] = item.match(rxLink); // Safe since it was split by the same RegExp.
+          return (
+            <Link key={i} src={id} style={{ color: "#4B82BA" }}>
+              {text}
+            </Link>
+          );
+        })
         : text;
     }
   }
@@ -217,7 +217,7 @@ const MyDocument = (props) => {
       if (grouped[r.ruleId] === undefined) grouped[r.ruleId] = {};
       if (
         grouped[r.ruleId][
-          r.locations[0].physicalLocation.artifactLocation.uri
+        r.locations[0].physicalLocation.artifactLocation.uri
         ] === undefined
       )
         grouped[r.ruleId][
@@ -572,7 +572,7 @@ const MyDocument = (props) => {
       if (grouped[r.ruleIndex] === undefined) grouped[r.ruleIndex] = {};
       if (
         grouped[r.ruleIndex][
-          driverRules[results[i].ruleIndex].properties["problem.severity"]
+        driverRules[results[i].ruleIndex].properties["problem.severity"]
         ] === undefined
       )
         grouped[r.ruleIndex][
@@ -829,6 +829,7 @@ const MyDocument = (props) => {
           2. Review Summary
         </Text>
         <Image style={styles.image} src={CodeQLLogo} />
+        <Text style={[styles.text, { textAlign: "center" }]}>Figure 1. VS-marketplace-CodeQL-icon (<Link style={styles.text} src="https://github.com/github/vscode-codeql/blob/main/extensions/ql-vscode/media/VS-marketplace-CodeQL-icon.png">vscode-codeql</Link>, 2019).</Text>
         <Text style={styles.text}>
           The secure code review of the "{project_name}" was completed on{" "}
           {created_at} by utilizing CodeQL; a industry-leading semantic code

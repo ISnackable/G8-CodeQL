@@ -16,7 +16,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { HashRouter } from "react-router-dom";
-import { Beforeunload } from "react-beforeunload";
 
 // core styles
 import "./scss/volt.scss";
@@ -29,16 +28,9 @@ import HomePage from "./pages/HomePage";
 import ScrollToTop from "./components/ScrollToTop";
 
 ReactDOM.render(
-  <Beforeunload
-    onBeforeunload={() => {
-      window.localStorage.removeItem("log");
-      window.localStorage.removeItem("projectInfo");
-    }}
-  >
-    <HashRouter>
-      <ScrollToTop />
-      <HomePage />
-    </HashRouter>
-  </Beforeunload>,
+  <HashRouter>
+    <ScrollToTop />
+    <HomePage />
+  </HashRouter>,
   document.getElementById("root")
 );

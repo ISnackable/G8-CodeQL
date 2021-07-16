@@ -122,19 +122,18 @@ exports.checkDuplicateProject = (req, res, next) => {
     // Compare the hash result in the database
     projectDB.getProjectHash(hash.hash, function (err, result) {
       if (err) {
+        fs.rmSync(`./uploads/temporaryMulterUpload`, { recursive: true });
         res.status(500).send({ message: "Internal Server Error" });
       } else {
         if (result) {
           // results === true, hash exists in the database, remove the temporary multer upload directory
           try {
             //Deletes temporary folder
-            fs.rmSync(`./uploads/temporaryMulterUpload`, { recursive: true, });
+            fs.rmSync(`./uploads/temporaryMulterUpload`, { recursive: true });
             console.log(`./uploads/temporaryMulterUpload is deleted!`);
             console.log("Database already exist, sending response back to frontend.");
           } catch (err) {
-            console.error(
-              `Error while deleting ./uploads/temporaryMulterUpload.`
-            );
+            console.error(`Error while deleting ./uploads/temporaryMulterUpload.`);
           }
           res.status(409).send({ message: "Project already exist on server." });
         } else {
@@ -147,6 +146,7 @@ exports.checkDuplicateProject = (req, res, next) => {
           // add the project into the database
           projectDB.addProject(data, function (err3, results) {
             if (err3) {
+              fs.rmSync(`./uploads/temporaryMulterUpload`, { recursive: true });
               res.status(500).send({ message: "Server error." });
             } else {
               // rename the temporay multer upload into database${id} in the uploads folder
@@ -155,8 +155,8 @@ exports.checkDuplicateProject = (req, res, next) => {
                   console.log("Error renaming temporaryMulterUpload to its projectId.");
                   projectDB.removeProject(results.insertId, (err4, results1) => {
                     res.status(500).send({ message: "Server error." });
-                  }
-                  );
+                  });
+                  fs.rmSync(`./uploads/temporaryMulterUpload`, { recursive: true });
                 } else {
                   console.log(results);
                   res.status(201).send({
@@ -447,7 +447,7 @@ exports.checkProcessing = (req, res, next) => {
 
   console.log("checkProcessing Status");
   const id = req.params.id;
-  
+
   projectDB.getProjectId(id, function (err, result) {
     if (!err) {
       console.log(result.sarif_filename);

@@ -184,14 +184,12 @@ exports.folderUpload = (req, res, next) => {
     return res.status(409).send({ message: "A project is being uploaded, if you suspect this is an error. Manually delete the 'temporaryMulterUpload' in the backend" });
 
   upload(req, res, function (err) {
-    if (err instanceof multer.MulterError) {
-      // A Multer error occurred when uploading.
-      return res.status(500).send({ message: "Internal Server Error" });
-    } else if (err) {
-      // An unknown error occurred when uploading.
+    if (err) {
+      // A error occurred when uploading.
+      fs.rmSync(`./uploads/temporaryMulterUpload`, { recursive: true });
       if (req.fileValidationError)
         return res.status(415).send({ message: req.fileValidationError });
-      return res.status(500).send({ message: "Opps, Something went wrong" });
+      return res.status(500).send({ message: "Internal Server Error" });
     } else if (!req.files) {
       return res.status(400).send({ message: "No files selected" });
     }
@@ -293,6 +291,7 @@ exports.repoUpload = (req, res) => {
           return res.status(500).send({ message: "Server error." });
         projectDB.getProjectHash(hash, function (err1, result) {
           if (err1) {
+            fs.rmSync(`./uploads/temporaryGitClone`, { recursive: true });
             res.status(500).send({ message: "Server error." });
           } else {
             if (result) {
@@ -302,9 +301,7 @@ exports.repoUpload = (req, res) => {
               );
               try {
                 //Deletes temporary folder
-                fs.rmSync(`./uploads/temporaryGitClone`, {
-                  recursive: true,
-                });
+                fs.rmSync(`./uploads/temporaryGitClone`, { recursive: true });
                 console.log(`./uploads/temporaryGitClone is deleted!`);
                 console.log("Database already exist, sending response back to frontend.");
               } catch (err) {
@@ -321,6 +318,7 @@ exports.repoUpload = (req, res) => {
               };
               projectDB.addProject(data, function (err3, results) {
                 if (err3) {
+                  fs.rmSync(`./uploads/temporaryGitClone`, { recursive: true });
                   res.status(500).send({ message: "Server error." });
                 } else {
                   // if the project is successfully added, rename it into the insertId
@@ -331,8 +329,8 @@ exports.repoUpload = (req, res) => {
                       );
                       projectDB.removeProject(results.insertId, (err4, results1) => {
                         res.status(500).send({ message: "Server error." });
-                      }
-                      );
+                      });
+                      fs.rmSync(`./uploads/temporaryGitClone`, { recursive: true });
                     } else {
                       console.log(results);
                       res.status(201).send({

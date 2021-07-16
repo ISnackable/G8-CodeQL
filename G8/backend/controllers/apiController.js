@@ -196,6 +196,8 @@ exports.folderUpload = (req, res, next) => {
       return res.status(400).send({ message: "No files selected" });
     }
 
+    // Loops through every file and check if they are an archive
+    // If it is an archive, extract the archive using 7zip binary
     req.files.forEach((file, index) => {
       let { ext } = path.parse(file.path);
       if (
@@ -258,6 +260,9 @@ exports.repoUpload = (req, res) => {
   if (fs.existsSync("./uploads/temporaryGitClone"))
     return res.status(409).send({ message: "A project is being uploaded" });
 
+  // This regex test whether the git link is from github/gitlab.
+  // We choose not to support other git based website such as BitBucket
+  // As their format is different from Github/GitLab.
   let repoLinkRegExp = /^(?:https?):(\/\/)?(github|gitlab)(.*?)(\.git)(\/?|\#[-\d\w._]+?)$/;
   var repoLink = req.body.repoLink;
   if (!repoLinkRegExp.test(repoLink)) {
@@ -266,6 +271,8 @@ exports.repoUpload = (req, res) => {
     return;
   }
   try {
+    // Here, we clone the Git Repo into a temporaryGitClone folder.
+    // The --depth=1 option only clone the main branch to reduce network prcoessing power.
     execFile("git", ["clone", repoLink, "./uploads/" + "temporaryGitClone", "--depth=1"], (error, stdout, stderr) => {
       if (error) {
         console.error("stderr", stderr);
@@ -273,6 +280,9 @@ exports.repoUpload = (req, res) => {
       //For debugging purposes on the backend
       console.log("stdout", stdout);
       console.error(`stderr: ${stderr}`);
+
+      // Here, we using rev-parse to check the SHA1 of the git repo.
+      // This is to check whether an existing project is already int the database
       execFile("git", ["-C", "./uploads/temporaryGitClone", "rev-parse", "HEAD"], (error, stdout, stderr) => {
         if (error) {
           console.error("stderr", stderr);
@@ -313,6 +323,7 @@ exports.repoUpload = (req, res) => {
                 if (err3) {
                   res.status(500).send({ message: "Server error." });
                 } else {
+                  // if the project is successfully added, rename it into the insertId
                   fs.rename("./uploads/temporaryGitClone", "./uploads/" + results.insertId, function (err2) {
                     if (err2) {
                       console.log(
@@ -348,7 +359,7 @@ exports.repoUpload = (req, res) => {
 exports.showAllInProjectNeo4J = (req, res) => {
   console.log(FgGreen, `apiController.showAllInProjectNeo4J()`, Reset);
 
-  const driver = neo4j.driver(`bolt://${config.neo_host}:7687`, neo4j.auth.basic("neo4j", "s3cr3t"));
+  const driver = neo4j.driver(`bolt://${config.neo_host}:7687`, neo4j.auth.basic(config.neo_user, config.neo_pwd));
   const id = req.params.id;
   const query = `WITH 1 as dummy
   Match (n)-[r]->(m)
@@ -450,7 +461,7 @@ exports.customQuery = (req, res) => {
   // This is to check whether the select statement contains mutiple fields
   // This check is required as @kind path/path-problems requires even fields
   // Adds a filler text if it is not even
-  if (!selectQuery?.includes(",") || selectQuery.split(",").length % 2 !== 0) {
+  if (!selectQuery?.includes(",") || selectQuery?.split(",")?.length % 2 !== 0) {
     console.warn("Select statement is not even");
     req.body.CustomQuery += `, "Filler text"`;
     console.log(req.body.CustomQuery);
@@ -514,6 +525,7 @@ exports.deleteProject = (req, res) => {
     return res.status(400).send('That was evil.');
   }
 
+  // provide some basic check to make sure the path is not malicious
   let rootDirectory = "/usr/src/app/";
   let databaseFolderPath = path.join(rootDirectory, databaseFolder).split(path.sep).join(path.posix.sep);
   let sarifFilePath = path.join(rootDirectory, sarifFile).split(path.sep).join(path.posix.sep);
@@ -557,7 +569,7 @@ exports.deleteProject = (req, res) => {
         }
       });
 
-      const driver = neo4j.driver(`bolt://${config.neo_host}:7687`, neo4j.auth.basic("neo4j", "s3cr3t"));
+      const driver = neo4j.driver(`bolt://${config.neo_host}:7687`, neo4j.auth.basic(config.neo_user, config.neo_pwd));
 
       const query = `
         MATCH (n {ProjectID: '${id}'})

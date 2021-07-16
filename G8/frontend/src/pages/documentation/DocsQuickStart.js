@@ -48,7 +48,11 @@ const DocsQuickStart = () => {
                   </li>
                   <li>
                     Write your own CodeQL query and run them against your
-                    project in the Custom Query page
+                    project in the{" "}
+                    <Card.Link href="/#/custom-query" target="_blank">
+                      Custom Query
+                    </Card.Link>{" "}
+                    page
                   </li>
                   <li>
                     An analysis report will be produced in the{" "}

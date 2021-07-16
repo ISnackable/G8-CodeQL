@@ -36,6 +36,7 @@ import {
   Tooltip,
   OverlayTrigger,
 } from "@themesberg/react-bootstrap";
+import DownloadCodeQLDatabaseButton from "../../components/DownloadCodeQLDatabaseButton";
 
 // const customMode = new CustomMode();
 // var EditSession = require("ace/edit_session").EditSession;
@@ -122,7 +123,7 @@ select b, "This is an empty block."`);
 
     setCompleters([completer]);
     fetchData();
-    return () => {};
+    return () => { };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -137,18 +138,17 @@ select b, "This is an empty block."`);
         return <></>;
       }
       return (
-        <>
-          <Dropdown.Item
-            className="fw-bold"
-            onClick={() => {
-              setCurrentProject(pv);
-              setCurrentProjectMessage("Project #" + id);
-            }}
-          >
-            <span>{project_name}</span>
-            <span> #{id}</span>
-          </Dropdown.Item>
-        </>
+        <Dropdown.Item
+          className="fw-bold"
+          onClick={() => {
+            setCurrentProject(pv);
+            setCurrentProjectMessage("Project #" + id);
+          }}
+        >
+          <span>
+            {project_name} <b>#{id}</b>
+          </span>
+        </Dropdown.Item>
       );
     });
   };
@@ -173,6 +173,9 @@ select b, "This is an empty block."`);
       })
       .catch((error) => {
         alert("An error occured in the backend.");
+        if (error.response) {
+          console.log(error.response.data); // => the response payload
+        }
         return;
       })
       .finally(() => {
@@ -357,49 +360,55 @@ select p`);
         <Col xs={12} className="p-3">
           <Card>
             <Card.Body>
-              <div
-                style={{
-                  float: "right",
-                  marginRight: "50px",
-                  marginTop: "30px",
-                }}
-              >
-                <Dropdown className="btn-toolbar">
-                  <Dropdown.Toggle
-                    as={Button}
-                    variant="primary"
-                    size="lg"
-                    className="me-2"
-                    style={{ backgroundColor: "red" }}
-                  >
-                    {currentProjectMessage}
-                    <FontAwesomeIcon icon={faCaretDown} className="me-2 mx-2" />
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
-                    <DrawProjectlist />
-                    <Dropdown.Divider>
-                      {/* Sample project goes here */}
-                    </Dropdown.Divider>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
+              <Row>
+                <Col md={4}>
+                  <article>
+                    <h1
+                      className="h2"
+                      id="quick-start"
+                      style={{ marginLeft: "20px", marginTop: "10px" }}
+                    >
+                      Custom Query{" "}
+                    </h1>
+                    <p className="fs-5 fw-light" style={{ marginLeft: "20px" }}>
+                      Create your own queries and run them against your own
+                      projects !
+                    </p>
+                    <small style={{ marginLeft: "20px" }}><a href="https://codeql.github.com/docs/codeql-language-guides/codeql-library-for-javascript/" target="_blank" rel="noopener noreferrer">Click here for CodeQL Language Guide</a></small>
+                  </article>
+                </Col>
 
-              <article>
-                <h1
-                  className="h2"
-                  id="quick-start"
-                  style={{ marginLeft: "20px ", marginTop: "10px" }}
-                >
-                  Custom Query{" "}
-                </h1>
-                <p className="fs-5 fw-light" style={{ marginLeft: "20px" }}>
-                  Create your own queries and run them against your own projects
-                  !
-                </p>
-              </article>
+                <Col md={{ span: 4, offset: 4 }}>
+                  <Row style={{ marginTop: "10px", float: "right", marginRight: "15px" }}>
+                    <Col className="mb-2">
+                      <DownloadCodeQLDatabaseButton
+                        id={currentProject.id}
+                      />
+                    </Col>
+                    <Col className="mb-2">
+                      <Dropdown className="btn-toolbar">
+                        <Dropdown.Toggle
+                          as={Button}
+                          variant="primary"
+                          size="md"
+                        >
+                          {currentProjectMessage}
+                          <FontAwesomeIcon
+                            icon={faCaretDown}
+                            className="me-2 mx-2"
+                          />
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
+                          <DrawProjectlist />
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
 
               <Row className="justify-content-md-center">
-                <Col xs={12} sm={12} xl={12} className="mb-8">
+                <Col xs={12} sm={12} xl={12}>
                   <div className="w-100 p-3">
                     {/* something about on clicks here  */}
 
@@ -434,55 +443,48 @@ select p`);
                       }}
                     />
                   </div>
+                </Col>
+              </Row>
 
-                  <div
-                    style={{
-                      float: "left",
-                      marginRight: "50px",
-                      marginLeft: "20px",
-                    }}
-                  >
-                    <Dropdown className="btn-toolbar">
-                      <Dropdown.Toggle
-                        as={Button}
-                        variant="primary"
-                        size="lg"
-                        className="me-2"
-                        style={{ backgroundColor: "#262b40" }}
-                      >
-                        Click for some sample queries
-                        <FontAwesomeIcon
-                          icon={faCaretDown}
-                          className="me-2 mx-2"
-                        />
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
-                        <SampleQueries />
-                        <Dropdown.Divider>
-                          {/* Sample project goes here */}
-                        </Dropdown.Divider>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </div>
-
-                  <div style={{ float: "right", marginRight: "50px" }}>
-                    <Button
-                      variant="Success"
+              <Row>
+                <Col md={4}>
+                  <Dropdown className="btn-toolbar">
+                    <Dropdown.Toggle
+                      as={Button}
+                      variant="primary"
                       size="lg"
-                      style={{ backgroundColor: "green", color: "black" }}
-                      onClick={sendCustomQuery}
+                      className="me-2"
+                      style={{ backgroundColor: "#262b40", marginLeft: "15px" }}
                     >
-                      {showSpinner && (
-                        <Spinner
-                          animation="border"
-                          role="status"
-                          size="sm"
-                          as="span"
-                        />
-                      )}{" "}
-                      Run Query
-                    </Button>
-                  </div>
+                      Click for some sample queries
+                      <FontAwesomeIcon
+                        icon={faCaretDown}
+                        className="me-2 mx-2"
+                      />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
+                      <SampleQueries />
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Col>
+
+                <Col md={{ span: 4, offset: 4 }}>
+                  <Button
+                    variant="tertiary"
+                    size="lg"
+                    onClick={sendCustomQuery}
+                    style={{ float: "right", marginRight: "15px" }}
+                  >
+                    {showSpinner && (
+                      <Spinner
+                        animation="border"
+                        role="status"
+                        size="sm"
+                        as="span"
+                      />
+                    )}{" "}
+                    Run Query
+                  </Button>
                 </Col>
               </Row>
             </Card.Body>

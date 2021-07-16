@@ -163,7 +163,7 @@ const Overview = () => {
     return (
       <>
         <Row className="justify-content-between align-items-center mb-4">
-          <Col xs={4}>
+          <Col>
             <Card style={{ backgroundColor: "#FF6565" }}>
               <Card.Body>
                 <Card.Text className="h1">{noOfError}</Card.Text>
@@ -174,7 +174,7 @@ const Overview = () => {
             </Card>
           </Col>
 
-          <Col xs={4}>
+          <Col>
             <Card style={{ backgroundColor: "yellow" }}>
               <Card.Body>
                 <Card.Text className="h1">{noOfWarnings}</Card.Text>
@@ -185,7 +185,7 @@ const Overview = () => {
             </Card>
           </Col>
 
-          <Col xs={4}>
+          <Col>
             <Card style={{ backgroundColor: "lightgreen" }}>
               <Card.Body>
                 <Card.Text className="h1">{noOfRecommendation}</Card.Text>

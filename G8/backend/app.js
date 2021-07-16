@@ -25,18 +25,27 @@ const app = express();
 // force to create databases folder if it does not exist
 fs.access("./databases", fs.F_OK, (err) => {
   if (err) {
-    console.error(err);
     console.log("'databases' folder does not exist, attempting to create it");
     fs.mkdirSync("./databases");
+    console.log("Created 'databases' folder");
   }
 });
 
 // force to create SarifFiles folder if it does not exist
 fs.access("./SarifFiles", fs.F_OK, (err) => {
   if (err) {
-    console.error(err);
     console.log("'SarifFiles' folder does not exist, attempting to create it");
     fs.mkdirSync("./SarifFiles");
+    console.log("Created 'SarifFiles' folder");
+  }
+});
+
+// force to create Snapshots folder if it does not exist
+fs.access("./Snapshots", fs.F_OK, (err) => {
+  if (err) {
+    console.log("'Snapshots' folder does not exist, attempting to create it");
+    fs.mkdirSync("./Snapshots");
+    console.log("Created 'Snapshots' folder");
   }
 });
 
@@ -44,8 +53,8 @@ fs.access("./SarifFiles", fs.F_OK, (err) => {
 // MF configuration
 // --------------------------------------------------
 app.disable("x-powered-by");
-app.use(morgan("common"));
-app.use(cors());
+app.use(morgan(`:remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] \n\n------------------------------------\n`));
+app.use(cors({ exposedHeaders: ["Content-Disposition"] }));
 // express has the body parser built in so can call it directly
 app.use(express.urlencoded({ extended: false })); // extended false for no object (security reason)
 app.use(express.json());
@@ -57,9 +66,7 @@ app.use("/g8", routes);
 function startServer() {
   try {
     app.listen(config.port, () => {
-      console.log(
-        `Server started and accessible via http://localhost:${config.port}/`
-      );
+      console.log(`Server started and accessible via http://localhost:${config.port}/`);
     });
   } catch (err) {
     console.error(err);

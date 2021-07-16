@@ -626,10 +626,10 @@ the below part */}
                 <li>
                   <Card.Link
                     as={Link}
-                    to={Routes.DocsChangelog.path}
+                    to={Routes.DocsQuickStart.path}
                     target="_blank"
                   >
-                    Changelog
+                    Terms & Condition
                   </Card.Link>
                 </li>
               </ul>
@@ -683,7 +683,7 @@ the below part */}
                 role="contentinfo"
               >
                 <p className="font-weight-normal font-small mb-0">
-                  Made by © G8 DISM 2021, Sponsored by DSO.
+                  Made by G8 DISM 2021, Sponsored by DSO.
                 </p>
               </div>
             </Col>

@@ -161,8 +161,15 @@ $ yarn install
 $ yarn start
 ```
 
+## License
+
+The version of CodeQL used by the G8 is subject to the [CodeQL Research Terms & Conditions](https://securitylab.github.com/tools/codeql/license). 
+
+By using G8, you agree to GitHub CodeQL Terms and Conditions. If you do not accept these Terms, do not download, install, use, or copy the Software.
+
 ## Acknowledgements
 
 - [CodeQL](https://github.com/github/codeql)
+- [CodeQL Logo](https://github.com/github/vscode-codeql/blob/main/extensions/ql-vscode/media/VS-marketplace-CodeQL-icon.png)
 - [Themesberg Volt React Dashboard](https://github.com/themesberg/volt-react-dashboard)
 - [Sarif Web Component](https://github.com/microsoft/sarif-web-component)

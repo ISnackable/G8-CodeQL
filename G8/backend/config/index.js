@@ -32,7 +32,7 @@ const config = {
   neo_host: process.env.NEO_HOST ?? "localhost",
   neo_user: process.env.NEO_USER ?? "neo4j",
   neo_pwd: process.env.NEO_PWD ?? "s3cr3t",
-  codeql_home: process.env.CODEQL_HOME ?? "../../codeql",
+  codeql_home: process.env.CODEQL_HOME,
 };
 
 module.exports = config;

@@ -233,33 +233,32 @@ export const ExistingProjectTable = (props) => {
     };
 
     const builddeletebutton = (id, type) => {
-      return (
-        <Button
-          variant="danger"
-          value={id}
-          onClick={(e) => deleteprojectbyid(e)}
-          aria-label="delete"
-        >
-          <FontAwesomeIcon icon={faTrashAlt} />
-        </Button>
-      );
-      // if (type === 1) {
-
-      // } else {
-      //   return (
-      //     <Button
-      //       variant="dark"
-      //       value={id}
-      //       onClick={(e) =>
-      //         alert(
-      //           "Project Cannot be deleted. While processing/error. Please do it manually on the backend."
-      //         )
-      //       }
-      //     >
-      //       <FontAwesomeIcon icon={faTrashAlt} />
-      //     </Button>
-      //   );
-      // }
+      if (type === 1) {
+        return (
+          <Button
+            variant="danger"
+            value={id}
+            onClick={(e) => deleteprojectbyid(e)}
+            aria-label="delete"
+          >
+            <FontAwesomeIcon icon={faTrashAlt} />
+          </Button>
+        );
+      } else {
+        return (
+          <Button
+            variant="dark"
+            value={id}
+            onClick={(e) =>
+              alert(
+                "Project Cannot be deleted while processing. Please do it manually on the backend."
+              )
+            }
+          >
+            <FontAwesomeIcon icon={faTrashAlt} />
+          </Button>
+        );
+      }
     };
     var delete_button;
     if (sarif_filename == null) {
@@ -269,7 +268,7 @@ export const ExistingProjectTable = (props) => {
       delete_button = builddeletebutton(id, 0);
       sarif_filename = buildsarifbutton(id, 1, sarif_filename);
     } else if (sarif_filename === "error") {
-      delete_button = builddeletebutton(id, 0);
+      delete_button = builddeletebutton(id, 1);
       sarif_filename = buildsarifbutton(id, 3, sarif_filename);
     } else {
       delete_button = builddeletebutton(id, 1);

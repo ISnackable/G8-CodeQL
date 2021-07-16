@@ -15,6 +15,9 @@ const neo4j = require("neo4j-driver");
 const projectDB = require("../models/projects.js");
 const middlewares = require("../middlewares");
 const config = require("../config");
+const { Reset, FgGreen } = require("../constants");
+const codeQL = require("../helpers/codeQL");
+
 const upload = middlewares.multer.array("files", 100);
 
 // --------------------------
@@ -33,57 +36,55 @@ const upload = middlewares.multer.array("files", 100);
 // end points
 // --------------------------------------------------
 
+/**
+ * A express endpoint to get all of the projects in the database
+ */
 exports.getProject = (req, res) => {
   // printDebugInfo("/g8/api/projects", req);
+  console.log(FgGreen, `apiController.getProject()`, Reset);
 
   projectDB.getProject(function (err, result) {
+    // Returns the all columns of the all project table if no error
     if (!err) {
       res.status(200).send(result);
     } else {
       let output = {
-        error: "Unable to get all the existing project information",
+        message: "Unable to get all the existing project information",
       };
       res.status(500).send(output);
     }
   });
 };
 
-// exports.projectid = (req, res) => {
-//   printDebugInfo("/g8/api/getProjectID", req);
-
-//   projectDB.getProject(function (err, result) {
-//     if (!err) {
-//       res.status(200).send(result);
-//     } else {
-//       var output = {
-//         error: "Unable to get all the project ids",
-//       };
-//       res.status(500).send(JSON.stringify(output));
-//     }
-//   });
-// };
-
+/**
+ * A express endpoint to get a single projects in the database by id
+ */
 exports.getProjectById = (req, res) => {
-  var projectid = req.params.id;
-  const projectIDpath = `/api/projects/${projectid}`;
+  console.log(FgGreen, `apiController.getProjectById()`, Reset);
 
-  fs.access(projectIDpath, fs.F_OK, (err) => {
-    projectDB.getProjectId(projectid, function (err, result) {
-      if (!err) {
-        if (result.length == 0) {
-          res.status(200).send("Project not found");
-        } else {
-          res.status(200).send(result);
-        }
+  const projectid = req.params.id;
+
+  projectDB.getProjectId(projectid, function (err, result) {
+    // Returns the all columns of the specifed project table id if no error
+    if (!err) {
+      if (result.length === 0) {
+        res.status(200).send({ message: "Project not found" });
       } else {
-        res.status(500).send("Some error");
+        res.status(200).send(result);
       }
-    });
+    } else {
+      res.status(500).send({ message: "Internal Server Error" });
+    }
   });
+
 };
 
-// Query current database number in the counter
+/**
+ * A express endpoint to query a codeQL database by the id
+ */
 exports.query = (req, res, next) => {
+  console.log(FgGreen, `apiController.query()`, Reset);
+
   const id = req.params.id;
   const CodeQLpath = `./databases/database${id}/db-javascript`;
   // Checking if db-javascript folder exists in the database
@@ -91,28 +92,22 @@ exports.query = (req, res, next) => {
   fs.access(CodeQLpath, fs.F_OK, (err) => {
     if (err) {
       console.error(err);
-      return res.status(422).send("The database does not exist.");
+      return res.status(422).send({ message: "The database does not exist." });
     } else {
       //file exists
 
-      const args = [
-        "database", // first argv
-        "analyze", // second argv
-        //"--quiet", // suppress output, Incrementally decrease the number of progress messages printed
-        "--format=sarifv2.1.0", // set the result output to SARIF v2.1.0 format
-        `--output=./SarifFiles/${id}.sarif`, // output file as id.sarif in ./SarifFiles/
-        "--sarif-add-snippets", // include code snippets for each location mentioned in the results
-        `./databases/database${id}`, // our database to scan
-        "../../codeql/javascript/ql/src/codeql-suites/javascript-security-extended.qls",
-        "--search-path=../../codeql/misc/suite-helpers", // maybe change? seem like different QL pack use different suite-helpers
-        "--threads=0",
-      ];
-
+      let query;
+      if (config.codeql_home) {
+        query = `${config.codeql_home}/codeql-repo/javascript/ql/src/codeql-suites/javascript-security-extended.qls`;
+      } else {
+        query = `../../codeql/javascript/ql/src/codeql-suites/javascript-security-extended.qls`;
+      }
       // Run CodeQL query command, sarif output file is stored in ./SarifFiles
       // Declaring a child variable to use for troubleshooting
-      var child = execFile("codeql", args, (error, stdout, stderr) => {
-        if (error) {
-          console.error("stderr", stderr);
+      codeQL.analyzeDatabase(`./databases/database${id}`, query, `./SarifFiles/${id}.sarif`, (code, output) => {
+        // if error (Exit Code >= 1)
+        if (code) {
+          console.error("stderr", output);
         } else {
           // If no errors, add sarif file name to the DB
           projectDB.insertSarif(`${id}.sarif`, id, function (err, result) {
@@ -122,47 +117,41 @@ exports.query = (req, res, next) => {
                 var options = {
                   root: path.join(__dirname, "../SarifFiles/"),
                 };
-                // This API provides access to data on the running file system.
-                // Ensure that either (a) the way in which the path argument was constructed into an absolute path is secure if it contains user input
-                // or (b) set the root option to the absolute path of a directory to contain access within.
-                res
-                  .contentType("application/json")
-                  .sendFile(SarifFilePath, options, function (err) {
-                    if (err) {
-                      console.error(err);
-                    } else {
-                      console.log(options);
-                      console.log("Sent:", SarifFilePath);
-                    }
-                  });
+                res.contentType("application/json").sendFile(SarifFilePath, options, function (err) {
+                  if (err) {
+                    console.error(err);
+                  } else {
+                    console.log(options);
+                    console.log("Sent:", SarifFilePath);
+                  }
+                  console.log(`application/jsonapplication/json" `);
+                });
               } else {
-                res.status(422).send("The database does not exist.");
+                console.log(`message: "Bhe database does not exist.st" `);
+                res.status(422).send({ message: "The database does not exist." });
               }
             } else {
+              console.log(`message: "Bad Request" `);
               if (err.code == "ER_BAD_NULL_ERROR") {
-                res.status(400).send("Bad Request");
+                res.status(400).send({ message: "Bad Request" });
               } else {
-                res.status(500).send("Internal Server Error");
+                console.log(`message: "Internal Server Error" `);
+                res.status(500).send({ message: "Internal Server Error" });
               }
             }
           });
         }
-        console.error(`stderr: ${stderr}`);
-      });
-
-      // for debugging purposes only
-      child.stdout.on("data", function (data) {
-        console.log("[STDOUT]: ", data.toString());
-      });
-      child.stderr.on("data", function (data) {
-        console.log("[STDERR]: ", data.toString());
-      });
+      })
     }
   });
 };
 
-// Get analyses by ID
+/**
+ * A express endpoint to get the analyses result (sarif) by id
+ */
 exports.getAnalysesById = (req, res, next) => {
+  console.log(FgGreen, `apiController.getAnalysesById()`, Reset);
+
   const id = req.params.id;
   const SarifFilePath = path.resolve(__dirname, `../SarifFiles/${id}.sarif`);
 
@@ -170,14 +159,10 @@ exports.getAnalysesById = (req, res, next) => {
   fs.access(SarifFilePath, fs.F_OK, (err) => {
     if (err) {
       console.error(err);
-      return res.status(422).send("The database does not exist.");
+      return res.status(422).send({ message: "The database does not exist." });
     } else {
       //file exists
-      // This API provides access to data on the running file system.
-      // Ensure that either (a) the way in which the path argument was constructed into an absolute path is secure if it contains user input
-      // or (b) set the root option to the absolute path of a directory to contain access within.
-      res.setHeader("Content-Type", "application/json");
-      res.sendFile(SarifFilePath, function (err) {
+      res.contentType("application/json").sendFile(SarifFilePath, function (err) {
         if (err) {
           console.error(err);
         } else {
@@ -189,30 +174,19 @@ exports.getAnalysesById = (req, res, next) => {
   });
 };
 
-// // http://localhost:8080/g8/api/verifySarifFile
-// exports.verifySarifFile = (req, res) => {
-//   var sarifFileName = req.body.sarifFileName;
-//   projectDB.getSarifFileName(sarifFileName, function (err, result) {
-//     if (!err) {
-//       if (result.length == 0) {
-//         res.status(200).send("File not found");
-//       } else {
-//         res.status(200).send(result);
-//       }
-//     } else {
-//       res.status(500).send("Some error");
-//     }
-//   });
-// };
-
+/**
+ * A express endpoint to upload files with multer
+ */
 exports.folderUpload = (req, res, next) => {
+  console.log(FgGreen, `apiController.folderUpload()`, Reset);
+
   if (fs.existsSync("./uploads/temporaryMulterUpload"))
-    return res.status(409).send({ message: "A project is being uploaded" });
+    return res.status(409).send({ message: "A project is being uploaded, if you suspect this is an error. Manually delete the 'temporaryMulterUpload' in the backend" });
 
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
-      return res.status(500).send("Internal Server Error");
+      return res.status(500).send({ message: "Internal Server Error" });
     } else if (err) {
       // An unknown error occurred when uploading.
       if (req.fileValidationError)
@@ -221,86 +195,75 @@ exports.folderUpload = (req, res, next) => {
     } else if (!req.files) {
       return res.status(400).send({ message: "No files selected" });
     }
-    try {
-      req.files.forEach((file, index) => {
-        let { ext } = path.parse(file.path);
-        if (
-          file.mimetype === "application/x-7z-compressed" ||
-          file.mimetype === "application/x-zip-compressed" ||
-          file.mimetype === "application/zip" ||
-          file.mimetype === "application/x-tar" ||
-          file.mimetype === "application/x-gzip" ||
-          file.mimetype === "application/vnd.rar" ||
-          (file.mimetype === "application/octet-stream" &&
-            (ext === ".7z" || ext === ".zip"))
-        ) {
-          const pathTo7zip = sevenBin.path7za;
 
-          // ./${file.path} == backend/uploads/zippedfile
-          const seven = extractFull(
-            `./${file.path}`,
-            `./uploads/temporaryMulterUpload/`,
-            {
-              $bin: pathTo7zip,
-              recursive: true,
+    // Loops through every file and check if they are an archive
+    // If it is an archive, extract the archive using 7zip binary
+    req.files.forEach((file, index) => {
+      let { ext } = path.parse(file.path);
+      if (
+        file.mimetype === "application/x-7z-compressed" ||
+        file.mimetype === "application/x-zip-compressed" ||
+        file.mimetype === "application/zip" ||
+        file.mimetype === "application/x-tar" ||
+        file.mimetype === "application/x-gzip" ||
+        file.mimetype === "application/vnd.rar" ||
+        (file.mimetype === "application/octet-stream" &&
+          (ext === ".7z" || ext === ".zip"))
+      ) {
+        const pathTo7zip = sevenBin.path7za;
+
+        // ./${file.path} == backend/uploads/zippedfile
+        let temporaryMulterUploadPath = path.join(".", "uploads", "temporaryMulterUpload");
+        const seven = extractFull(`./${file.path.split(path.sep).join(path.posix.sep)}`, temporaryMulterUploadPath, {
+          $bin: pathTo7zip,
+          recursive: true,
+        });
+
+        // 7zip successfully extracted the archive
+        seven.on("end", function () {
+          try {
+            // delete archive file
+            fs.rmSync(`./${file.path}`);
+
+            // done extracting last archive in files
+            // It is neccessary to check whether index is the last index of files
+            // so that we can extract all archive files before returning to the next middleware
+            if (req.files.length - 1 === index) {
+              return next();
             }
-          );
-
-          seven.on("end", function () {
-            try {
-              // delete archive file
-              fs.rmSync(`./${file.path}`);
-
-              // done extracting last archive in files
-              if (req.files.length - 1 === index) {
-                return next();
-                // Assumed no error
-                // res.setHeader("Content-Type", "text/plain");
-                // return res.status(200).send({ message: "OK." });
-              }
-            } catch (err) {
-              console.error(`Error while deleting ${file.path}.`);
-            }
-          });
-
-          // cannot set res.status(500) here as callback is too slow, causes express http header error
-          seven.on("error", function (err) {
-            console.error(err);
-            throw new Error("Failed to extract file");
-          });
-        } else {
-          if (req.files.length - 1 === index) {
-            // Assumed no error
-            return next();
+          } catch (err) {
+            console.error(`Error while deleting ${file.path}.`);
           }
+        });
+
+        // cannot set res.status(500) here as callback is too slow, causes express http header error
+        seven.on("error", function (err) {
+          console.error(err);
+        });
+      } else {
+        if (req.files.length - 1 === index) {
+          // Assumed no error
+          return next();
         }
-      });
-    } catch (error) {
-      return res.status(500).send({ message: "Internal Server Error" });
-    }
+      }
+    });
+
   });
 };
 
-/*
-    Creating hashes over folders (with default options)
-    Content means in this case a folder's children - both the files and the subfolders with their children.
-
-    The hashes are the same if:
-
-    A folder is checked again
-    Two folders have the same name and content (but have different parent folders)
-
-    The hashes are different if:
-
-    A file somewhere in the directory structure was renamed or its content was changed
-    Two folders have the same name but different content
-    Two folders have the same content but different names
-  */
+/**
+ * A express endpoint to upload files with git clone
+ */
 exports.repoUpload = (req, res) => {
+  console.log(FgGreen, `apiController.repoUpload()`, Reset);
+
   if (fs.existsSync("./uploads/temporaryGitClone"))
     return res.status(409).send({ message: "A project is being uploaded" });
 
-  let repoLinkRegExp = /^(http(s)?)(:(\/\/)?)([\w.@:/\-~]+)(\.git)(\/)?$/;
+  // This regex test whether the git link is from github/gitlab.
+  // We choose not to support other git based website such as BitBucket
+  // As their format is different from Github/GitLab.
+  let repoLinkRegExp = /^(?:https?):(\/\/)?(github|gitlab)(.*?)(\.git)(\/?|\#[-\d\w._]+?)$/;
   var repoLink = req.body.repoLink;
   if (!repoLinkRegExp.test(repoLink)) {
     //Checking using regex.
@@ -308,124 +271,102 @@ exports.repoUpload = (req, res) => {
     return;
   }
   try {
-    execFile(
-      "git",
-      ["clone", repoLink, "./uploads/" + "temporaryGitClone", "--depth=1"],
-      (error, stdout, stderr) => {
+    // Here, we clone the Git Repo into a temporaryGitClone folder.
+    // The --depth=1 option only clone the main branch to reduce network prcoessing power.
+    execFile("git", ["clone", repoLink, "./uploads/" + "temporaryGitClone", "--depth=1"], (error, stdout, stderr) => {
+      if (error) {
+        console.error("stderr", stderr);
+      }
+      //For debugging purposes on the backend
+      console.log("stdout", stdout);
+      console.error(`stderr: ${stderr}`);
+
+      // Here, we using rev-parse to check the SHA1 of the git repo.
+      // This is to check whether an existing project is already int the database
+      execFile("git", ["-C", "./uploads/temporaryGitClone", "rev-parse", "HEAD"], (error, stdout, stderr) => {
         if (error) {
           console.error("stderr", stderr);
         }
-        //For debugging purposes on the backend
-        console.log("stdout", stdout);
-        console.error(`stderr: ${stderr}`);
-        execFile(
-          "git",
-          ["-C", "./uploads/temporaryGitClone", "rev-parse", "HEAD"],
-          (error, stdout, stderr) => {
-            if (error) {
-              console.error("stderr", stderr);
-            }
 
-            let hash = stdout;
-            if (!hash)
-              return res.status(500).send({ message: "Server error." });
-            projectDB.getProjectHash(hash, function (err1, result) {
-              if (err1) {
-                res.status(500).send({ message: "Server error." });
-              } else {
-                if (result) {
-                  console.log(result);
-                  console.log(
-                    "Database already exist, sending response back to frontend."
-                  );
-                  try {
-                    //Deletes temporary folder
-                    fs.rmSync(`./uploads/temporaryGitClone`, {
-                      recursive: true,
-                    });
-                    console.log(`./uploads/temporaryGitClone is deleted!`);
-                    console.log(
-                      "Database already exist, sending response back to frontend."
-                    );
-                  } catch (err) {
-                    console.error(
-                      `Error while deleting ./uploads/temporaryGitClone.`
-                    );
-                  }
-                  res
-                    .status(409)
-                    .send({ message: "Repository already exist on server." });
+        let hash = stdout;
+        if (!hash)
+          return res.status(500).send({ message: "Server error." });
+        projectDB.getProjectHash(hash, function (err1, result) {
+          if (err1) {
+            res.status(500).send({ message: "Server error." });
+          } else {
+            if (result) {
+              console.log(result);
+              console.log(
+                "Database already exist, sending response back to frontend."
+              );
+              try {
+                //Deletes temporary folder
+                fs.rmSync(`./uploads/temporaryGitClone`, {
+                  recursive: true,
+                });
+                console.log(`./uploads/temporaryGitClone is deleted!`);
+                console.log("Database already exist, sending response back to frontend.");
+              } catch (err) {
+                console.error(`Error while deleting ./uploads/temporaryGitClone.`);
+              }
+              res.status(409).send({ message: "Repository already exist on server." });
+            } else {
+              console.log(result);
+
+              const matchRepoName = /^(?:https?:\/\/).*[:/](.*).git$/;
+              var data = {
+                projectName: repoLink.match(matchRepoName)[1],
+                hash: hash,
+              };
+              projectDB.addProject(data, function (err3, results) {
+                if (err3) {
+                  res.status(500).send({ message: "Server error." });
                 } else {
-                  console.log(result);
-
-                  // git@github.com:user/repo.git
-                  // ssh://login@server.com:12345/absolute/path/to/repository
-                  // https://<your_username>@bitbucket.org/<workspace_ID>/<repo_name>.git
-                  // https://emmap1@bitbucket.org/tutorials/tutorials.git.bitbucket.org.git
-                  // https://github.com:ISnackable/DISMFYP2021GRP8.git
-                  var matchRepoName = /^(?:git@|https:\/\/).*[:/](.*).git$/;
-                  var data = {
-                    projectName: repoLink.match(matchRepoName)[1],
-                    hash: hash,
-                  };
-                  projectDB.addProject(data, function (err3, results) {
-                    if (err3) {
-                      res.status(500).send({ message: "Server error." });
-                    } else {
-                      fs.rename(
-                        "./uploads/temporaryGitClone",
-                        "./uploads/" + results.insertId,
-                        function (err2) {
-                          if (err2) {
-                            console.log(
-                              "Error renaming temporaryGitClone to its hash."
-                            );
-                            projectDB.removeProject(
-                              results.insertId,
-                              (err4, results1) => {
-                                res
-                                  .status(500)
-                                  .send({ message: "Server error." });
-                              }
-                            );
-                          } else {
-                            console.log(results);
-                            res.status(201).send({
-                              message: "Success. File loaded onto backend",
-                              projectID: results.insertId,
-                            });
-                          }
-                        }
+                  // if the project is successfully added, rename it into the insertId
+                  fs.rename("./uploads/temporaryGitClone", "./uploads/" + results.insertId, function (err2) {
+                    if (err2) {
+                      console.log(
+                        "Error renaming temporaryGitClone to its hash."
                       );
+                      projectDB.removeProject(results.insertId, (err4, results1) => {
+                        res.status(500).send({ message: "Server error." });
+                      }
+                      );
+                    } else {
+                      console.log(results);
+                      res.status(201).send({
+                        message: "Success. File loaded onto backend",
+                        projectID: results.insertId,
+                      });
                     }
                   });
                 }
-              }
-            });
+              });
+            }
           }
-        );
-      }
-    );
+        });
+      });
+    });
   } catch (error) {
     res.status(500).send({ message: "Server error." });
   }
 };
 
+/**
+ * A express endpoint to get all the neo4j nodes by id
+ */
 exports.showAllInProjectNeo4J = (req, res) => {
-  const driver = neo4j.driver(
-    `bolt://${config.neo_host}:7687`,
-    neo4j.auth.basic("neo4j", "s3cr3t"),
-    {
-      /* encrypted: 'ENCRYPTION_OFF' */
-    }
-  );
+  console.log(FgGreen, `apiController.showAllInProjectNeo4J()`, Reset);
+
+  const driver = neo4j.driver(`bolt://${config.neo_host}:7687`, neo4j.auth.basic(config.neo_user, config.neo_pwd));
   const id = req.params.id;
   const query = `WITH 1 as dummy
   Match (n)-[r]->(m)
   WHERE n.ProjectID = "${id}" AND r.ProjectID = "${id}" AND m.ProjectID = "${id}"
   Return n,r,m`;
-  var nodes = [];
-  var edges = [];
+  const nodes = [];
+  const edges = [];
   const session = driver.session({ database: "neo4j" });
   session
     .run(query)
@@ -449,17 +390,6 @@ exports.showAllInProjectNeo4J = (req, res) => {
           return undefined;
         }
       };
-
-      // function not used
-      // var check_duplicate_id = (node) => {
-      //   nodes.forEach((single_node) => {
-      //     if (single_node.id == node.identity.low) {
-      //       return true;
-      //     } else {
-      //       return false;
-      //     }
-      //   });
-      // };
 
       var check_duplicate = [];
       result.records.forEach((record) => {
@@ -504,118 +434,105 @@ exports.showAllInProjectNeo4J = (req, res) => {
     });
 };
 
+/**
+ * A express endpoint to create a custom query & send the result back
+ */
 exports.customQuery = (req, res) => {
+  console.log(FgGreen, `apiController.customQuery()`, Reset);
+
   const id = req.params.id;
   const CodeQLpath = `./databases/database${id}/db-javascript`;
   let metadata = `/\*\*
 \* @name my-custom-query
 \* @description This is a custom query generated from the frontend web application. 
-\* @kind ${
-    req.body.CustomQuery?.toLowerCase().includes("dataflow")
+\* @kind ${req.body.CustomQuery?.toLowerCase().includes("dataflow")
       ? "path-problem"
       : "problem"
-  }
+    }
 \* @problem.severity recommendation
 \* @percision high
 \* @id javascript/my-custom-query
 \* @tags custom
 \*/
 \n`;
+
+  let selectQuery = req.body.CustomQuery?.match(/[Ss]elect(.*)/g)[0];
+
+  // This is to check whether the select statement contains mutiple fields
+  // This check is required as @kind path/path-problems requires even fields
+  // Adds a filler text if it is not even
+  if (!selectQuery?.includes(",") || selectQuery?.split(",")?.length % 2 !== 0) {
+    console.warn("Select statement is not even");
+    req.body.CustomQuery += `, "Filler text"`;
+    console.log(req.body.CustomQuery);
+  }
+
   let CusQuery = metadata + req.body.CustomQuery;
 
   fs.access(CodeQLpath, fs.F_OK, (err) => {
     if (err) {
       console.error(err);
-      return res.status(422).send("The database does not exist.");
+      return res.status(422).send({ message: "The database does not exist." });
     } else {
-      fs.writeFile(
-        "./codeql-custom-queries-javascript/CustomQuery.ql",
-        CusQuery,
-        function (err) {
-          if (err) {
-            console.error(err);
-            return;
-          } else {
-            console.log("Query successfully saved.");
-            const args = [
-              "database", // first argv
-              "analyze", // second argv
-              //"--quiet", // suppress output, Incrementally decrease the number of progress messages printed
-              "--format=sarifv2.1.0", // set the result output to SARIF v2.1.0 format
-              `--output=./SarifFiles/TemporaryCustomQuery.sarif`, // output file as id.sarif in ./SarifFiles/
-              "--sarif-add-snippets", // include code snippets for each location mentioned in the results
-              `./databases/database${id}`, // our database to scan
-              "./codeql-custom-queries-javascript/CustomQuery.ql",
-              "--search-path=../../codeql/",
-              "--rerun", // Evaluate even queries that seem to have a BQRS result stored in the database already.
-              "--threads=0",
-            ];
+      fs.writeFile("./codeql-custom-queries-javascript/CustomQuery.ql", CusQuery, function (err) {
+        if (err) {
+          return console.error(err);
+        } else {
+          console.log("Query successfully saved.");
 
-            // Run CodeQL query command, sarif output file is stored in ./SarifFiles
-            // Declaring a child variable to use for troubleshooting
-            var child = execFile("codeql", args, (error, stdout, stderr) => {
-              if (error) {
-                console.error("stderr", stderr);
-                return res.status(500).send("Internal Server Error");
-              } else {
-                // If no errors, add sarif file name to the DB
-                projectDB.insertSarif(
-                  `${id}.sarif`,
-                  id,
-                  function (err, result) {
-                    if (!err) {
-                      if (result) {
-                        var SarifFilePath = `TemporaryCustomQuery.sarif`;
-                        var options = {
-                          root: path.join(__dirname, "../SarifFiles/"),
-                        };
-                        // This API provides access to data on the running file system.
-                        // Ensure that either (a) the way in which the path argument was constructed into an absolute path is secure if it contains user input
-                        // or (b) set the root option to the absolute path of a directory to contain access within.
-                        res.setHeader("Content-Type", "application/json");
-                        res.sendFile(SarifFilePath, options, function (err) {
-                          if (err) {
-                            console.error(err);
-                          } else {
-                            console.log(options);
-                            console.log("Sent:", SarifFilePath);
-                            res.end();
-                          }
-                        });
-                      } else {
-                        res.status(422).send("The database does not exist.");
-                      }
-                    } else {
-                      if (err.code == "ER_BAD_NULL_ERROR") {
-                        res.status(400).send("Bad Request");
-                      } else {
-                        res.status(500).send("Internal Server Error");
-                      }
-                    }
-                  }
-                );
-              }
-              console.error(`stderr: ${stderr}`);
-            });
-            // for debugging purposes only
-            child.stdout.on("data", function (data) {
-              console.log("[STDOUT]: ", data.toString());
-            });
-            child.stderr.on("data", function (data) {
-              console.log("[STDERR]: ", data.toString());
-            });
-          }
+          // Run CodeQL query command, sarif output file is stored in ./SarifFiles
+          // Declaring a child variable to use for troubleshooting
+          codeQL.analyzeDatabase(`./databases/database${id}`, `./codeql-custom-queries-javascript/CustomQuery.ql`, "./SarifFiles/TemporaryCustomQuery.sarif", (code, output) => {
+            // if error (Exit Code >= 1)
+            if (code) {
+              console.error("stderr", output);
+              return res.status(500).send({ message: "Internal Server Error" });
+            } else {
+              var SarifFilePath = `TemporaryCustomQuery.sarif`;
+              var options = {
+                root: path.join(__dirname, "../SarifFiles/"),
+              };
+
+              res.contentType("application/json").sendFile(SarifFilePath, options, function (err) {
+                if (err) {
+                  console.error(err);
+                } else {
+                  console.log(options);
+                  console.log("Sent:", SarifFilePath);
+                  res.end();
+                }
+              });
+            }
+          });
         }
-      );
+      });
     }
   });
 };
 
+/**
+ * A express endpoint to delete a project in the database by id
+ */
 exports.deleteProject = (req, res) => {
+  console.log(FgGreen, `apiController.deleteProject()`, Reset);
+
   const id = req.params.id;
-  var databaseFolder = `./databases/database${id}`;
-  var sarifFile = `./SarifFiles/${id}.sarif`;
-  var uploadsFolder = `./uploads/${id}`;
+  const databaseFolder = `./databases/database${id}`;
+  const sarifFile = `./SarifFiles/${id}.sarif`;
+  const uploadsFolder = `./uploads/${id}`;
+
+  if (databaseFolder.indexOf('\0') !== -1 || sarifFile.indexOf('\0') !== -1 || uploadsFolder.indexOf('\0') !== -1) {
+    return res.status(400).send('That was evil.');
+  }
+
+  // provide some basic check to make sure the path is not malicious
+  let rootDirectory = "/usr/src/app/";
+  let databaseFolderPath = path.join(rootDirectory, databaseFolder).split(path.sep).join(path.posix.sep);
+  let sarifFilePath = path.join(rootDirectory, sarifFile).split(path.sep).join(path.posix.sep);
+  let uploadsFolderPath = path.join(rootDirectory, uploadsFolder).split(path.sep).join(path.posix.sep);
+  if (databaseFolderPath.indexOf(rootDirectory) !== 0 || sarifFilePath.indexOf(rootDirectory) !== 0 || uploadsFolderPath.indexOf(rootDirectory) !== 0) {
+    return res.status(400).send('trying to sneak out of the web root?');
+  }
 
   // Attemps to remove projectid from the database first
   projectDB.removeProject(id, function (err, result) {
@@ -652,13 +569,7 @@ exports.deleteProject = (req, res) => {
         }
       });
 
-      const driver = neo4j.driver(
-        `bolt://${config.neo_host}:7687`,
-        neo4j.auth.basic("neo4j", "s3cr3t"),
-        {
-          /* encrypted: 'ENCRYPTION_OFF' */
-        }
-      );
+      const driver = neo4j.driver(`bolt://${config.neo_host}:7687`, neo4j.auth.basic(config.neo_user, config.neo_pwd));
 
       const query = `
         MATCH (n {ProjectID: '${id}'})
@@ -677,51 +588,46 @@ exports.deleteProject = (req, res) => {
           console.error(error);
         });
 
-      var output = {
-        "Project deleted": result.affectedRows,
+      let output = {
+        message: "Project deleted",
+        affectedRows: result.affectedRows,
       };
       res.status(200).send(output);
     }
   });
 };
 
+/**
+ * A express endpoint to download a codeQL database snapshot by id
+ */
 exports.getSnapshots = (req, res) => {
+  console.log(FgGreen, `apiController.getSnapshots()`, Reset);
+
   const id = req.params.id;
-  const langauge = req.params.language;
-  const file = `./Snapshots/database${id}_${langauge}.zip`;
+  const file = `./Snapshots/database${id}.zip`;
 
-  const args = [
-    "database",
-    "bundle",
-    `--output=${file}`,
-    `./CodeQLDB/database${id}/${langauge}`,
-  ];
+  codeQL.createSnapshot(`./databases/database${id}`, file, (code, output) => {
+    // error
+    if (code) {
+      console.error(`stderr: ${output}`);;
 
-  var child = execFile("codeql", args, (error, stdout, stderr) => {
-    if (error) {
-      console.error(error);
-      console.error(`stderr: ${stderr}`);
-      if (stderr.includes("is not a recognized CodeQL database")) {
+      if (
+        output.includes("is not a recognized CodeQL database") ||
+        output.includes("has not been finalized")
+      ) {
         return res.status(400).send({
           message: "Database does not exist or the wrong folder is selected.",
         });
-      } else if (stderr.includes("already exists")) {
+      } else if (output.includes("already exists")) {
         console.log(`Downloading ${file}`);
-        res.download(file);
+        return res.download(file);
       }
+      return res.status(500).send({
+        message: "Internal Server Error",
+      });
     } else {
       console.log(`Downloading ${file}`);
       res.download(file);
     }
-
-    console.log(stdout);
-  });
-
-  // for debugging purposes only
-  child.stdout.on("data", function (data) {
-    console.log("[STDOUT]: ", data.toString());
-  });
-  child.stderr.on("data", function (data) {
-    console.log("[STDERR]: ", data.toString());
   });
 };

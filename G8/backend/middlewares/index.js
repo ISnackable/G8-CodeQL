@@ -8,11 +8,12 @@ const fs = require("fs");
 const path = require("path");
 const jsonMap = require("json-source-map");
 const multer = require("multer");
-const { execFile } = require("child_process");
 const { hashElement } = require("folder-hash");
 const neo4j = require("neo4j-driver");
 const projectDB = require("../models/projects.js");
 const config = require("../config");
+const codeQL = require("../helpers/codeQL")
+const { Reset, FgGreen } = require("../constants");
 
 // ------------------------------------------------------
 // Multer config
@@ -22,15 +23,19 @@ var storage = multer.diskStorage({
     let filePath = path.posix.normalize(file.originalname);
     let { dir, name } = path.parse(filePath);
 
+    // This is to set the project name in the database. It will take the first file as the project name
     if (!req.projectName) {
       req.projectName = dir ? dir.split("/")[1] : name;
     }
 
+    // Setting the destination to a temporary location first, so can check whether hash is same
     let newDestination = `uploads/temporaryMulterUpload/${dir}`;
     let stat = null;
     try {
+      // This is to check if the destination exists
       stat = fs.statSync(newDestination);
     } catch (err) {
+      // Create the directory if it does not exist
       fs.mkdirSync(newDestination, { recursive: true });
     }
     if (stat && !stat.isDirectory()) {
@@ -81,7 +86,27 @@ exports.multer = multer({
   },
 });
 
+/*
+    Creating hashes over folders (with default options)
+    Content means in this case a folder's children - both the files and the subfolders with their children.
+
+    The hashes are the same if:
+
+    A folder is checked again
+    Two folders have the same name and content (but have different parent folders)
+
+    The hashes are different if:
+
+    A file somewhere in the directory structure was renamed or its content was changed
+    Two folders have the same name but different content
+    Two folders have the same content but different names
+  */
+/**
+ * This is a middleware to check whether the multer upload is already uploaded before
+ */
 exports.checkDuplicateProject = (req, res, next) => {
+  console.log(FgGreen, `middlewares.checkDuplicateProject()`, Reset);
+
   let projectName = req.projectName;
 
   const options = {
@@ -90,23 +115,22 @@ exports.checkDuplicateProject = (req, res, next) => {
     folders: { ignoreRootName: true, exclude: ["node_modules"] },
   };
 
+  // Hashing the temporaryMulterUpload folder using SHA1 hex, and getting the hash result
   hashElement(`./uploads/temporaryMulterUpload`, options).then((hash) => {
     //--Insert code to check duplicate
     console.log(hash.hash);
+    // Compare the hash result in the database
     projectDB.getProjectHash(hash.hash, function (err, result) {
       if (err) {
         res.status(500).send({ message: "Internal Server Error" });
       } else {
         if (result) {
+          // results === true, hash exists in the database, remove the temporary multer upload directory
           try {
             //Deletes temporary folder
-            fs.rmSync(`./uploads/temporaryMulterUpload`, {
-              recursive: true,
-            });
+            fs.rmSync(`./uploads/temporaryMulterUpload`, { recursive: true, });
             console.log(`./uploads/temporaryMulterUpload is deleted!`);
-            console.log(
-              "Database already exist, sending response back to frontend."
-            );
+            console.log("Database already exist, sending response back to frontend.");
           } catch (err) {
             console.error(
               `Error while deleting ./uploads/temporaryMulterUpload.`
@@ -114,38 +138,33 @@ exports.checkDuplicateProject = (req, res, next) => {
           }
           res.status(409).send({ message: "Project already exist on server." });
         } else {
+          // results === false, project does not exist in database, rename the temporay multer upload into database${id}
           var data = {
             projectName: projectName,
             hash: hash.hash,
           };
 
+          // add the project into the database
           projectDB.addProject(data, function (err3, results) {
             if (err3) {
               res.status(500).send({ message: "Server error." });
             } else {
-              fs.rename(
-                "./uploads/temporaryMulterUpload",
-                "./uploads/" + results.insertId,
-                function (err2) {
-                  if (err2) {
-                    console.log(
-                      "Error renaming temporaryMulterUpload to its projectId."
-                    );
-                    projectDB.removeProject(
-                      results.insertId,
-                      (err4, results1) => {
-                        res.status(500).send({ message: "Server error." });
-                      }
-                    );
-                  } else {
-                    console.log(results);
-                    res.status(201).send({
-                      message: "Success. File loaded onto backend",
-                      projectID: results.insertId,
-                    });
+              // rename the temporay multer upload into database${id} in the uploads folder
+              fs.rename("./uploads/temporaryMulterUpload", "./uploads/" + results.insertId, function (err2) {
+                if (err2) {
+                  console.log("Error renaming temporaryMulterUpload to its projectId.");
+                  projectDB.removeProject(results.insertId, (err4, results1) => {
+                    res.status(500).send({ message: "Server error." });
                   }
+                  );
+                } else {
+                  console.log(results);
+                  res.status(201).send({
+                    message: "Success. File loaded onto backend",
+                    projectID: results.insertId,
+                  });
                 }
-              );
+              });
             }
           });
         }
@@ -154,66 +173,60 @@ exports.checkDuplicateProject = (req, res, next) => {
   });
 };
 
-// Create Database
+/**
+ * Create CodeQL database middleware
+ */
 exports.createCodeQLDatabase = (req, res, next) => {
+  console.log(FgGreen, `middlewares.createCodeQLDatabase()`, Reset);
+
   const id = req.params.id;
+  // When creating a codeql database, insert "processing" to "sarif_filename" column
   projectDB.insertProcessing(id, (err, result) => {
     if (err) {
       console.log(err);
       return res.status(500).send("Something went wrong! Server side.");
-    }
-  });
+    } else {
+      // Command to create a database
+      // Let the database finish creating or db-javascript will be missing.
+      codeQL.createDatabase(`./databases/database${id}`, `./uploads/${id}`, "javascript", (code, output) => {
+        // error
+        if (code) {
+          // If error, insert "error" to "sarif_filename" column
+          projectDB.insertSarifFilenameError(id, (err, result) => {
+            if (err) {
+              console.log(err);
+              return res.status(500).send("Something went wrong! Server side.");
+            }
+          });
 
-  const args = [
-    "database", // first argv
-    "create", // second argv
-    `./databases/database${id}`, // database name to be created
-    `--source-root=./uploads/${id}`, // source code folder
-    "--language=javascript", // programming language
-    "--threads=0",
-  ];
+          console.error(`stderr: ${output}`);
+          if (output.includes("Invalid source root")) {
+            return res.status(400).send({ message: "Database does not exists" });
+          } else if (output.includes("exists and is not an empty directory")) {
+            return res.status(409).send({ message: "Database already exists" });
+          }
 
-  // Command to create a database
-  // Let the database finish creating or db-javascript will be missing.
-  var child = execFile("codeql", args, (error, stdout, stderr) => {
-    if (error) {
-      projectDB.insertSarifFilenameError(id, (err, result) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).send("Something went wrong! Server side.");
+          // in stdout
+          if (output.includes("No JavaScript or TypeScript code found")) {
+            return res.status(400).send({ message: "No JavaScript code found" });
+          }
+
+          return res.status(500).send({ message: "Internal Server Error" });
         }
+
+        next();
       });
-      console.error(error);
-      console.error(`stderr: ${stderr}`);
-      if (stderr.includes("Invalid source root")) {
-        return res.status(400).send({ message: "Database does not exists" });
-      } else if (stderr.includes("exists and is not an empty directory")) {
-        return res.status(409).send({ message: "Database already exists" });
-      }
-
-      // in stdout
-      if (stdout.includes("No JavaScript or TypeScript code found")) {
-        return res.status(400).send({ message: "No JavaScript code found" });
-      }
-      // console.error("stderr", stderr);
-      return res.status(500).send({ message: "Internal Server Error" });
     }
+  });
 
-    console.log(stdout);
-    next();
-    // res.status(204).send("Database updated with new hash.");
-  });
-  // for debugging purposes only
-  child.stdout.on("data", function (data) {
-    console.log("[STDOUT]: ", data.toString());
-  });
-  child.stderr.on("data", function (data) {
-    console.log("[STDERR]: ", data.toString());
-  });
 };
 
-// Create Neo4j
+/**
+ * Create a Neo4J data base of the sarif file middleware
+ */
 exports.createNeo4J = (req, res) => {
+  console.log(FgGreen, `middlewares.createNeo4J()`, Reset);
+
   const id = req.params.id;
   const SarifExist = `./SarifFiles/${id}.sarif`;
 
@@ -281,9 +294,8 @@ exports.createNeo4J = (req, res) => {
       var CreateQuery = "";
       var NoDupeQuery = Array.from(new Set(qNameArr));
       for (a = 1; a <= NoDupeQuery.length; a++) {
-        CreateQuery += `CREATE (Q${a}:Query {Query:"${
-          NoDupeQuery[a - 1]
-        }", ProjectID:"${id}"})\n`;
+        CreateQuery += `CREATE (Q${a}:Query {Query:"${NoDupeQuery[a - 1]
+          }", ProjectID:"${id}"})\n`;
       }
 
       var CFCounter = 1;
@@ -293,9 +305,8 @@ exports.createNeo4J = (req, res) => {
       // For loop to loop through each different file available
       // Create File
       for (i = 0; i < NoDupeFile.length; i++) {
-        CreateQuery += `\nCREATE (F${i + 1}:File {File:"${
-          NoDupeFile[i]
-        }", ProjectID:"${id}"})\n`;
+        CreateQuery += `\nCREATE (F${i + 1}:File {File:"${NoDupeFile[i]
+          }", ProjectID:"${id}"})\n`;
 
         // Checks if current file name is related to the query by comparing rule id
         // Loops through all alerts
@@ -310,15 +321,12 @@ exports.createNeo4J = (req, res) => {
               /[\"]/g,
               "'"
             );
-            CreateQuery += `CREATE (A${b + 1}:Alert {FileName:'${
-              NoDupeFile[i]
-            }', RuleID:'${ResultArr[b].ruleId}', Message_Text:"${
-              ResultArr[b].message.text
-            }", FileLocation:'${
-              ResultArr[b].locations[0].physicalLocation.artifactLocation.uri
-            }', StartEndLine:'${JSON.stringify(
-              ResultArr[b].locations[0].physicalLocation.region
-            )}', ProjectID:"${id}"})\n`;
+            CreateQuery += `CREATE (A${b + 1}:Alert {FileName:'${NoDupeFile[i]
+              }', RuleID:'${ResultArr[b].ruleId}', Message_Text:"${ResultArr[b].message.text
+              }", FileLocation:'${ResultArr[b].locations[0].physicalLocation.artifactLocation.uri
+              }', StartEndLine:'${JSON.stringify(
+                ResultArr[b].locations[0].physicalLocation.region
+              )}', ProjectID:"${id}"})\n`;
 
             // Loops through all queries
             // Create Child
@@ -326,12 +334,10 @@ exports.createNeo4J = (req, res) => {
               // RuleID is paired with QueryName to create a child
               // CREATE (t)-[:CHILD]->(parent)
               if (RuleIDArr[b][1] == NoDupeQuery[c]) {
-                CreateQuery += `CREATE (A${
-                  b + 1
-                })-[:Child {ProjectID:"${id}"}]->(F${i + 1})\n`;
-                CreateQuery += `CREATE (A${
-                  b + 1
-                })-[:Child {ProjectID:"${id}"}]->(Q${c + 1})\n`;
+                CreateQuery += `CREATE (A${b + 1
+                  })-[:Child {ProjectID:"${id}"}]->(F${i + 1})\n`;
+                CreateQuery += `CREATE (A${b + 1
+                  })-[:Child {ProjectID:"${id}"}]->(Q${c + 1})\n`;
               }
             } // End of Create Child
 
@@ -371,13 +377,11 @@ exports.createNeo4J = (req, res) => {
                 if (z == 0) {
                   // Checks if in a new loop (Creating code flows for another Alert)
                   // Creates Child for current Alert it is looping on
-                  CreateQuery += `CREATE (CF${CFCounter})-[:Child {ProjectID:"${id}"}]->(A${
-                    b + 1
-                  })\n`;
+                  CreateQuery += `CREATE (CF${CFCounter})-[:Child {ProjectID:"${id}"}]->(A${b + 1
+                    })\n`;
                 } else {
-                  CreateQuery += `CREATE (CF${
-                    CFCounter - 1
-                  })-[:Child {ProjectID:"${id}"}]->(CF${CFCounter})\n`;
+                  CreateQuery += `CREATE (CF${CFCounter - 1
+                    })-[:Child {ProjectID:"${id}"}]->(CF${CFCounter})\n`;
                 }
                 CFCounter++;
               }
@@ -386,13 +390,7 @@ exports.createNeo4J = (req, res) => {
         } // End of Create Alert For Loop
       } // End of Create File Loop
 
-      const driver = neo4j.driver(
-        `bolt://${config.neo_host}:7687`,
-        neo4j.auth.basic("neo4j", "s3cr3t"),
-        {
-          /* encrypted: 'ENCRYPTION_OFF' */
-        }
-      );
+      const driver = neo4j.driver(`bolt://${config.neo_host}:7687`, neo4j.auth.basic("neo4j", "s3cr3t"));
       const deleteQuery = `
         MATCH (n)
         DETACH DELETE n`;
@@ -424,7 +422,12 @@ exports.createNeo4J = (req, res) => {
   });
 };
 
+/**
+ * This is a middleware for the id params validation. Id has to be a decimal number
+ */
 exports.idValidation = (req, res, next) => {
+  console.log(FgGreen, `middlewares.idValidation()`, Reset);
+
   const id = req.params.id;
 
   // Note: use of !NaN(0x10) or !NaN(1e1) === true
@@ -436,23 +439,28 @@ exports.idValidation = (req, res, next) => {
   }
 };
 
+/**
+ * This is a middleware to check whether a project is already being processed using the params id
+ */
 exports.checkProcessing = (req, res, next) => {
+  console.log(FgGreen, `middlewares.checkProcessing()`, Reset);
+
   console.log("checkProcessing Status");
   const id = req.params.id;
+  
   projectDB.getProjectId(id, function (err, result) {
     if (!err) {
       console.log(result.sarif_filename);
       if (result.sarif_filename == "processing") {
         var output = {
-          error:
-            "Still processing a project. Please wait for current project to successfully analyze.",
+          message: "Still processing a project. Please wait for current project to successfully analyze.",
         };
         return res.status(503).send(output);
       }
       return next();
     } else {
       var output = {
-        error: "Unable to get all the existing project information",
+        message: "Unable to get all the existing project information",
       };
       return res.status(500).send(output);
     }

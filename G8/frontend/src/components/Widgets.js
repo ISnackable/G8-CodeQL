@@ -10,71 +10,11 @@ import {
   Col,
   Row,
   Card,
-  Image,
-  Button,
-  ListGroup,
   ProgressBar,
 } from "@themesberg/react-bootstrap";
 
-import teamMembers from "../data/teamMembers";
 //Added
 import Neo4JShowAll from "./Neo4JShowAll.js";
-
-export const TeamMembersWidget = () => {
-  const TeamMember = (props) => {
-    const { name, statusKey, image, icon, btnText } = props;
-    const status = {
-      online: { color: "success", label: "Online" },
-      inMeeting: { color: "warning", label: "In a meeting" },
-      offline: { color: "danger", label: "Offline" },
-    };
-
-    const statusColor = status[statusKey] ? status[statusKey].color : "danger",
-      statusLabel = status[statusKey] ? status[statusKey].label : "Offline";
-
-    return (
-      <ListGroup.Item className="px-0">
-        <Row className="align-items-center">
-          <Col className="col-auto">
-            <a href="#top" className="user-avatar">
-              <Image src={image} className="rounded-circle" />
-            </a>
-          </Col>
-          <Col className="ms--2">
-            <h4 className="h6 mb-0">
-              <a href="#!">{name}</a>
-            </h4>
-            <span className={`text-${statusColor}`}>● </span>
-            <small>{statusLabel}</small>
-          </Col>
-          <Col className="col-auto">
-            <Button variant="tertiary" size="sm">
-              <FontAwesomeIcon icon={icon} className="me-1" /> {btnText}
-            </Button>
-          </Col>
-        </Row>
-      </ListGroup.Item>
-    );
-  };
-
-  return (
-    <Card border="light" className="shadow-sm">
-      <Card.Header className="border-bottom border-light d-flex justify-content-between">
-        <h5 className="mb-0">Team members</h5>
-        <Button variant="secondary" size="sm">
-          See all
-        </Button>
-      </Card.Header>
-      <Card.Body>
-        <ListGroup className="list-group-flush list my--3">
-          {teamMembers.map((tm) => (
-            <TeamMember key={`team-member-${tm.id}`} {...tm} />
-          ))}
-        </ListGroup>
-      </Card.Body>
-    </Card>
-  );
-};
 
 export const ProgressTrackWidget = () => {
   const Progress = (props) => {

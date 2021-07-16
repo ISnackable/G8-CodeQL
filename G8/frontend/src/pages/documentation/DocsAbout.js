@@ -28,7 +28,7 @@ const DocsAbout = () => (
                 aim to resolve using our automatic tool.
               </p>
 
-              <h2 className="mt-2" id="">
+              <h2 id="" className="mt-5">
                 How to use G8?
               </h2>
               <p>
@@ -41,6 +41,7 @@ const DocsAbout = () => (
                 is a tiring, tedious and mind-boggling process which we, at G8,
                 aim to resolve using our automatic tool.
               </p>
+
               <p>
                 G8 is powered by <code>CodeQl</code>, a code scanning engine
                 which allows queries to be written in order to find the bugs in
@@ -74,12 +75,88 @@ const DocsAbout = () => (
                 <li>JavaScript/TypeScript</li>
               </ul>
 
-              <h2 id="getting-support">Privacy and Security</h2>
+              <h2 id="getting-support" className="mt-5">License</h2>
+              <p>
+                The version of CodeQL used by the G8 is subject to the{" "}
+                <Card.Link
+                  href="https://securitylab.github.com/tools/codeql/license"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  CodeQL Research Terms & Conditions
+                </Card.Link>.{" "}
+                By using G8, you agree to GitHub CodeQL Terms and Conditions.
+                If you do not accept these Terms, do not download, install, use, or copy
+                the Software.
+              </p>
+
+              <h2 id="getting-support" className="mt-5">Privacy and Security</h2>
               <p>
                 When the codes are being put through our scanner, it is our
-                policy to not store, or reproduce the information in any way
-                possible.
+                policy for the user to manage their data. All information can
+                be deleted by the user.
               </p>
+
+              <h2 id="getting-support" className="mt-5">Acknowledgement</h2>
+              <p>
+                All images and code are used purely for educational purposes.
+              </p>
+              <ul>
+                <li>
+                  <Card.Link
+                    href="https://securitylab.github.com/tools/codeql/license"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    CodeQL
+                  </Card.Link>
+                </li>
+                <li>
+                  <Card.Link
+                    href="https://github.com/github/vscode-codeql/blob/main/extensions/ql-vscode/media/VS-marketplace-CodeQL-icon.png"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    CodeQL Logo
+                  </Card.Link>
+                </li>
+                <li>
+                  <Card.Link
+                    href="https://securitylab.github.com/tools/codeql/license"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Themesberg Volt React Dashboard
+                  </Card.Link>
+                </li>
+                <li>
+                  <Card.Link
+                    href="https://securitylab.github.com/tools/codeql/license"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Sarif Web Component
+                  </Card.Link>
+                </li>
+                <li>
+                  <Card.Link
+                    href="https://freebiesupply.com/logos/neo4j-logo/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Neo4J Logo
+                  </Card.Link>
+                </li>
+                <li>
+                  <Card.Link
+                    href="https://codersera.com/blog/learn-express-js/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    ExpressJS Logo
+                  </Card.Link>
+                </li>
+              </ul>
             </article>
           </Card.Body>
         </Card>

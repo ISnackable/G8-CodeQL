@@ -26,6 +26,7 @@ import customquery1 from "../../assets/img/docImg/customquery1.png";
 import customquery2 from "../../assets/img/docImg/customquery2.png";
 import customquery3 from "../../assets/img/docImg/customquery3.png";
 import customquery4 from "../../assets/img/docImg/customquery4.png";
+import customquery5 from "../../assets/img/docImg/customquery5.jpeg";
 
 import pdf1 from "../../assets/img/docImg/pdf1.png";
 
@@ -381,7 +382,7 @@ const DocsExploring = () => (
                     rounded
                     className="mb-3"
                     src={customquery1}
-                    alt="CodeQL Alerts"
+                    alt="customquery1"
                   />
                 </li>
                 <li>
@@ -390,7 +391,7 @@ const DocsExploring = () => (
                     rounded
                     className="mb-3"
                     src={customquery2}
-                    alt="CodeQL Alerts"
+                    alt="customquery2"
                   />
                 </li>
                 <li>
@@ -399,7 +400,7 @@ const DocsExploring = () => (
                     rounded
                     className="mb-3"
                     src={customquery3}
-                    alt="CodeQL Alerts"
+                    alt="customquery3"
                   />
                 </li>
                 <li>
@@ -410,7 +411,7 @@ const DocsExploring = () => (
                     rounded
                     className="mb-3"
                     src={customquery4}
-                    alt="CodeQL Alerts"
+                    alt="customquery4"
                   />
                 </li>
                 <li>
@@ -418,6 +419,17 @@ const DocsExploring = () => (
                     Proceed to view the analysis in the Sarif Viewer page or the
                     CodeQL Alerts page
                   </p>
+                </li>
+                <li>
+                  <p>
+                    There is also a button for a user to download a CodeQL database snapshot for offline querying
+                  </p>
+                  <Image
+                    rounded
+                    className="mb-3"
+                    src={customquery5}
+                    alt="customquery5"
+                  />
                 </li>
               </ol>
               {/* PDF Generator */}

@@ -262,7 +262,7 @@ select sink.getNode(), source, sink,
               </Button>
             </Col>
             <Col lg={6} className="order-lg-1">
-              <Image src={ReactMockupImg} alt="Calendar Preview" />
+              <Image src={ReactMockupImg} alt="React Mockup" />
             </Col>
           </Row>
           <Row className="justify-content-between align-items-center mb-5 mb-lg-7">
@@ -285,7 +285,7 @@ select sink.getNode(), source, sink,
               </Button>
             </Col>
             <Col lg={6} className="order-lg-1">
-              <Image src={ExpressMockupImg} alt="Calendar Preview" />
+              <Image src={ExpressMockupImg} alt="Express Mockup" />
             </Col>
           </Row>
           {/* codeql feature  */}
@@ -418,7 +418,7 @@ select sink.getNode(), source, sink,
             <Col lg={6} className="order-lg-1">
               <Image
                 src={Neo4JImage}
-                alt="MapBox Leaflet.js Custom Integration Mockup"
+                alt="Neo4J Mockup"
               />
             </Col>
           </Row>

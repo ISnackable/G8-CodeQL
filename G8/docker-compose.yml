@@ -5,6 +5,7 @@ services:
   # MariaDB Database
   mariadb:
     image: mariadb:10
+    # mounting a named volume to the container to track db data
     volumes:
       - mariadb_data:/var/lib/mysql
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -39,6 +40,10 @@ services:
         # UNCOMMENT TO SPECIFY A CODEQL CLI VERSION, defaults to latest version
         # CODEQL_VERSION: "v2.5.7"
         PRECOMPILE_QUERIES: "true" # FALSE TO REDUCE CREATION TIME
+    volumes:
+      - backend_uploads:/uploads/
+      - backend_database:/databases/
+      - backend_sarif:/SarifFiles/
     environment:
       CODEQL_HOME: /usr/local/codeql-home
       DB_HOST: mariadb
@@ -63,9 +68,6 @@ services:
     # ports:
     #   - 7474:7474
     #   - 7687:7687
-    # mounting a named volume to the container to track db data
-    volumes:
-      - neo4j_data:/data/
     environment:
       - NEO4J_AUTH=neo4j/s3cr3t # configure the instance with custom username/password
       # Raise memory limits
@@ -75,5 +77,7 @@ services:
 
 # volumes to be generated, these are saved somewhere for repeated use by docker
 volumes:
-  neo4j_data:
   mariadb_data:
+  backend_uploads:
+  backend_database:
+  backend_sarif:

@@ -381,8 +381,8 @@ const SarifViewer = () => {
             Edit
           </Dropdown.Toggle>
           <Dropdown.Menu className="dashboard-dropdown dropdown-menu-left mt-2">
-            <input id="input-file" className="d-none" type="file" />
             <Dropdown.Item
+              as="button"
               className="fw-bold"
               onClick={(e) => {
                 e.preventDefault();
@@ -403,7 +403,7 @@ const SarifViewer = () => {
                 Upload Log
               </Form>
             </Dropdown.Item>
-            <Dropdown.Item className="fw-bold" onClick={removeLogs}>
+            <Dropdown.Item as="button" className="fw-bold" onClick={removeLogs}>
               <FontAwesomeIcon icon={faTrash} className="me-2" />
               Remove Log
             </Dropdown.Item>

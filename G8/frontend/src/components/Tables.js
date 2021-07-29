@@ -107,6 +107,8 @@ export const CommandsTable = () => {
 };
 
 export const ExistingProjectTable = (props) => {
+  // For setting customquerystatus mode
+  const [CustomQueryStatus,setCustomQueryStatus] = useLocalStorageState("CustomQueryStatus",false);
   //Creates state variables
   let [responseData, setResponseData] = React.useState([]);
   // eslint-disable-next-line no-unused-vars
@@ -180,7 +182,7 @@ export const ExistingProjectTable = (props) => {
             ]);
           }
         });
-
+        setCustomQueryStatus(false); //Set status to false
         alert("Project has been successfully loaded");
       })
       .catch((error) => {

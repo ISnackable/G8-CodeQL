@@ -53,6 +53,7 @@ const backend_url =
 
 const CustomQuery = () => {
   // eslint-disable-next-line no-unused-vars
+  const [CustomQueryStatus,setCustomQueryStatus] = useLocalStorageState("CustomQueryStatus",false);
   const [logs, setLogs] = useLocalStorageState("log", []);
   const [responseData, setResponseData] = useState([]);
   const [currentProject, setCurrentProject] = useState({ id: null });
@@ -167,8 +168,9 @@ select b, "This is an empty block."`);
         console.log(response.data);
         setLogs([response.data]);
         alert(
-          "Finished analyzing. Please note that only the sarif file is available for viewing in the sarif viewer."
+          "Finished analyzing. Please note that only the sarif file is available for viewing in the CodeQL Alerts & Sarif Viewer."
         );
+        setCustomQueryStatus(true);
         return;
       })
       .catch((error) => {

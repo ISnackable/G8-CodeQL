@@ -32,18 +32,7 @@ const DocsAbout = () => (
                 How to use G8?
               </h2>
               <p>
-                Source codes are an integral part of any technological device in
-                the world. From routers, switches to smart home systems, the
-                implementation of the codes shape the usability of the devices.
-                However, such source codes might be at risk of the lurking
-                threats of bugs and cyber-attacks in the cyberspace due to the
-                loopholes in certain parts of the code. Fixing these loopholes
-                is a tiring, tedious and mind-boggling process which we, at G8,
-                aim to resolve using our automatic tool.
-              </p>
-
-              <p>
-                G8 is powered by <code>CodeQl</code>, a code scanning engine
+                G8 is powered by <code>CodeQL</code>, a code scanning engine
                 which allows queries to be written in order to find the bugs in
                 the code. After finding the issue, you can repair the code by
                 using the provided solutions to save you some time. Once the
@@ -63,7 +52,7 @@ const DocsAbout = () => (
               </h2>
 
               <ul className="docs-list">
-                <li>.js files</li>
+                <li>.js/.ts files</li>
                 <li>Github repository links</li>
               </ul>
 

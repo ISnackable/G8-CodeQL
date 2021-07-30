@@ -53,7 +53,8 @@ const backend_url =
 
 const CustomQuery = () => {
   // eslint-disable-next-line no-unused-vars
-  const [CustomQueryStatus,setCustomQueryStatus] = useLocalStorageState("CustomQueryStatus",false);
+  const [CustomQueryStatus, setCustomQueryStatus] = useLocalStorageState("CustomQueryStatus", false);
+  // eslint-disable-next-line no-unused-vars
   const [logs, setLogs] = useLocalStorageState("log", []);
   const [responseData, setResponseData] = useState([]);
   const [currentProject, setCurrentProject] = useState({ id: null });

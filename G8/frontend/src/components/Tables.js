@@ -108,7 +108,8 @@ export const CommandsTable = () => {
 
 export const ExistingProjectTable = (props) => {
   // For setting customquerystatus mode
-  const [CustomQueryStatus,setCustomQueryStatus] = useLocalStorageState("CustomQueryStatus",false);
+  // eslint-disable-next-line no-unused-vars
+  const [CustomQueryStatus, setCustomQueryStatus] = useLocalStorageState("CustomQueryStatus", false);
   //Creates state variables
   let [responseData, setResponseData] = React.useState([]);
   // eslint-disable-next-line no-unused-vars
